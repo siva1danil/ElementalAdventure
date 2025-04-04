@@ -1,3 +1,5 @@
+using ElementalAdventure.Client.OpenGL;
+using ElementalAdventure.Client.Resources;
 using ElementalAdventure.Client.Scenes;
 
 using OpenTK.Graphics.OpenGL4;
@@ -7,28 +9,46 @@ using OpenTK.Windowing.Desktop;
 namespace ElementalAdventure.Client;
 
 public class ClientWindow : GameWindow {
+    private readonly ResourceLoader _resourceLoader;
+    private readonly ResourceRegistry _resourceRegistry;
     private IScene? _scene;
 
-    public ClientWindow() : base(GameWindowSettings.Default, NativeWindowSettings.Default) {
+    public ClientWindow(string root) : base(GameWindowSettings.Default, NativeWindowSettings.Default) {
         Load += LoadHandler;
+        Unload += UnloadHandler;
         UpdateFrame += UpdateFrameHandler;
         RenderFrame += RenderFrameHandler;
+
+        _resourceLoader = new ResourceLoader(Path.Combine(root, "Resources"));
+        _resourceRegistry = new ResourceRegistry();
     }
 
     private void LoadHandler() {
-        _scene = new ExampleScene();
+        try {
+            _resourceRegistry.AddShader("default", new ShaderProgram(_resourceLoader.LoadText("Shaders/Default.vert"), _resourceLoader.LoadText("Shaders/Default.frag")));
+        } catch (Exception e) {
+            Console.WriteLine(e.Message);
+            Close();
+        }
+
+        _scene = new ExampleScene(_resourceRegistry);
+    }
+
+    private void UnloadHandler() {
+        _scene?.Dispose();
+        _resourceRegistry.Dispose();
     }
 
     private void UpdateFrameHandler(FrameEventArgs args) {
-        if (_scene != null) _scene.Update();
+        _scene?.Update();
     }
 
     private void RenderFrameHandler(FrameEventArgs args) {
         GL.ClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         GL.Clear(ClearBufferMask.ColorBufferBit);
-        if (_scene != null) _scene.Render();
+        _scene?.Render();
         SwapBuffers();
     }
 
-    public static void Main() => new ClientWindow().Run();
+    public static void Main() => new ClientWindow(AppDomain.CurrentDomain.BaseDirectory).Run();
 }
