@@ -1,7 +1,18 @@
-#version 330 core
+#version 430 core
 
-layout (location = 0) in vec3 aPos;
+struct Instance {
+    vec3 position;
+    vec3 color;
+};
+
+layout (location = 0) in vec3 aPosition;
+layout (std430, binding = 0) buffer InstanceBuffer {
+    Instance instances[];
+};
+
+out vec3 vColor;
 
 void main() {
-    gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0f);
+    vColor = instances[gl_InstanceID].color;
+    gl_Position = vec4(aPosition + instances[gl_InstanceID].position, 1.0f);
 }

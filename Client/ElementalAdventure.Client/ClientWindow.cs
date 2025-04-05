@@ -18,6 +18,7 @@ public class ClientWindow : GameWindow {
         Unload += UnloadHandler;
         UpdateFrame += UpdateFrameHandler;
         RenderFrame += RenderFrameHandler;
+        Resize += ResizeHandler;
 
         _resourceLoader = new ResourceLoader(Path.Combine(root, "Resources"));
         _resourceRegistry = new ResourceRegistry();
@@ -48,6 +49,10 @@ public class ClientWindow : GameWindow {
         GL.Clear(ClearBufferMask.ColorBufferBit);
         _scene?.Render();
         SwapBuffers();
+    }
+
+    private void ResizeHandler(ResizeEventArgs e) {
+        GL.Viewport(0, 0, e.Width, e.Height);
     }
 
     public static void Main() => new ClientWindow(AppDomain.CurrentDomain.BaseDirectory).Run();

@@ -12,12 +12,16 @@ public class ExampleScene : IScene {
     private readonly ResourceRegistry _resourceRegistry;
 
     private readonly VertexArray<Vertex> _vao;
+    private readonly StorageBuffer<Instance> _ssbo;
 
     public ExampleScene(ResourceRegistry resourceRegistry) {
         _resourceRegistry = resourceRegistry;
 
         _vao = new VertexArray<Vertex>();
-        _vao.SetData([new(new(-1, -1, 0)), new(new(1, -1, 0)), new(new(1, 1, 0)), new(new(-1, 1, 0))]);
+        _vao.SetData([new(new(0, 0, 0)), new(new(1 * 0.25f, 0, 0)), new(new(0, 1 * 0.25f, 0)), new(new(1 * 0.25f, 0, 0)), new(new(0, 1 * 0.25f, 0)), new(new(1 * 0.25f, 1 * 0.25f, 0))]);
+
+        _ssbo = new StorageBuffer<Instance>();
+        _ssbo.SetData([new(new(0, 0, 0), new(1, 0, 0)), new(new(1 * 0.25f, 0, 0), new(0, 1, 0)), new(new(0, 1 * 0.25f, 0), new(0, 1, 0)), new(new(1 * 0.25f, 1 * 0.25f, 0), new(1, 0, 0))]);
     }
 
     public void Update() {
@@ -27,7 +31,8 @@ public class ExampleScene : IScene {
     public void Render() {
         GL.UseProgram(_resourceRegistry.GetShader("default").Id);
         GL.BindVertexArray(_vao.Id);
-        GL.DrawArrays(PrimitiveType.TriangleStrip, 0, 4);
+        GL.BindBufferBase(BufferRangeTarget.ShaderStorageBuffer, 0, _ssbo.Id);
+        GL.DrawArraysInstanced(PrimitiveType.Triangles, 0, 6, 4);
         GL.BindVertexArray(0);
         GL.UseProgram(0);
     }
@@ -36,8 +41,14 @@ public class ExampleScene : IScene {
         _vao.Dispose();
     }
 
-    [StructLayout(LayoutKind.Sequential)]
+    [StructLayout(LayoutKind.Explicit, Size = 12)]
     private struct Vertex(Vector3 position) {
-        public Vector3 Position = position;
+        [FieldOffset(0)] public Vector3 Position = position;
+    }
+
+    [StructLayout(LayoutKind.Explicit, Size = 32)]
+    private struct Instance(Vector3 position, Vector3 color) {
+        [FieldOffset(0)] public Vector3 Position = position;
+        [FieldOffset(16)] public Vector3 Color = color;
     }
 }
