@@ -1,13 +1,11 @@
 #version 430 core
 
-struct Instance {
-    vec3 position;
-    vec3 color;
-};
-
 layout (location = 0) in vec3 aPosition;
 layout (std430, binding = 0) buffer InstanceBuffer {
-    Instance instances[];
+    struct {
+        vec3 position;
+        vec3 color;
+    } instances[];
 };
 
 out vec3 vColor;
