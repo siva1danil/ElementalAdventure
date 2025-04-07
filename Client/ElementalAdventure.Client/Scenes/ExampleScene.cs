@@ -1,10 +1,10 @@
-using System.Numerics;
 using System.Runtime.InteropServices;
 
 using ElementalAdventure.Client.OpenGL;
 using ElementalAdventure.Client.Resources;
 
 using OpenTK.Graphics.OpenGL4;
+using OpenTK.Mathematics;
 
 namespace ElementalAdventure.Client.Scenes;
 
@@ -13,19 +13,20 @@ public class ExampleScene : IScene {
 
     private readonly VertexArray<Vertex> _vao;
     private readonly StorageBuffer<Instance> _ssbo;
+    private Matrix4 _projection;
 
     public ExampleScene(ResourceRegistry resourceRegistry) {
         _resourceRegistry = resourceRegistry;
 
         _vao = new VertexArray<Vertex>();
-        _vao.SetData([new(new(0, 0, 0)), new(new(1 * 0.25f, 0, 0)), new(new(0, 1 * 0.25f, 0)), new(new(1 * 0.25f, 0, 0)), new(new(0, 1 * 0.25f, 0)), new(new(1 * 0.25f, 1 * 0.25f, 0))]);
+        _vao.SetData([new(new(0, 0, 0)), new(new(1, 0, 0)), new(new(0, 1, 0)), new(new(1, 0, 0)), new(new(0, 1, 0)), new(new(1, 1, 0))]);
 
         _ssbo = new StorageBuffer<Instance>();
-        _ssbo.SetData([new(new(0, 0, 0), new(1, 0, 0)), new(new(1 * 0.25f, 0, 0), new(0, 1, 0)), new(new(0, 1 * 0.25f, 0), new(0, 1, 0)), new(new(1 * 0.25f, 1 * 0.25f, 0), new(1, 0, 0))]);
+        _ssbo.SetData([new(new(0, 0, 0), new(1, 0, 0)), new(new(1, 0, 0), new(0, 1, 0)), new(new(0, 1, 0), new(0, 1, 0)), new(new(1, 1, 0), new(1, 0, 0)), new(new(2, 2, 0), new(1, 1, 1))]);
     }
 
     public void Update() {
-        //
+        _projection = Matrix4.CreateOrthographicOffCenter(-3, 3, -3, 3, -1, 1); // TODO: Move to resize event, dirtyness check
     }
 
     public void Render() {
@@ -35,7 +36,8 @@ public class ExampleScene : IScene {
         GL.ActiveTexture(TextureUnit.Texture0);
         GL.BindTexture(TextureTarget.Texture2D, _resourceRegistry.GetTexture("default").Id);
 
-        GL.DrawArraysInstanced(PrimitiveType.Triangles, 0, 6, 4);
+        GL.UniformMatrix4(GL.GetUniformLocation(_resourceRegistry.GetShader("default").Id, "uProjection"), false, ref _projection);
+        GL.DrawArraysInstanced(PrimitiveType.Triangles, 0, 6, 5);
 
         GL.BindTexture(TextureTarget.Texture2D, 0);
         GL.BindBufferBase(BufferRangeTarget.ShaderStorageBuffer, 0, 0);
