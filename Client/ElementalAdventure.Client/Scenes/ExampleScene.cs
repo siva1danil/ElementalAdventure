@@ -32,7 +32,13 @@ public class ExampleScene : IScene {
         GL.UseProgram(_resourceRegistry.GetShader("default").Id);
         GL.BindVertexArray(_vao.Id);
         GL.BindBufferBase(BufferRangeTarget.ShaderStorageBuffer, 0, _ssbo.Id);
+        GL.ActiveTexture(TextureUnit.Texture0);
+        GL.BindTexture(TextureTarget.Texture2D, _resourceRegistry.GetTexture("default").Id);
+
         GL.DrawArraysInstanced(PrimitiveType.Triangles, 0, 6, 4);
+
+        GL.BindTexture(TextureTarget.Texture2D, 0);
+        GL.BindBufferBase(BufferRangeTarget.ShaderStorageBuffer, 0, 0);
         GL.BindVertexArray(0);
         GL.UseProgram(0);
     }

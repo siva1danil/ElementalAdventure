@@ -5,12 +5,14 @@ layout (std430, binding = 0) buffer InstanceBuffer {
     struct {
         vec3 position;
         vec3 color;
-    } instances[];
+    } aInstances[];
 };
 
 out vec3 vColor;
+out vec2 vUV;
 
 void main() {
-    vColor = instances[gl_InstanceID].color;
-    gl_Position = vec4(aPosition + instances[gl_InstanceID].position, 1.0f);
+    vColor = aInstances[gl_InstanceID].color;
+    vUV = aPosition.xy;
+    gl_Position = vec4(aPosition + aInstances[gl_InstanceID].position, 1.0f);
 }

@@ -27,6 +27,7 @@ public class ClientWindow : GameWindow {
     private void LoadHandler() {
         try {
             _resourceRegistry.AddShader("default", new ShaderProgram(_resourceLoader.LoadText("Shaders/Default.vert"), _resourceLoader.LoadText("Shaders/Default.frag")));
+            _resourceRegistry.AddTexture("default", new Texture2D(_resourceLoader.LoadBinary("Textures/Default.png")));
         } catch (Exception e) {
             Console.WriteLine(e.Message);
             Close();
