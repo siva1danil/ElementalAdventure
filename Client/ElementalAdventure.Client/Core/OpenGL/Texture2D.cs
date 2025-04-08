@@ -2,7 +2,7 @@ using OpenTK.Graphics.OpenGL4;
 
 using StbImageSharp;
 
-namespace ElementalAdventure.Client.OpenGL;
+namespace ElementalAdventure.Client.Core.OpenGL;
 
 public class Texture2D : IDisposable {
     private readonly int _id;

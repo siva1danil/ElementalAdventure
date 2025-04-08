@@ -1,4 +1,4 @@
-namespace ElementalAdventure.Client.Resources;
+namespace ElementalAdventure.Client.Core.Resources;
 
 public class ResourceLoader {
     private readonly string _root;

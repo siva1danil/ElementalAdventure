@@ -1,6 +1,6 @@
-using ElementalAdventure.Client.OpenGL;
+using ElementalAdventure.Client.Core.OpenGL;
 
-namespace ElementalAdventure.Client.Resources;
+namespace ElementalAdventure.Client.Core.Resources;
 
 public class ResourceRegistry : IDisposable {
     private readonly Dictionary<string, ShaderProgram> _shaders;

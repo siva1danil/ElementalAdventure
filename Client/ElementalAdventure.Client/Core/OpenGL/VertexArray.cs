@@ -3,7 +3,7 @@ using System.Runtime.InteropServices;
 
 using OpenTK.Graphics.OpenGL4;
 
-namespace ElementalAdventure.Client.OpenGL;
+namespace ElementalAdventure.Client.Core.OpenGL;
 
 public class VertexArray<T> : IDisposable where T : struct {
     private readonly int _vao = -1;

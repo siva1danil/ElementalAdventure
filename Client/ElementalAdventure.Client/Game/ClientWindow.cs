@@ -1,12 +1,12 @@
-using ElementalAdventure.Client.OpenGL;
-using ElementalAdventure.Client.Resources;
-using ElementalAdventure.Client.Scenes;
+using ElementalAdventure.Client.Core.OpenGL;
+using ElementalAdventure.Client.Core.Resources;
+using ElementalAdventure.Client.Game.Scenes;
 
 using OpenTK.Graphics.OpenGL4;
 using OpenTK.Windowing.Common;
 using OpenTK.Windowing.Desktop;
 
-namespace ElementalAdventure.Client;
+namespace ElementalAdventure.Client.Game;
 
 public class ClientWindow : GameWindow {
     private readonly ResourceLoader _resourceLoader;
@@ -33,7 +33,7 @@ public class ClientWindow : GameWindow {
             Close();
         }
 
-        _scene = new ExampleScene(_resourceRegistry);
+        _scene = new GameScene(_resourceRegistry);
     }
 
     private void UnloadHandler() {

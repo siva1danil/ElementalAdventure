@@ -1,7 +1,7 @@
 using System.Reflection;
 using System.Reflection.Emit;
 
-namespace ElementalAdventure.Client.Utils;
+namespace ElementalAdventure.Client.Game.Utils;
 
 public static class ListExtensions {
     static class ArrayAccessor<T> {

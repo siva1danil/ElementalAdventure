@@ -1,6 +1,6 @@
 using OpenTK.Graphics.OpenGL4;
 
-namespace ElementalAdventure.Client.OpenGL;
+namespace ElementalAdventure.Client.Core.OpenGL;
 
 public class ShaderProgram : IDisposable {
     private readonly int _id = -1;
