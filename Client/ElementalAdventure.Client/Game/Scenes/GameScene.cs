@@ -10,11 +10,12 @@ public class GameScene : IScene {
     }
 
     public void Update() {
-        //
+        // 
     }
 
     public void Render() {
-        //
+        // TODO: Render tilemap
+        // TODO: Render UI
     }
 
     public void Dispose() {

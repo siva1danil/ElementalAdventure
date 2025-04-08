@@ -26,6 +26,18 @@ public class Texture2D : IDisposable {
         GL.BindTexture(TextureTarget.Texture2D, 0);
     }
 
+    public Texture2D(byte[] rgba, int width, int height) {
+        (_width, _height) = (width, height);
+        _id = GL.GenTexture();
+        GL.BindTexture(TextureTarget.Texture2D, _id);
+        GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba, _width, _height, 0, PixelFormat.Rgba, PixelType.UnsignedByte, rgba);
+        GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Nearest);
+        GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Nearest);
+        GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)TextureWrapMode.ClampToEdge);
+        GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)TextureWrapMode.ClampToEdge);
+        GL.BindTexture(TextureTarget.Texture2D, 0);
+    }
+
     public void Dispose() {
         GL.DeleteTexture(_id);
         GC.SuppressFinalize(this);
