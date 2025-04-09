@@ -8,37 +8,25 @@ using OpenTK.Mathematics;
 namespace ElementalAdventure.Client.Game.Model;
 
 public class Tilemap {
-    private int[,] _map;
+    private Tile?[,] _map;
     private int _tileCount;
-    private bool _dirty;
 
     public int TileCount => _tileCount;
-    public bool Dirty => _dirty;
 
     public Tilemap() {
-        _map = new int[0, 0];
+        _map = new Tile?[0, 0];
     }
 
     public void SetMap<T>(TextureAtlas<T> atlas, T?[,] map) where T : notnull {
-        _map = new int[map.GetLength(0), map.GetLength(1)];
+        _map = new Tile?[map.GetLength(0), map.GetLength(1)];
         _tileCount = 0;
-        _dirty = true;
         for (int y = 0; y < map.GetLength(0); y++) {
             for (int x = 0; x < map.GetLength(1); x++) {
-                _map[y, x] = map[map.GetLength(0) - y - 1, x] == null ? 0 : atlas.GetEntry(map[map.GetLength(0) - y - 1, x]!).Index + 1;
-                if (_map[y, x] != 0) _tileCount++;
-            }
-        }
-    }
-
-    public void SetMap(int[,] map) {
-        _map = new int[map.GetLength(0), map.GetLength(1)];
-        _tileCount = 0;
-        _dirty = true;
-        for (int y = 0; y < map.GetLength(0); y++) {
-            for (int x = 0; x < map.GetLength(1); x++) {
-                _map[y, x] = map[map.GetLength(0) - y - 1, x];
-                if (_map[y, x] != 0) _tileCount++;
+                TextureAtlas<T>.Entry? tile = map[map.GetLength(0) - y - 1, x] == null ? null : atlas.GetEntry(map[map.GetLength(0) - y - 1, x]!);
+                if (tile != null) {
+                    _map[y, x] = new Tile(tile.Value.Index, tile.Value.FrameCount, tile.Value.FrameTime);
+                    _tileCount++;
+                }
             }
         }
     }
@@ -51,8 +39,14 @@ public class Tilemap {
         List<InstanceData> data = new List<InstanceData>();
         for (int y = 0; y < _map.GetLength(0); y++)
             for (int x = 0; x < _map.GetLength(1); x++)
-                if (_map[y, x] != 0) data.Add(new InstanceData(new(x, y, 0), _map[y, x] - 1));
+                if (_map[y, x] != null) data.Add(new InstanceData(new(x, y, 0), _map[y, x]!.Value.Index, _map[y, x]!.Value.FrameCount, _map[y, x]!.Value.FrameTime));
         return data.GetBackingArray();
+    }
+
+    private struct Tile(int index, int frameCount, int frameTime) {
+        public int Index = index;
+        public int FrameCount = frameCount;
+        public int FrameTime = frameTime;
     }
 
     [StructLayout(LayoutKind.Explicit, Size = 12)]
@@ -60,9 +54,11 @@ public class Tilemap {
         [FieldOffset(0)] public Vector3 Position = position;
     }
 
-    [StructLayout(LayoutKind.Explicit, Size = 16)]
-    public struct InstanceData(Vector3 position, int index) {
+    [StructLayout(LayoutKind.Explicit, Size = 32)]
+    public struct InstanceData(Vector3 position, int index, int frameCount, int frameTime) {
         [FieldOffset(0)] public Vector3 Position = position;
         [FieldOffset(12)] public int Index = index;
+        [FieldOffset(16)] public int FrameCount = frameCount;
+        [FieldOffset(20)] public int FrameTime = frameTime;
     }
 }
