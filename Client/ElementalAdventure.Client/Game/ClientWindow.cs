@@ -10,46 +10,44 @@ using OpenTK.Windowing.Desktop;
 namespace ElementalAdventure.Client.Game;
 
 public class ClientWindow : GameWindow {
-    private readonly ResourceLoader _resourceLoader;
-    private readonly ResourceRegistry _resourceRegistry;
+    private readonly ClientContext _context;
     private IScene? _scene;
 
-    public ClientWindow(string root) : base(GameWindowSettings.Default, NativeWindowSettings.Default) {
+    public ClientWindow(string root) : base(GameWindowSettings.Default, new NativeWindowSettings { ClientSize = new(1280, 720) }) {
         Load += LoadHandler;
         Unload += UnloadHandler;
         UpdateFrame += UpdateFrameHandler;
         RenderFrame += RenderFrameHandler;
         Resize += ResizeHandler;
 
-        _resourceLoader = new ResourceLoader(Path.Combine(root, "Resources"));
-        _resourceRegistry = new ResourceRegistry();
+        _context = new ClientContext(new ResourceLoader(Path.Combine(root, "Resources")), new ResourceRegistry(), ClientSize);
     }
 
     private void LoadHandler() {
         try {
-            _resourceRegistry.AddShader("shader.tilemap", new ShaderProgram(_resourceLoader.LoadText("Shader/Tilemap.vert"), _resourceLoader.LoadText("Shader/Tilemap.frag")));
-            _resourceRegistry.AddTextureAtlas("textureatlas.minecraft", new TextureAtlas<string>(new Dictionary<string, TextureAtlas<string>.EntryDef> {
-                { "chest_front", new([_resourceLoader.LoadBinary("TextureAtlas/Minecraft/chest_front.png")], 100) },
-                { "clay", new([_resourceLoader.LoadBinary("TextureAtlas/Minecraft/clay.png")], 100) },
-                { "coal_ore", new([_resourceLoader.LoadBinary("TextureAtlas/Minecraft/coal_ore.png")], 100) },
-                { "coarse_dirt", new([_resourceLoader.LoadBinary("TextureAtlas/Minecraft/coarse_dirt.png")], 100) },
-                { "cobblestone", new([_resourceLoader.LoadBinary("TextureAtlas/Minecraft/cobblestone.png")], 100) },
-                { "cobblestone_mossy", new([_resourceLoader.LoadBinary("TextureAtlas/Minecraft/cobblestone_mossy.png")], 100) },
-                { "diamond_ore", new([_resourceLoader.LoadBinary("TextureAtlas/Minecraft/diamond_ore.png")], 100) },
-                { "dirt", new([_resourceLoader.LoadBinary("TextureAtlas/Minecraft/dirt.png")], 100) },
-                { "stone", new([_resourceLoader.LoadBinary("TextureAtlas/Minecraft/stone.png")], 100) }
-            }));
+            _context.ResourceRegistry.AddShader("shader.tilemap", new ShaderProgram(_context.ResourceLoader.LoadText("Shader/Tilemap.vert"), _context.ResourceLoader.LoadText("Shader/Tilemap.frag")));
+            _context.ResourceRegistry.AddTextureAtlas("textureatlas.minecraft", new TextureAtlas<string>(new Dictionary<string, TextureAtlas<string>.EntryDef> {
+                { "chest_front", new([_context.ResourceLoader.LoadBinary("TextureAtlas/Minecraft/chest_front.png")], 100) },
+                { "clay", new([_context.ResourceLoader.LoadBinary("TextureAtlas/Minecraft/clay.png")], 100) },
+                { "coal_ore", new([_context.ResourceLoader.LoadBinary("TextureAtlas/Minecraft/coal_ore.png")], 100) },
+                { "coarse_dirt", new([_context.ResourceLoader.LoadBinary("TextureAtlas/Minecraft/coarse_dirt.png")], 100) },
+                { "cobblestone", new([_context.ResourceLoader.LoadBinary("TextureAtlas/Minecraft/cobblestone.png")], 100) },
+                { "cobblestone_mossy", new([_context.ResourceLoader.LoadBinary("TextureAtlas/Minecraft/cobblestone_mossy.png")], 100) },
+                { "diamond_ore", new([_context.ResourceLoader.LoadBinary("TextureAtlas/Minecraft/diamond_ore.png")], 100) },
+                { "dirt", new([_context.ResourceLoader.LoadBinary("TextureAtlas/Minecraft/dirt.png")], 100) },
+                { "stone", new([_context.ResourceLoader.LoadBinary("TextureAtlas/Minecraft/stone.png")], 100) }
+            }, 1));
         } catch (Exception e) {
             Console.WriteLine(e.Message);
             Close();
         }
 
-        _scene = new GameScene(_resourceRegistry);
+        _scene = new GameScene(_context);
     }
 
     private void UnloadHandler() {
         _scene?.Dispose();
-        _resourceRegistry.Dispose();
+        _context.ResourceRegistry.Dispose();
     }
 
     private void UpdateFrameHandler(FrameEventArgs args) {
@@ -65,6 +63,7 @@ public class ClientWindow : GameWindow {
 
     private void ResizeHandler(ResizeEventArgs e) {
         GL.Viewport(0, 0, e.Width, e.Height);
+        _context.WindowSize = new(e.Width, e.Height);
     }
 
     public static void Main() => new ClientWindow(AppDomain.CurrentDomain.BaseDirectory).Run();

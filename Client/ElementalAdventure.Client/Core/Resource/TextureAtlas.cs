@@ -1,14 +1,12 @@
 using ElementalAdventure.Client.Core.OpenGL;
 
-using OpenTK.Mathematics;
-
 using StbImageSharp;
 
 namespace ElementalAdventure.Client.Core.Resource;
 
 public class TextureAtlas<K> : IDisposable where K : notnull {
     private readonly Texture2D _atlas;
-    private readonly int _entryWidth, _entryHeight;
+    private readonly int _entryWidth, _entryHeight, _entryPadding;
     private readonly Dictionary<K, Entry> _entries;
 
     public int Id => _atlas.Id;
@@ -16,14 +14,17 @@ public class TextureAtlas<K> : IDisposable where K : notnull {
     public int AtlasHeight => _atlas.Height;
     public int EntryWidth => _entryWidth;
     public int EntryHeight => _entryHeight;
+    public int EntryPadding => _entryPadding;
     public Dictionary<K, Entry> Entries => _entries;
 
-    public TextureAtlas(Dictionary<K, EntryDef> entries) {
+    public TextureAtlas(Dictionary<K, EntryDef> entries, int padding) {
         if (entries.Count == 0)
             throw new ArgumentException("Tileset must contain at least one tile.");
         foreach (KeyValuePair<K, EntryDef> entry in entries)
             if (entry.Value.Frames.Length == 0)
                 throw new ArgumentException("Tileset tile must contain at least one frame.");
+
+        _entryPadding = padding;
 
         int entryCount = 0;
         foreach (KeyValuePair<K, EntryDef> entry in entries)
@@ -34,27 +35,35 @@ public class TextureAtlas<K> : IDisposable where K : notnull {
 
         ImageResult first = ImageResult.FromMemory(enumerator.Current.Value.Frames[0], ColorComponents.RedGreenBlueAlpha);
         (_entryWidth, _entryHeight) = (first.Width, first.Height);
-        Vector2i atlasTiles = new((int)Math.Ceiling(Math.Sqrt(entryCount)), (int)Math.Ceiling(entryCount / Math.Ceiling(Math.Sqrt(entryCount))));
-        Vector2i atlasSize = new(atlasTiles.X * _entryWidth, atlasTiles.Y * _entryHeight);
+
+        (int paddedWidth, int paddedHeight) = (_entryWidth + 2 * _entryPadding, _entryHeight + 2 * _entryPadding);
+        (int atlasCols, int atlasRows) = ((int)Math.Ceiling(Math.Sqrt(entryCount)), (int)Math.Ceiling(entryCount / Math.Ceiling(Math.Sqrt(entryCount))));
+        (int atlasWidth, int atlasHeight) = (atlasCols * paddedWidth, atlasRows * paddedHeight);
 
         _entries = new(entries.Count);
-        byte[] data = new byte[atlasSize.X * atlasSize.Y * 4];
+        byte[] data = new byte[atlasWidth * atlasHeight * 4];
         int index = 0;
         foreach (KeyValuePair<K, EntryDef> entry in entries) {
             _entries[entry.Key] = new Entry(index, entry.Value.Frames.Length, entry.Value.FrameTime);
             for (int i = 0; i < entry.Value.Frames.Length; i++) {
                 ImageResult frame = ImageResult.FromMemory(entry.Value.Frames[i], ColorComponents.RedGreenBlueAlpha);
-                Vector2i rowcol = new(index % atlasTiles.X, index / atlasTiles.X);
-                Vector2i offset = new(rowcol.X * _entryWidth, rowcol.Y * _entryHeight);
-                for (int y = 0; y < _entryHeight; y++) {
-                    int srcStart = y * _entryWidth * 4;
-                    int dstStart = ((offset.Y + y) * atlasSize.X + offset.X) * 4;
-                    Buffer.BlockCopy(frame.Data, srcStart, data, dstStart, _entryWidth * 4);
+                (int col, int row) = (index % atlasCols, index / atlasCols);
+                (int offsetX, int offsetY) = (col * paddedWidth + _entryPadding, row * paddedHeight + _entryPadding);
+                for (int y = -_entryPadding; y < _entryHeight + _entryPadding; y++) {
+                    int clampedY = Math.Clamp(y, 0, _entryHeight - 1);
+                    for (int x = -_entryPadding; x < _entryWidth + _entryPadding; x++) {
+                        int clampedX = Math.Clamp(x, 0, _entryWidth - 1);
+                        int srcIndex = (clampedY * _entryWidth + clampedX) * 4;
+                        int dstX = offsetX + x;
+                        int dstY = offsetY + y;
+                        int dstIndex = (dstY * atlasWidth + dstX) * 4;
+                        Buffer.BlockCopy(frame.Data, srcIndex, data, dstIndex, 4);
+                    }
                 }
                 index++;
             }
         }
-        _atlas = new(data, atlasSize.X, atlasSize.Y);
+        _atlas = new(data, atlasWidth, atlasHeight);
     }
 
     public Entry GetEntry(K key) {
