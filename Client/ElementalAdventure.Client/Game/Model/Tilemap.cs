@@ -1,5 +1,6 @@
 using System.Runtime.InteropServices;
 
+using ElementalAdventure.Client.Core.Resource;
 using ElementalAdventure.Client.Game.Utils;
 
 using OpenTK.Mathematics;
@@ -16,6 +17,18 @@ public class Tilemap {
 
     public Tilemap() {
         _map = new int[0, 0];
+    }
+
+    public void SetMap<T>(TextureAtlas<T> atlas, T?[,] map) where T : notnull {
+        _map = new int[map.GetLength(0), map.GetLength(1)];
+        _tileCount = 0;
+        _dirty = true;
+        for (int y = 0; y < map.GetLength(0); y++) {
+            for (int x = 0; x < map.GetLength(1); x++) {
+                _map[y, x] = map[map.GetLength(0) - y - 1, x] == null ? 0 : atlas.GetEntry(map[map.GetLength(0) - y - 1, x]!).Index + 1;
+                if (_map[y, x] != 0) _tileCount++;
+            }
+        }
     }
 
     public void SetMap(int[,] map) {

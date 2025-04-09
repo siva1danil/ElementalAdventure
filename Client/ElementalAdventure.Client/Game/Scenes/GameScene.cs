@@ -19,10 +19,11 @@ public class GameScene : IScene {
         _vertexArray = new VertexArray<Tilemap.VertexData>();
         _instanceBuffer = new StorageBuffer<Tilemap.InstanceData>();
         _tilemap = new Tilemap();
-        _tilemap.SetMap(new int[,] {
-            { 4, 4, 4, 4, 4 },
-            { 0, 0, 3, 3, 3 },
-            { 56, 0, 2, 2, 2 },
+        _tilemap.SetMap(_resourceRegistry.GetTextureAtlas("textureatlas.minecraft"), new string?[,] {
+            {"cobblestone_mossy", "cobblestone_mossy", "cobblestone_mossy", "cobblestone_mossy"},
+            {"cobblestone_mossy", "cobblestone_mossy", "cobblestone_mossy", "cobblestone_mossy"},
+            {null, "coal_ore", "coal_ore", null},
+            {"dirt", null, null, "dirt"},
         });
     }
 
@@ -31,20 +32,20 @@ public class GameScene : IScene {
     }
 
     public void Render() {
-        GL.UseProgram(_resourceRegistry.GetShader("tilemap").Id);
+        GL.UseProgram(_resourceRegistry.GetShader("shader.tilemap").Id);
         GL.BindVertexArray(_vertexArray.Id);
         GL.BindBuffer(BufferTarget.ShaderStorageBuffer, _instanceBuffer.Id);
         GL.BindBufferBase(BufferRangeTarget.ShaderStorageBuffer, 0, _instanceBuffer.Id);
         GL.ActiveTexture(TextureUnit.Texture0);
-        GL.BindTexture(TextureTarget.Texture2D, _resourceRegistry.GetTexture("tileset").Id);
+        GL.BindTexture(TextureTarget.Texture2D, _resourceRegistry.GetTextureAtlas("textureatlas.minecraft").Id);
 
         if (_tilemap.Dirty) {
             _vertexArray.SetData(_tilemap.GetVertexData(), BufferUsageHint.StreamDraw);
             _instanceBuffer.SetData(_tilemap.GetInstanceData(), BufferUsageHint.StreamDraw);
         }
 
-        GL.Uniform2(GL.GetUniformLocation(_resourceRegistry.GetShader("tilemap").Id, "uTextureSize"), 256, 256);
-        GL.Uniform2(GL.GetUniformLocation(_resourceRegistry.GetShader("tilemap").Id, "uTileSize"), 16, 16);
+        GL.Uniform2(GL.GetUniformLocation(_resourceRegistry.GetShader("shader.tilemap").Id, "uTextureSize"), _resourceRegistry.GetTextureAtlas("textureatlas.minecraft").AtlasWidth, _resourceRegistry.GetTextureAtlas("textureatlas.minecraft").AtlasHeight);
+        GL.Uniform2(GL.GetUniformLocation(_resourceRegistry.GetShader("shader.tilemap").Id, "uTileSize"), _resourceRegistry.GetTextureAtlas("textureatlas.minecraft").EntryWidth, _resourceRegistry.GetTextureAtlas("textureatlas.minecraft").EntryHeight);
 
         GL.DrawArraysInstanced(PrimitiveType.Triangles, 0, 6, _tilemap.TileCount);
 

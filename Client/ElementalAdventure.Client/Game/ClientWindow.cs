@@ -1,4 +1,5 @@
 using ElementalAdventure.Client.Core.OpenGL;
+using ElementalAdventure.Client.Core.Resource;
 using ElementalAdventure.Client.Core.Resources;
 using ElementalAdventure.Client.Game.Scenes;
 
@@ -26,8 +27,18 @@ public class ClientWindow : GameWindow {
 
     private void LoadHandler() {
         try {
-            _resourceRegistry.AddShader("tilemap", new ShaderProgram(_resourceLoader.LoadText("Shaders/Tilemap.vert"), _resourceLoader.LoadText("Shaders/Tilemap.frag")));
-            _resourceRegistry.AddTexture("tileset", new Texture2D(_resourceLoader.LoadBinary("Textures/Tileset.png")));
+            _resourceRegistry.AddShader("shader.tilemap", new ShaderProgram(_resourceLoader.LoadText("Shader/Tilemap.vert"), _resourceLoader.LoadText("Shader/Tilemap.frag")));
+            _resourceRegistry.AddTextureAtlas("textureatlas.minecraft", new TextureAtlas<string>(new Dictionary<string, TextureAtlas<string>.EntryDef> {
+                { "chest_front", new([_resourceLoader.LoadBinary("TextureAtlas/Minecraft/chest_front.png")], 100) },
+                { "clay", new([_resourceLoader.LoadBinary("TextureAtlas/Minecraft/clay.png")], 100) },
+                { "coal_ore", new([_resourceLoader.LoadBinary("TextureAtlas/Minecraft/coal_ore.png")], 100) },
+                { "coarse_dirt", new([_resourceLoader.LoadBinary("TextureAtlas/Minecraft/coarse_dirt.png")], 100) },
+                { "cobblestone", new([_resourceLoader.LoadBinary("TextureAtlas/Minecraft/cobblestone.png")], 100) },
+                { "cobblestone_mossy", new([_resourceLoader.LoadBinary("TextureAtlas/Minecraft/cobblestone_mossy.png")], 100) },
+                { "diamond_ore", new([_resourceLoader.LoadBinary("TextureAtlas/Minecraft/diamond_ore.png")], 100) },
+                { "dirt", new([_resourceLoader.LoadBinary("TextureAtlas/Minecraft/dirt.png")], 100) },
+                { "stone", new([_resourceLoader.LoadBinary("TextureAtlas/Minecraft/stone.png")], 100) }
+            }));
         } catch (Exception e) {
             Console.WriteLine(e.Message);
             Close();
