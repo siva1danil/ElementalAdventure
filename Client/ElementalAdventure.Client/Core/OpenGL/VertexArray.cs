@@ -5,7 +5,7 @@ using OpenTK.Graphics.OpenGL4;
 
 namespace ElementalAdventure.Client.Core.OpenGL;
 
-public class VertexArray<T> : IDisposable where T : struct {
+public class VertexArray<T> : IDisposable where T : unmanaged {
     private readonly int _vao = -1;
     private readonly int _vbo = -1;
 
@@ -27,6 +27,7 @@ public class VertexArray<T> : IDisposable where T : struct {
             int offset = Marshal.OffsetOf<T>(field.Name).ToInt32();
             GL.VertexAttribPointer(index, size, VertexAttribPointerType.Float, false, _stride, offset);
             GL.EnableVertexAttribArray(index);
+            index++;
         }
 
         GL.BindBuffer(BufferTarget.ArrayBuffer, 0);

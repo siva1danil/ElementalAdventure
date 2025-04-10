@@ -1,5 +1,4 @@
 using ElementalAdventure.Client.Core.OpenGL;
-using ElementalAdventure.Client.Core.Resources;
 using ElementalAdventure.Client.Game.Model;
 
 using OpenTK.Graphics.OpenGL4;
@@ -10,15 +9,13 @@ namespace ElementalAdventure.Client.Game.Scenes;
 public class GameScene : IScene {
     private readonly ClientContext _context;
 
-    private readonly VertexArray<Tilemap.VertexData> _vertexArray;
-    private readonly StorageBuffer<Tilemap.InstanceData> _instanceBuffer;
+    private readonly VertexArrayInstanced<Tilemap.VertexData, Tilemap.InstanceData> _vertexArray;
     private readonly Tilemap _tilemap;
 
     public GameScene(ClientContext context) {
         _context = context;
 
-        _vertexArray = new VertexArray<Tilemap.VertexData>();
-        _instanceBuffer = new StorageBuffer<Tilemap.InstanceData>();
+        _vertexArray = new VertexArrayInstanced<Tilemap.VertexData, Tilemap.InstanceData>();
         _tilemap = new Tilemap();
         _tilemap.SetMap(_context.ResourceRegistry.GetTextureAtlas("textureatlas.minecraft"), new string?[,] {
             { "chest_front", "chest_front", "chest_front", "chest_front" },
@@ -37,13 +34,11 @@ public class GameScene : IScene {
     public void Render() {
         GL.UseProgram(_context.ResourceRegistry.GetShader("shader.tilemap").Id);
         GL.BindVertexArray(_vertexArray.Id);
-        GL.BindBuffer(BufferTarget.ShaderStorageBuffer, _instanceBuffer.Id);
-        GL.BindBufferBase(BufferRangeTarget.ShaderStorageBuffer, 0, _instanceBuffer.Id);
         GL.ActiveTexture(TextureUnit.Texture0);
         GL.BindTexture(TextureTarget.Texture2D, _context.ResourceRegistry.GetTextureAtlas("textureatlas.minecraft").Id);
 
-        _vertexArray.SetData(_tilemap.GetVertexData(), BufferUsageHint.StreamDraw);
-        _instanceBuffer.SetData(_tilemap.GetInstanceData(), BufferUsageHint.StreamDraw);
+        _vertexArray.SetGlobalData(_tilemap.GetVertexData(), BufferUsageHint.StreamDraw);
+        _vertexArray.SetInstanceData(_tilemap.GetInstanceData(), BufferUsageHint.StreamDraw);
 
         Matrix4 matrix4 = Matrix4.CreateOrthographicOffCenter(0, _context.WindowSize.X / 120, 0, _context.WindowSize.Y / 120, -1, 1);
         GL.UniformMatrix4(GL.GetUniformLocation(_context.ResourceRegistry.GetShader("shader.tilemap").Id, "uProjection"), false, ref matrix4);

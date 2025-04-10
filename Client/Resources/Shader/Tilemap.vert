@@ -1,14 +1,10 @@
-#version 430 core
+#version 330 core
 
-layout (location = 0) in vec3 aPosition;
-layout (std430, binding = 0) buffer InstanceBuffer {
-    struct {
-        vec3 position;
-        int index;
-        int frameCount;
-        int frameTime;
-    } aInstances[];
-};
+layout (location = 0) in vec3 aGlobalPosition;
+layout (location = 1) in vec3 aInstancePosition;
+layout (location = 2) in int aInstanceIndex;
+layout (location = 3) in int aInstanceFrameCount;
+layout (location = 4) in int aInstanceFrameTime;
 
 uniform mat4 uProjection;
 uniform uvec2 uTimeMilliseconds;
@@ -20,7 +16,7 @@ out vec2 vUV;
 
 vec2 getUV(ivec2 textureSize, ivec2 tileSize, int padding, int index, vec2 position) {
     ivec2 paddedTileSize = tileSize + ivec2(padding) * 2;
-    
+
     vec2 uvSize = vec2(paddedTileSize) / vec2(textureSize);
     ivec2 colsrows = textureSize / paddedTileSize;
     ivec2 colrow = ivec2(index % colsrows.x, index / colsrows.x);
@@ -32,7 +28,7 @@ vec2 getUV(ivec2 textureSize, ivec2 tileSize, int padding, int index, vec2 posit
 }
 
 void main() {
-    int index = aInstances[gl_InstanceID].index + int(uTimeMilliseconds.y) / aInstances[gl_InstanceID].frameTime % aInstances[gl_InstanceID].frameCount;
-    vUV = getUV(uTextureSize, uTileSize, uPadding, index, aPosition.xy);
-    gl_Position = uProjection * vec4(aInstances[gl_InstanceID].position + aPosition, 1.0f);
+    int index = aInstanceIndex + int(uTimeMilliseconds.y) / aInstanceFrameTime % aInstanceFrameCount;
+    vUV = getUV(uTextureSize, uTileSize, uPadding, index, aGlobalPosition.xy);
+    gl_Position = uProjection * vec4(aGlobalPosition + aInstancePosition, 1.0f);
 }

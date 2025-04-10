@@ -69,7 +69,7 @@ public class ClientWindow : GameWindow {
                     _context.ResourceLoader.LoadBinary("TextureAtlas/Minecraft/fire_29.png"),
                     _context.ResourceLoader.LoadBinary("TextureAtlas/Minecraft/fire_30.png"),
                     _context.ResourceLoader.LoadBinary("TextureAtlas/Minecraft/fire_31.png"),
-                ], 100) },
+                ], 50) },
             }, 1));
         } catch (Exception e) {
             Console.WriteLine(e.Message);
