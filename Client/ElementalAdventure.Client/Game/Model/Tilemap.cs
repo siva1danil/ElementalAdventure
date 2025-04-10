@@ -10,17 +10,21 @@ namespace ElementalAdventure.Client.Game.Model;
 public class Tilemap {
     private Tile[,,] _map;
     private int _count;
+    private bool _dirty;
 
     public int Count => _count;
+    public bool Dirty { get => _dirty; set => _dirty = value; }
 
     public Tilemap() {
         _map = new Tile[0, 0, 0];
         _count = 0;
+        _dirty = true;
     }
 
     public void SetMap<T>(TextureAtlas<T> atlas, T?[,,] map) where T : notnull {
         _map = new Tile[map.GetLength(0), map.GetLength(1), map.GetLength(2)];
         _count = 0;
+        _dirty = true;
 
         float zFactor = MathF.BitDecrement(1.0f / (map.GetLength(0) - 1));
         for (int z = 0; z < map.GetLength(0); z++) {

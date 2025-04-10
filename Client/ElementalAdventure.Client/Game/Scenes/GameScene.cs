@@ -1,4 +1,5 @@
 using ElementalAdventure.Client.Core.OpenGL;
+using ElementalAdventure.Client.Core.Resource;
 using ElementalAdventure.Client.Game.Model;
 
 using OpenTK.Graphics.OpenGL4;
@@ -23,7 +24,7 @@ public class GameScene : IScene {
                 {null, null, null, null},
                 {null, "water", "lava", null},
                 {null, null, null, null},
-                {null, "dirt", "dirt", null},
+                {null, "stone", "stone", null},
                 {null, null, null, null}
             },
             {
@@ -42,20 +43,26 @@ public class GameScene : IScene {
     }
 
     public void Render() {
-        GL.UseProgram(_context.AssetManager.GetShader("shader.tilemap").Id);
+        ShaderProgram shader = _context.AssetManager.GetShader("shader.tilemap");
+        TextureAtlas<string> atlas = _context.AssetManager.GetTextureAtlas("textureatlas.minecraft");
+
+        GL.UseProgram(shader.Id);
         GL.BindVertexArray(_vertexArray.Id);
         GL.ActiveTexture(TextureUnit.Texture0);
-        GL.BindTexture(TextureTarget.Texture2D, _context.AssetManager.GetTextureAtlas("textureatlas.minecraft").Id);
+        GL.BindTexture(TextureTarget.Texture2D, atlas.Id);
 
-        _vertexArray.SetGlobalData(_tilemap.GetGlobalData(), BufferUsageHint.StreamDraw);
-        _vertexArray.SetInstanceData(_tilemap.GetInstanceData(), BufferUsageHint.StreamDraw);
+        if (_tilemap.Dirty) {
+            _vertexArray.SetGlobalData(_tilemap.GetGlobalData(), BufferUsageHint.DynamicDraw);
+            _vertexArray.SetInstanceData(_tilemap.GetInstanceData(), BufferUsageHint.DynamicDraw);
+            _tilemap.Dirty = false;
+        }
 
         Matrix4 matrix4 = Matrix4.CreateOrthographicOffCenter(0, _context.WindowSize.X / 120, 0, _context.WindowSize.Y / 120, -1, 1);
-        GL.UniformMatrix4(GL.GetUniformLocation(_context.AssetManager.GetShader("shader.tilemap").Id, "uProjection"), false, ref matrix4);
-        GL.Uniform2(GL.GetUniformLocation(_context.AssetManager.GetShader("shader.tilemap").Id, "uTimeMilliseconds"), (uint)((long)DateTime.UtcNow.TimeOfDay.TotalMilliseconds >> 32), (uint)((long)DateTime.UtcNow.TimeOfDay.TotalMilliseconds & 0xFFFFFFFF));
-        GL.Uniform2(GL.GetUniformLocation(_context.AssetManager.GetShader("shader.tilemap").Id, "uTextureSize"), _context.AssetManager.GetTextureAtlas("textureatlas.minecraft").AtlasWidth, _context.AssetManager.GetTextureAtlas("textureatlas.minecraft").AtlasHeight);
-        GL.Uniform2(GL.GetUniformLocation(_context.AssetManager.GetShader("shader.tilemap").Id, "uTileSize"), _context.AssetManager.GetTextureAtlas("textureatlas.minecraft").EntryWidth, _context.AssetManager.GetTextureAtlas("textureatlas.minecraft").EntryHeight);
-        GL.Uniform1(GL.GetUniformLocation(_context.AssetManager.GetShader("shader.tilemap").Id, "uPadding"), _context.AssetManager.GetTextureAtlas("textureatlas.minecraft").EntryPadding);
+        GL.UniformMatrix4(GL.GetUniformLocation(shader.Id, "uProjection"), false, ref matrix4);
+        GL.Uniform2(GL.GetUniformLocation(shader.Id, "uTimeMilliseconds"), (uint)((long)DateTime.UtcNow.TimeOfDay.TotalMilliseconds >> 32), (uint)((long)DateTime.UtcNow.TimeOfDay.TotalMilliseconds & 0xFFFFFFFF));
+        GL.Uniform2(GL.GetUniformLocation(shader.Id, "uTextureSize"), atlas.AtlasWidth, atlas.AtlasHeight);
+        GL.Uniform2(GL.GetUniformLocation(shader.Id, "uTileSize"), atlas.EntryWidth, atlas.EntryHeight);
+        GL.Uniform1(GL.GetUniformLocation(shader.Id, "uPadding"), atlas.EntryPadding);
 
         GL.DrawArraysInstanced(PrimitiveType.Triangles, 0, 6, _tilemap.Count);
 
