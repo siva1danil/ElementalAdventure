@@ -1,18 +1,18 @@
-using ElementalAdventure.Client.Core.Resources;
+using ElementalAdventure.Client.Game.Assets;
 
 using OpenTK.Mathematics;
 
 namespace ElementalAdventure.Client.Game;
 
 public class ClientContext {
-    public ResourceLoader ResourceLoader;
-    public ResourceRegistry ResourceRegistry;
+    public AssetLoader AssetLoader;
+    public AssetManager AssetManager;
 
     public Vector2 WindowSize;
 
-    public ClientContext(ResourceLoader resourceLoader, ResourceRegistry resourceRegistry, Vector2 windowSize) {
-        ResourceLoader = resourceLoader;
-        ResourceRegistry = resourceRegistry;
+    public ClientContext(AssetLoader assetLoader, AssetManager assetManager, Vector2 windowSize) {
+        AssetLoader = assetLoader;
+        AssetManager = assetManager;
         WindowSize = windowSize;
     }
 }

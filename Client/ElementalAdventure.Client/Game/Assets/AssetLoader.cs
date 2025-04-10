@@ -1,9 +1,9 @@
-namespace ElementalAdventure.Client.Core.Resources;
+namespace ElementalAdventure.Client.Game.Assets;
 
-public class ResourceLoader {
+public class AssetLoader {
     private readonly string _root;
 
-    public ResourceLoader(string root) {
+    public AssetLoader(string root) {
         _root = root;
     }
 
