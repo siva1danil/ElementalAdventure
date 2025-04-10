@@ -24,8 +24,13 @@ public class Tilemap {
         for (int z = 0; z < map.GetLength(0); z++) {
             for (int y = 0; y < map.GetLength(1); y++) {
                 for (int x = 0; x < map.GetLength(2); x++) {
-                    if (map[z, y, x] != null) _count++;
-                    _map[z, y, x] = map[z, y, x] == null ? new Tile(false, new Vector3(x, y, z * zFactor), 0, 0, 0) : new Tile(true, new Vector3(x, y, z * zFactor), atlas.Entries[map[z, y, x]!].Index, atlas.Entries[map[z, y, x]!].FrameCount, atlas.Entries[map[z, y, x]!].FrameTime);
+                    if (map[z, y, x] == null) {
+                        _map[z, map.GetLength(1) - y - 1, x] = new Tile(false, new Vector3(x, map.GetLength(1) - y - 1, z * zFactor), 0, 0, 0);
+                    } else {
+                        TextureAtlas<T>.Entry value = atlas.Entries[map[z, y, x]!];
+                        _map[z, map.GetLength(1) - y - 1, x] = new Tile(true, new Vector3(x, map.GetLength(1) - y - 1, z * zFactor), value.Index, value.FrameCount, value.FrameTime);
+                        _count++;
+                    }
                 }
             }
         }
