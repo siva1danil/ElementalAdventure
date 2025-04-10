@@ -7,5 +7,8 @@ in vec2 vUV;
 out vec4 FragColor;
 
 void main() {
-    FragColor = texture(uTexture, vUV);
+    vec4 color = texture(uTexture, vUV);
+    if (color.a == 0.0)
+        discard;
+    FragColor = color;
 }

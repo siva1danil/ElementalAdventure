@@ -8,49 +8,47 @@ using OpenTK.Mathematics;
 namespace ElementalAdventure.Client.Game.Model;
 
 public class Tilemap {
-    private Tile?[,] _map;
-    private int _tileCount;
+    private Tile[,,] _map;
+    private int _count;
 
-    public int TileCount => _tileCount;
+    public int Count => _count;
 
     public Tilemap() {
-        _map = new Tile?[0, 0];
+        _map = new Tile[0, 0, 0];
+        _count = 0;
     }
 
-    public void SetMap<T>(TextureAtlas<T> atlas, T?[,] map) where T : notnull {
-        _map = new Tile?[map.GetLength(0), map.GetLength(1)];
-        _tileCount = 0;
-        for (int y = 0; y < map.GetLength(0); y++) {
-            for (int x = 0; x < map.GetLength(1); x++) {
-                TextureAtlas<T>.Entry? tile = map[map.GetLength(0) - y - 1, x] == null ? null : atlas.GetEntry(map[map.GetLength(0) - y - 1, x]!);
-                if (tile != null) {
-                    _map[y, x] = new Tile(tile.Value.Index, tile.Value.FrameCount, tile.Value.FrameTime);
-                    _tileCount++;
+    public void SetMap<T>(TextureAtlas<T> atlas, T?[,,] map) where T : notnull {
+        _map = new Tile[map.GetLength(0), map.GetLength(1), map.GetLength(2)];
+        float zFactor = MathF.BitIncrement(1.0f) / map.GetLength(0);
+        for (int z = 0; z < map.GetLength(0); z++) {
+            for (int y = 0; y < map.GetLength(1); y++) {
+                for (int x = 0; x < map.GetLength(2); x++) {
+                    if (map[z, y, x] != null) _count++;
+                    _map[z, y, x] = map[z, y, x] == null ? new Tile(false, new Vector3(x, y, z * zFactor), 0, 0, 0) : new Tile(true, new Vector3(x, y, z * zFactor), atlas.Entries[map[z, y, x]!].Index, atlas.Entries[map[z, y, x]!].FrameCount, atlas.Entries[map[z, y, x]!].FrameTime);
                 }
             }
         }
     }
 
-    public VertexData[] GetVertexData() {
-        return [new VertexData(new Vector3(0, 0, 0)), new VertexData(new Vector3(1, 0, 0)), new VertexData(new Vector3(0, 1, 0)), new VertexData(new Vector3(1, 0, 0)), new VertexData(new Vector3(0, 1, 0)), new VertexData(new Vector3(1, 1, 0))];
+    public GlobalData[] GetGlobalData() {
+        return [new(new(0.0f, 0.0f, 0.0f)), new(new(1.0f, 0.0f, 0.0f)), new(new(0.0f, 1.0f, 0.0f)), new(new(1.0f, 0.0f, 0.0f)), new(new(0.0f, 1.0f, 0.0f)), new(new(1.0f, 1.0f, 0.0f))];
     }
 
     public InstanceData[] GetInstanceData() {
-        List<InstanceData> data = new List<InstanceData>();
-        for (int y = 0; y < _map.GetLength(0); y++)
-            for (int x = 0; x < _map.GetLength(1); x++)
-                if (_map[y, x] != null) data.Add(new InstanceData(new(x, y, 0), _map[y, x]!.Value.Index, _map[y, x]!.Value.FrameCount, _map[y, x]!.Value.FrameTime));
+        List<InstanceData> data = new(_count);
+        for (int z = 0; z < _map.GetLength(0); z++)
+            for (int y = 0; y < _map.GetLength(1); y++)
+                for (int x = 0; x < _map.GetLength(2); x++)
+                    if (_map[z, y, x].Exists)
+                        data.Add(new(_map[z, y, x].Position, _map[z, y, x].Index, _map[z, y, x].FrameCount, _map[z, y, x].FrameTime));
         return data.GetBackingArray();
     }
 
-    private struct Tile(int index, int frameCount, int frameTime) {
-        public int Index = index;
-        public int FrameCount = frameCount;
-        public int FrameTime = frameTime;
-    }
+    public readonly record struct Tile(bool Exists, Vector3 Position, int Index, int FrameCount, int FrameTime);
 
     [StructLayout(LayoutKind.Explicit, Size = 12)]
-    public struct VertexData(Vector3 position) {
+    public struct GlobalData(Vector3 position) {
         [FieldOffset(0)] public Vector3 Position = position;
     }
 
