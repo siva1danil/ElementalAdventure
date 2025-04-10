@@ -20,7 +20,9 @@ public class Tilemap {
 
     public void SetMap<T>(TextureAtlas<T> atlas, T?[,,] map) where T : notnull {
         _map = new Tile[map.GetLength(0), map.GetLength(1), map.GetLength(2)];
-        float zFactor = MathF.BitIncrement(1.0f) / map.GetLength(0);
+        _count = 0;
+
+        float zFactor = MathF.BitDecrement(1.0f / (map.GetLength(0) - 1));
         for (int z = 0; z < map.GetLength(0); z++) {
             for (int y = 0; y < map.GetLength(1); y++) {
                 for (int x = 0; x < map.GetLength(2); x++) {

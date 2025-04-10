@@ -23,7 +23,7 @@ public class GameScene : IScene {
                 {null, null, null, null},
                 {null, null, null, null},
                 {null, null, null, null},
-                {null, "fire", "fire", null},
+                {null, "dirt", "dirt", null},
                 {null, null, null, null}
             },
             {
@@ -31,7 +31,7 @@ public class GameScene : IScene {
                 {"chest_front", null, null, "chest_front"},
                 {"chest_front", null, null, "chest_front"},
                 {"chest_front", null, null, "chest_front"},
-                {"chest_front", null, null, "chest_front"},
+                {"chest_front", "fire", "fire", "chest_front"},
                 {"chest_front", "chest_front", "chest_front", "chest_front"}
             }
         });
