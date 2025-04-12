@@ -1,0 +1,44 @@
+using System.Runtime.InteropServices;
+
+using ElementalAdventure.Client.Core.Resource;
+using ElementalAdventure.Client.Game.Assets;
+
+using OpenTK.Mathematics;
+
+namespace ElementalAdventure.Client.Game.Logic;
+
+public class Entity {
+    private readonly AssetManager _assetManager;
+    private readonly EntityType _entityType;
+
+    private Vector3 _position;
+
+    public Entity(AssetManager assetManager, EntityType entityType, Vector3 position) {
+        _assetManager = assetManager;
+        _entityType = entityType;
+        _position = position;
+    }
+
+    public GlobalData[] GetGlobalData() {
+        return [new(new(0.0f, 0.0f, 0.0f)), new(new(1.0f, 0.0f, 0.0f)), new(new(0.0f, 1.0f, 0.0f)), new(new(1.0f, 0.0f, 0.0f)), new(new(0.0f, 1.0f, 0.0f)), new(new(1.0f, 1.0f, 0.0f))];
+    }
+
+    public InstanceData[] GetInstanceData() {
+        TextureAtlas<string> atlas = _assetManager.GetTextureAtlas(_entityType.TextureAtlas);
+        TextureAtlas<string>.Entry entry = atlas.GetEntry(_entityType.Texture);
+        return [new(_position, entry.Index, entry.FrameCount, entry.FrameTime)];
+    }
+
+    [StructLayout(LayoutKind.Explicit, Size = 12)]
+    public struct GlobalData(Vector3 position) {
+        [FieldOffset(0)] public Vector3 Position = position;
+    }
+
+    [StructLayout(LayoutKind.Explicit, Size = 24)]
+    public struct InstanceData(Vector3 position, int index, int frameCount, int frameTime) {
+        [FieldOffset(0)] public Vector3 Position = position;
+        [FieldOffset(12)] public int Index = index;
+        [FieldOffset(16)] public int FrameCount = frameCount;
+        [FieldOffset(20)] public int FrameTime = frameTime;
+    }
+}

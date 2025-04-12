@@ -151,7 +151,7 @@ public class ClientWindow : GameWindow {
                     _context.AssetLoader.LoadBinary("TextureAtlas/Player/mage_idle_6.png"),
                     _context.AssetLoader.LoadBinary("TextureAtlas/Player/mage_idle_7.png"),
                     _context.AssetLoader.LoadBinary("TextureAtlas/Player/mage_idle_8.png")
-                ], 50) },
+                ], 150) },
                 { "mage_walk", new ([
                     _context.AssetLoader.LoadBinary("TextureAtlas/Player/mage_walk_1.png"),
                     _context.AssetLoader.LoadBinary("TextureAtlas/Player/mage_walk_2.png"),
@@ -161,7 +161,7 @@ public class ClientWindow : GameWindow {
                     _context.AssetLoader.LoadBinary("TextureAtlas/Player/mage_walk_6.png"),
                     _context.AssetLoader.LoadBinary("TextureAtlas/Player/mage_walk_7.png"),
                     _context.AssetLoader.LoadBinary("TextureAtlas/Player/mage_walk_8.png")
-                ], 50) },
+                ], 150) },
             }, 1));
 
             _context.AssetManager.AddTileType("grass", new("textureatlas.minecraft", "grass"));
@@ -170,6 +170,8 @@ public class ClientWindow : GameWindow {
             _context.AssetManager.AddTileType("water", new("textureatlas.minecraft", "water"));
             _context.AssetManager.AddTileType("lava", new("textureatlas.minecraft", "lava"));
             _context.AssetManager.AddTileType("fire", new("textureatlas.minecraft", "fire"));
+
+            _context.AssetManager.AddEntityType("player", new EntityType("textureatlas.player", "mage_idle"));
         } catch (Exception e) {
             Console.WriteLine(e.Message);
             Close();
@@ -177,6 +179,7 @@ public class ClientWindow : GameWindow {
 
         _scene = new GameScene(_context);
 
+        GL.Enable(EnableCap.DepthTest);
         GL.Enable(EnableCap.Blend);
         GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
     }
@@ -191,8 +194,8 @@ public class ClientWindow : GameWindow {
     }
 
     private void RenderFrameHandler(FrameEventArgs args) {
-        GL.ClearColor(0.2f, 0.3f, 0.3f, 1.0f);
-        GL.Clear(ClearBufferMask.ColorBufferBit);
+        GL.ClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+        GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
         _scene?.Render();
         SwapBuffers();
     }

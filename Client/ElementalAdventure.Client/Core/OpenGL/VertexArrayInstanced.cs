@@ -49,7 +49,7 @@ public class VertexArrayInstanced<T0, T1> : IDisposable where T0 : unmanaged whe
         GL.BindVertexArray(0);
     }
 
-    public void SetGlobalData(T0[] data, BufferUsageHint usage = BufferUsageHint.DynamicDraw) {
+    public void SetGlobalData(T0[] data, BufferUsageHint usage = BufferUsageHint.StaticDraw) {
         GL.BindBuffer(BufferTarget.ArrayBuffer, _vboGlobal);
         GL.BufferData(BufferTarget.ArrayBuffer, data.Length * _strideGlobal, data, usage);
         GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
