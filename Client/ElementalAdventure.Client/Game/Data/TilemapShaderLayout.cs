@@ -10,11 +10,12 @@ public static class TilemapShaderLayout {
         [FieldOffset(0)] public Vector3 Position = position;
     }
 
-    [StructLayout(LayoutKind.Explicit, Size = 24)]
-    public struct InstanceData(Vector3 position, int index, int frameCount, int frameTime) {
-        [FieldOffset(0)] public Vector3 Position = position;
-        [FieldOffset(12)] public int Index = index;
-        [FieldOffset(16)] public int FrameCount = frameCount;
-        [FieldOffset(20)] public int FrameTime = frameTime;
+    [StructLayout(LayoutKind.Explicit, Size = 36)]
+    public struct InstanceData(Vector3 positionLast, Vector3 positionCurrent, int index, int frameCount, int frameTime) {
+        [FieldOffset(0)] public Vector3 PositionLast = positionLast;
+        [FieldOffset(12)] public Vector3 PositionCurrent = positionCurrent;
+        [FieldOffset(24)] public int Index = index;
+        [FieldOffset(28)] public int FrameCount = frameCount;
+        [FieldOffset(32)] public int FrameTime = frameTime;
     }
 }

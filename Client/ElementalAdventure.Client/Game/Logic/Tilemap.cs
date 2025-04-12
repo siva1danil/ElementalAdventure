@@ -55,7 +55,7 @@ public class Tilemap {
             for (int y = 0; y < _map.GetLength(1); y++)
                 for (int x = 0; x < _map.GetLength(2); x++)
                     if (_map[z, y, x].Exists)
-                        data.Add(new(_map[z, y, x].Position, _map[z, y, x].Index, _map[z, y, x].FrameCount, _map[z, y, x].FrameTime));
+                        data.Add(new(_map[z, y, x].Position, _map[z, y, x].Position, _map[z, y, x].Index, _map[z, y, x].FrameCount, _map[z, y, x].FrameTime));
         return data.GetBackingArray();
     }
 

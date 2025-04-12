@@ -12,8 +12,8 @@ public class Entity {
 
     private Vector3 _positionLast, _positionCurrent, _velocity;
 
-    public Vector3 PositionLast { get => _positionCurrent; set => _positionCurrent = value; }
-    public Vector3 PositionCurrent { get => _positionCurrent; set => _positionCurrent = value; }
+    public Vector3 PositionLast => _positionLast;
+    public Vector3 Position { get => _positionCurrent; set { _positionLast = _positionCurrent; _positionCurrent = value; } }
     public Vector3 Velocity { get => _velocity; set => _velocity = value; }
 
     public Entity(AssetManager assetManager, EntityType entityType, Vector3 position) {
@@ -30,6 +30,6 @@ public class Entity {
     public TilemapShaderLayout.InstanceData[] GetInstanceData() {
         TextureAtlas<string> atlas = _assetManager.GetTextureAtlas(_entityType.TextureAtlas);
         TextureAtlas<string>.Entry entry = atlas.GetEntry(_entityType.Texture);
-        return [new(_positionCurrent, entry.Index, entry.FrameCount, entry.FrameTime)];
+        return [new(_positionLast, _positionCurrent, entry.Index, entry.FrameCount, entry.FrameTime)];
     }
 }

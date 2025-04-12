@@ -22,8 +22,7 @@ public class GameWorld {
 
     public void Tick() {
         foreach (Entity entity in _entities) {
-            entity.PositionLast = entity.PositionCurrent;
-            entity.PositionCurrent += entity.Velocity;
+            entity.Position += entity.Velocity;
         }
 
         _tickTimestamp = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();

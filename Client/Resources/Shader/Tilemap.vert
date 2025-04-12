@@ -1,10 +1,11 @@
 #version 330 core
 
 layout (location = 0) in vec3 aGlobalPosition;
-layout (location = 1) in vec3 aInstancePosition;
-layout (location = 2) in int aInstanceIndex;
-layout (location = 3) in int aInstanceFrameCount;
-layout (location = 4) in int aInstanceFrameTime;
+layout (location = 1) in vec3 aInstancePositionLast;
+layout (location = 2) in vec3 aInstancePositionCurrent;
+layout (location = 3) in int aInstanceIndex;
+layout (location = 4) in int aInstanceFrameCount;
+layout (location = 5) in int aInstanceFrameTime;
 
 uniform mat4 uProjection;
 uniform uvec2 uTimeMilliseconds;
@@ -31,5 +32,5 @@ vec2 getUV(ivec2 textureSize, ivec2 tileSize, int padding, int index, vec2 posit
 void main() {
     int index = aInstanceIndex + int(uTimeMilliseconds.y) / aInstanceFrameTime % aInstanceFrameCount;
     vUV = getUV(uTextureSize, uTileSize, uPadding, index, aGlobalPosition.xy);
-    gl_Position = uProjection * vec4(aGlobalPosition + aInstancePosition + vec3(uAlpha * 0.0f, 0.0f, 0.0f), 1.0f); // TODO: temporary hack, remove
+    gl_Position = uProjection * vec4(aGlobalPosition + mix(aInstancePositionLast, aInstancePositionCurrent, uAlpha), 1.0f);
 }
