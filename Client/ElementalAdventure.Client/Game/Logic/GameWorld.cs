@@ -17,7 +17,7 @@ public class GameWorld {
         _tilemap = tilemap;
         _entities = entities;
 
-        _tickTimestamp = (long)DateTime.UtcNow.TimeOfDay.TotalMilliseconds;
+        _tickTimestamp = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
     }
 
     public void Tick() {
@@ -26,6 +26,6 @@ public class GameWorld {
             entity.PositionCurrent += entity.Velocity;
         }
 
-        _tickTimestamp = (long)DateTime.UtcNow.TimeOfDay.TotalMilliseconds;
+        _tickTimestamp = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
     }
 }

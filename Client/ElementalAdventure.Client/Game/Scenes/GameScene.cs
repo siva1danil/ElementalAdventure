@@ -75,7 +75,8 @@ public class GameScene : IScene {
         TextureAtlas<string> atlasMinecraft = _context.AssetManager.GetTextureAtlas("textureatlas.dungeon");
         TextureAtlas<string> atlasPlayer = _context.AssetManager.GetTextureAtlas("textureatlas.player");
         Matrix4 projection = Matrix4.CreateOrthographicOffCenter(0, _context.WindowSize.X / 80, 0, _context.WindowSize.Y / 80, -1, 1);
-        long timeMilliseconds = (long)DateTime.UtcNow.TimeOfDay.TotalMilliseconds;
+        long timeMilliseconds = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
+        float alpha = (timeMilliseconds - _world.TickTimestamp) / (float)_world.TickInterval;
 
         GL.UseProgram(shader.Id);
 
@@ -90,6 +91,7 @@ public class GameScene : IScene {
         }
         GL.UniformMatrix4(GL.GetUniformLocation(shader.Id, "uProjection"), false, ref projection);
         GL.Uniform2(GL.GetUniformLocation(shader.Id, "uTimeMilliseconds"), (uint)(timeMilliseconds >> 32), (uint)(timeMilliseconds & 0xFFFFFFFF));
+        GL.Uniform1(GL.GetUniformLocation(shader.Id, "uAlpha"), alpha);
         GL.Uniform2(GL.GetUniformLocation(shader.Id, "uTextureSize"), atlasMinecraft.AtlasWidth, atlasMinecraft.AtlasHeight);
         GL.Uniform2(GL.GetUniformLocation(shader.Id, "uTileSize"), atlasMinecraft.EntryWidth, atlasMinecraft.EntryHeight);
         GL.Uniform1(GL.GetUniformLocation(shader.Id, "uPadding"), atlasMinecraft.EntryPadding);
@@ -101,6 +103,7 @@ public class GameScene : IScene {
         GL.BindTexture(TextureTarget.Texture2D, atlasPlayer.Id);
         GL.UniformMatrix4(GL.GetUniformLocation(shader.Id, "uProjection"), false, ref projection);
         GL.Uniform2(GL.GetUniformLocation(shader.Id, "uTimeMilliseconds"), (uint)(timeMilliseconds >> 32), (uint)(timeMilliseconds & 0xFFFFFFFF));
+        GL.Uniform1(GL.GetUniformLocation(shader.Id, "uAlpha"), alpha);
         GL.Uniform2(GL.GetUniformLocation(shader.Id, "uTextureSize"), atlasPlayer.AtlasWidth, atlasPlayer.AtlasHeight);
         GL.Uniform2(GL.GetUniformLocation(shader.Id, "uTileSize"), atlasPlayer.EntryWidth, atlasPlayer.EntryHeight);
         GL.Uniform1(GL.GetUniformLocation(shader.Id, "uPadding"), atlasPlayer.EntryPadding);
