@@ -15,6 +15,8 @@ public class GameScene : IScene {
     private readonly VertexArrayInstanced<Entity.GlobalData, Entity.InstanceData> _entityVertexArray;
     private readonly GameWorld _world;
 
+    private double _tickAccumulator;
+
     public GameScene(ClientContext context) {
         _context = context;
 
@@ -56,10 +58,18 @@ public class GameScene : IScene {
         });
         _world.Entities.Add(new Entity(_context.AssetManager, _context.AssetManager.GetEntityType("player"), new Vector3(0.0f, 0.0f, 1.0f)));
         _world.Entities.Add(new Entity(_context.AssetManager, _context.AssetManager.GetEntityType("player"), new Vector3(4.0f, 2.0f, 1.0f)));
+        _world.Entities[0].Velocity = new Vector3(0.0f, 0.1f, 0.0f);
+        _world.Entities[1].Velocity = new Vector3(0.1f, 0.0f, 0.0f);
+
+        _tickAccumulator = 0.0;
     }
 
     public void Update(FrameEventArgs args) {
-        // 
+        _tickAccumulator += args.Time;
+        while (_tickAccumulator >= 1.0 / 20.0) {
+            _world.Tick();
+            _tickAccumulator -= 1.0 / 20.0;
+        }
     }
 
     public void Render(FrameEventArgs args) {

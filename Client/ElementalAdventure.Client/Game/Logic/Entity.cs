@@ -11,12 +11,17 @@ public class Entity {
     private readonly AssetManager _assetManager;
     private readonly EntityType _entityType;
 
-    private Vector3 _position;
+    private Vector3 _positionLast, _positionCurrent, _velocity;
+
+    public Vector3 PositionLast { get => _positionCurrent; set => _positionCurrent = value; }
+    public Vector3 PositionCurrent { get => _positionCurrent; set => _positionCurrent = value; }
+    public Vector3 Velocity { get => _velocity; set => _velocity = value; }
 
     public Entity(AssetManager assetManager, EntityType entityType, Vector3 position) {
         _assetManager = assetManager;
         _entityType = entityType;
-        _position = position;
+        _positionLast = _positionCurrent = position;
+        _velocity = Vector3.Zero;
     }
 
     public GlobalData[] GetGlobalData() {
@@ -26,7 +31,7 @@ public class Entity {
     public InstanceData[] GetInstanceData() {
         TextureAtlas<string> atlas = _assetManager.GetTextureAtlas(_entityType.TextureAtlas);
         TextureAtlas<string>.Entry entry = atlas.GetEntry(_entityType.Texture);
-        return [new(_position, entry.Index, entry.FrameCount, entry.FrameTime)];
+        return [new(_positionCurrent, entry.Index, entry.FrameCount, entry.FrameTime)];
     }
 
     [StructLayout(LayoutKind.Explicit, Size = 12)]

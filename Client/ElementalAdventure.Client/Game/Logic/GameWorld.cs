@@ -11,4 +11,11 @@ public class GameWorld {
         _tilemap = tilemap;
         _entities = entities;
     }
+
+    public void Tick() {
+        foreach (Entity entity in _entities) {
+            entity.PositionLast = entity.PositionCurrent;
+            entity.PositionCurrent += entity.Velocity;
+        }
+    }
 }
