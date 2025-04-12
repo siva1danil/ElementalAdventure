@@ -1,6 +1,6 @@
 using ElementalAdventure.Client.Core.OpenGL;
 using ElementalAdventure.Client.Core.Resource;
-using ElementalAdventure.Client.Game.Model;
+using ElementalAdventure.Client.Game.Logic;
 
 using OpenTK.Graphics.OpenGL4;
 using OpenTK.Mathematics;

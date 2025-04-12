@@ -5,7 +5,7 @@ using ElementalAdventure.Client.Game.Utils;
 
 using OpenTK.Mathematics;
 
-namespace ElementalAdventure.Client.Game.Model;
+namespace ElementalAdventure.Client.Game.Logic;
 
 public class Tilemap {
     private Tile[,,] _map;
