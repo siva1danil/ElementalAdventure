@@ -26,38 +26,35 @@ public class GameScene : IScene {
         _world = new GameWorld(new Tilemap(), []);
         _world.Tilemap.SetMap(_context.AssetManager, new string?[,,] {
             {
-                { null, null, null, null },
-                {"grass", "grass", "grass", "grass"},
-                {"dirt", "dirt", "dirt", "dirt"},
-                {"stone", "stone", "dirt", "dirt"},
-                {"stone", "stone", "stone", "stone"},
-                {"stone", "stone", "stone", "stone"},
-                {"stone", "stone", "stone", "stone"},
-                {"stone", "stone", "stone", "stone"},
+                { "null", "null", "null", "null", "null", "null", "null" },
+                { "null", null,   null,   null,   null,   null,   "null" },
+                { "null", null,   null,   null,   null,   null,   "null" },
+                { "null", null,   null,   null,   null,   null,   "null" },
+                { "null", null,   null,   null,   null,   null,   "null" },
+                { "null", null,   null,   null,   null,   null,   "null" },
+                { "null", "null", "null", "null", "null", "null", "null" }
             },
             {
-                { null, null, null, null },
-                { null, null, null, null },
-                { null, null, null, null },
-                { null, null, null, null },
-                { null, null, null, null },
-                { null, null, null, null },
-                { null, null, null, null },
-                { "lava", "lava", "lava", "lava" },
+                { "floor_1", "wall_top", "wall_top", "wall_top", "wall_top", "wall_top", "floor_1" },
+                { "floor_1", "floor_1",  "floor_1",  "floor_1",  "floor_1",  "floor_1",  "floor_1" },
+                { "floor_1", "floor_1",  "floor_1",  "floor_1",  "floor_1",  "floor_1",  "floor_1" },
+                { "floor_1", "floor_1",  "floor_1",  "floor_1",  "floor_1",  "floor_1",  "floor_1" },
+                { "floor_1", "floor_1",  "floor_1",  "floor_1",  "floor_1",  "floor_1",  "floor_1" },
+                { "floor_1", "floor_1",  "floor_1",  "floor_1",  "floor_1",  "floor_1",  "floor_1" },
+                { "floor_1", "floor_1",  "floor_1",  "floor_1",  "floor_1",  "floor_1",  "floor_1" }
             },
             {
-                { "fire", null, null, null },
-                { null, null, "water", "water" },
-                { null, null, null, "water" },
-                { null, null, null, null },
-                { null, null, null, null },
-                { null, null, null, null },
-                { null, null, null, null },
-                { null, null, null, null },
+                { "wall_topleft_outer",    null,          null,          null,          null,          null,          "wall_topright_outer"    },
+                { "wall_left",             null,          null,          null,          null,          null,          "wall_right"             },
+                { "wall_left",             null,          null,          null,          null,          null,          "wall_right"             },
+                { "wall_left",             null,          null,          null,          null,          null,          "wall_right"             },
+                { "wall_left",             null,          null,          null,          null,          null,          "wall_right"             },
+                { "wall_left",             null,          null,          null,          null,          null,          "wall_right"             },
+                { "wall_bottomleft_outer", "wall_bottom", "wall_bottom", "wall_bottom", "wall_bottom", "wall_bottom", "wall_bottomright_outer" }
             }
         });
         _world.Entities.Add(new Entity(_context.AssetManager, _context.AssetManager.GetEntityType("player"), new Vector3(0.0f, 0.0f, 1.0f)));
-        _world.Entities.Add(new Entity(_context.AssetManager, _context.AssetManager.GetEntityType("player"), new Vector3(4.0f, 2.0f, 1.0f)));
+        _world.Entities.Add(new Entity(_context.AssetManager, _context.AssetManager.GetEntityType("player"), new Vector3(0.0f, 0.0f, 1.0f)));
         _world.Entities[0].Velocity = new Vector3(0.0f, 0.1f, 0.0f);
         _world.Entities[1].Velocity = new Vector3(0.1f, 0.0f, 0.0f);
 
@@ -74,7 +71,7 @@ public class GameScene : IScene {
 
     public void Render(FrameEventArgs args) {
         ShaderProgram shader = _context.AssetManager.GetShader("shader.tilemap");
-        TextureAtlas<string> atlasMinecraft = _context.AssetManager.GetTextureAtlas("textureatlas.minecraft");
+        TextureAtlas<string> atlasMinecraft = _context.AssetManager.GetTextureAtlas("textureatlas.dungeon");
         TextureAtlas<string> atlasPlayer = _context.AssetManager.GetTextureAtlas("textureatlas.player");
         Matrix4 projection = Matrix4.CreateOrthographicOffCenter(0, _context.WindowSize.X / 80, 0, _context.WindowSize.Y / 80, -1, 1);
 
