@@ -4,6 +4,7 @@ using ElementalAdventure.Client.Game.Logic;
 
 using OpenTK.Graphics.OpenGL4;
 using OpenTK.Mathematics;
+using OpenTK.Windowing.Common;
 
 namespace ElementalAdventure.Client.Game.Scenes;
 
@@ -57,11 +58,11 @@ public class GameScene : IScene {
         _world.Entities.Add(new Entity(_context.AssetManager, _context.AssetManager.GetEntityType("player"), new Vector3(4.0f, 2.0f, 1.0f)));
     }
 
-    public void Update() {
+    public void Update(FrameEventArgs args) {
         // 
     }
 
-    public void Render() {
+    public void Render(FrameEventArgs args) {
         ShaderProgram shader = _context.AssetManager.GetShader("shader.tilemap");
         TextureAtlas<string> atlasMinecraft = _context.AssetManager.GetTextureAtlas("textureatlas.minecraft");
         TextureAtlas<string> atlasPlayer = _context.AssetManager.GetTextureAtlas("textureatlas.player");

@@ -1,6 +1,8 @@
+using OpenTK.Windowing.Common;
+
 namespace ElementalAdventure.Client.Game.Scenes;
 
 public interface IScene : IDisposable {
-    void Update();
-    void Render();
+    void Update(FrameEventArgs args);
+    void Render(FrameEventArgs args);
 }

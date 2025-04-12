@@ -190,13 +190,13 @@ public class ClientWindow : GameWindow {
     }
 
     private void UpdateFrameHandler(FrameEventArgs args) {
-        _scene?.Update();
+        _scene?.Update(args);
     }
 
     private void RenderFrameHandler(FrameEventArgs args) {
         GL.ClearColor(0.0f, 0.0f, 0.0f, 1.0f);
         GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
-        _scene?.Render();
+        _scene?.Render(args);
         SwapBuffers();
     }
 
