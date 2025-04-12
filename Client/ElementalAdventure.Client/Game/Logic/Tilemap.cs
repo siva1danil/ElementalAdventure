@@ -1,12 +1,14 @@
 using System.Runtime.InteropServices;
 
 using ElementalAdventure.Client.Core.Resource;
+using ElementalAdventure.Client.Game.Assets;
 using ElementalAdventure.Client.Game.Utils;
 
 using OpenTK.Mathematics;
 
 namespace ElementalAdventure.Client.Game.Logic;
 
+// TODO: refactor internal format
 public class Tilemap {
     private Tile[,,] _map;
     private int _count;
@@ -21,7 +23,7 @@ public class Tilemap {
         _dirty = true;
     }
 
-    public void SetMap<T>(TextureAtlas<T> atlas, T?[,,] map) where T : notnull {
+    public void SetMap(AssetManager assetManager, string?[,,] map) {
         _map = new Tile[map.GetLength(0), map.GetLength(1), map.GetLength(2)];
         _count = 0;
         _dirty = true;
@@ -33,8 +35,10 @@ public class Tilemap {
                     if (map[z, y, x] == null) {
                         _map[z, map.GetLength(1) - y - 1, x] = new Tile(false, new Vector3(x, map.GetLength(1) - y - 1, z * zFactor), 0, 0, 0);
                     } else {
-                        TextureAtlas<T>.Entry value = atlas.Entries[map[z, y, x]!];
-                        _map[z, map.GetLength(1) - y - 1, x] = new Tile(true, new Vector3(x, map.GetLength(1) - y - 1, z * zFactor), value.Index, value.FrameCount, value.FrameTime);
+                        int wy = map.GetLength(1) - y - 1;
+                        TileType type = assetManager.GetTileType(map[z, y, x]!);
+                        TextureAtlas<string>.Entry value = assetManager.GetTextureAtlas(type.TextureAtlas).GetEntry(type.Texture);
+                        _map[z, wy, x] = new Tile(true, new Vector3(x, wy, z * zFactor), value.Index, value.FrameCount, value.FrameTime);
                         _count++;
                     }
                 }

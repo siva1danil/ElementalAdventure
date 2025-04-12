@@ -141,6 +141,35 @@ public class ClientWindow : GameWindow {
                     _context.AssetLoader.LoadBinary("TextureAtlas/Minecraft/fire_31.png"),
                 ], 50) },
             }, 1));
+            _context.AssetManager.AddTextureAtlas("textureatlas.player", new TextureAtlas<string>(new Dictionary<string, TextureAtlas<string>.EntryDef> {
+                { "mage_idle", new ([
+                    _context.AssetLoader.LoadBinary("TextureAtlas/Player/mage_idle_1.png"),
+                    _context.AssetLoader.LoadBinary("TextureAtlas/Player/mage_idle_2.png"),
+                    _context.AssetLoader.LoadBinary("TextureAtlas/Player/mage_idle_3.png"),
+                    _context.AssetLoader.LoadBinary("TextureAtlas/Player/mage_idle_4.png"),
+                    _context.AssetLoader.LoadBinary("TextureAtlas/Player/mage_idle_5.png"),
+                    _context.AssetLoader.LoadBinary("TextureAtlas/Player/mage_idle_6.png"),
+                    _context.AssetLoader.LoadBinary("TextureAtlas/Player/mage_idle_7.png"),
+                    _context.AssetLoader.LoadBinary("TextureAtlas/Player/mage_idle_8.png")
+                ], 50) },
+                { "mage_walk", new ([
+                    _context.AssetLoader.LoadBinary("TextureAtlas/Player/mage_walk_1.png"),
+                    _context.AssetLoader.LoadBinary("TextureAtlas/Player/mage_walk_2.png"),
+                    _context.AssetLoader.LoadBinary("TextureAtlas/Player/mage_walk_3.png"),
+                    _context.AssetLoader.LoadBinary("TextureAtlas/Player/mage_walk_4.png"),
+                    _context.AssetLoader.LoadBinary("TextureAtlas/Player/mage_walk_5.png"),
+                    _context.AssetLoader.LoadBinary("TextureAtlas/Player/mage_walk_6.png"),
+                    _context.AssetLoader.LoadBinary("TextureAtlas/Player/mage_walk_7.png"),
+                    _context.AssetLoader.LoadBinary("TextureAtlas/Player/mage_walk_8.png")
+                ], 50) },
+            }, 1));
+
+            _context.AssetManager.AddTileType("grass", new("textureatlas.minecraft", "grass"));
+            _context.AssetManager.AddTileType("dirt", new("textureatlas.minecraft", "dirt"));
+            _context.AssetManager.AddTileType("stone", new("textureatlas.minecraft", "stone"));
+            _context.AssetManager.AddTileType("water", new("textureatlas.minecraft", "water"));
+            _context.AssetManager.AddTileType("lava", new("textureatlas.minecraft", "lava"));
+            _context.AssetManager.AddTileType("fire", new("textureatlas.minecraft", "fire"));
         } catch (Exception e) {
             Console.WriteLine(e.Message);
             Close();

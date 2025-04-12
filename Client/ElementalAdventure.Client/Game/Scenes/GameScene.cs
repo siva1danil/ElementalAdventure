@@ -18,22 +18,36 @@ public class GameScene : IScene {
 
         _vertexArray = new VertexArrayInstanced<Tilemap.GlobalData, Tilemap.InstanceData>();
         _tilemap = new Tilemap();
-        _tilemap.SetMap(_context.AssetManager.GetTextureAtlas("textureatlas.minecraft"), new string?[,,] {
+        _tilemap.SetMap(_context.AssetManager, new string?[,,] {
             {
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, "water", "lava", null},
-                {null, null, null, null},
-                {null, "stone", "stone", null},
-                {null, null, null, null}
+                { null, null, null, null },
+                {"grass", "grass", "grass", "grass"},
+                {"dirt", "dirt", "dirt", "dirt"},
+                {"stone", "stone", "dirt", "dirt"},
+                {"stone", "stone", "stone", "stone"},
+                {"stone", "stone", "stone", "stone"},
+                {"stone", "stone", "stone", "stone"},
+                {"stone", "stone", "stone", "stone"},
             },
             {
-                {"grass", "grass", "grass", "grass"},
-                {"grass", null, null, "grass"},
-                {"grass", null, null, "grass"},
-                {"grass", null, null, "grass"},
-                {"grass", "fire", "fire", "grass"},
-                {"grass", "grass", "grass", "grass"}
+                { null, null, null, null },
+                { null, null, null, null },
+                { null, null, null, null },
+                { null, null, null, null },
+                { null, null, null, null },
+                { null, null, null, null },
+                { null, null, null, null },
+                { "lava", "lava", "lava", "lava" },
+            },
+            {
+                { "fire", null, null, null },
+                { null, null, "water", "water" },
+                { null, null, null, "water" },
+                { null, null, null, null },
+                { null, null, null, null },
+                { null, null, null, null },
+                { null, null, null, null },
+                { null, null, null, null },
             }
         });
     }
