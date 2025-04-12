@@ -1,7 +1,6 @@
-using System.Runtime.InteropServices;
-
 using ElementalAdventure.Client.Core.Resource;
 using ElementalAdventure.Client.Game.Assets;
+using ElementalAdventure.Client.Game.Data;
 
 using OpenTK.Mathematics;
 
@@ -24,26 +23,13 @@ public class Entity {
         _velocity = Vector3.Zero;
     }
 
-    public GlobalData[] GetGlobalData() {
+    public TilemapShaderLayout.GlobalData[] GetGlobalData() {
         return [new(new(0.0f, 0.0f, 0.0f)), new(new(1.0f, 0.0f, 0.0f)), new(new(0.0f, 1.0f, 0.0f)), new(new(1.0f, 0.0f, 0.0f)), new(new(0.0f, 1.0f, 0.0f)), new(new(1.0f, 1.0f, 0.0f))];
     }
 
-    public InstanceData[] GetInstanceData() {
+    public TilemapShaderLayout.InstanceData[] GetInstanceData() {
         TextureAtlas<string> atlas = _assetManager.GetTextureAtlas(_entityType.TextureAtlas);
         TextureAtlas<string>.Entry entry = atlas.GetEntry(_entityType.Texture);
         return [new(_positionCurrent, entry.Index, entry.FrameCount, entry.FrameTime)];
-    }
-
-    [StructLayout(LayoutKind.Explicit, Size = 12)]
-    public struct GlobalData(Vector3 position) {
-        [FieldOffset(0)] public Vector3 Position = position;
-    }
-
-    [StructLayout(LayoutKind.Explicit, Size = 24)]
-    public struct InstanceData(Vector3 position, int index, int frameCount, int frameTime) {
-        [FieldOffset(0)] public Vector3 Position = position;
-        [FieldOffset(12)] public int Index = index;
-        [FieldOffset(16)] public int FrameCount = frameCount;
-        [FieldOffset(20)] public int FrameTime = frameTime;
     }
 }

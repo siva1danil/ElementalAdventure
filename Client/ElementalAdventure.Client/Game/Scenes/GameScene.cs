@@ -1,5 +1,6 @@
 using ElementalAdventure.Client.Core.OpenGL;
 using ElementalAdventure.Client.Core.Resource;
+using ElementalAdventure.Client.Game.Data;
 using ElementalAdventure.Client.Game.Logic;
 
 using OpenTK.Graphics.OpenGL4;
@@ -11,8 +12,8 @@ namespace ElementalAdventure.Client.Game.Scenes;
 public class GameScene : IScene {
     private readonly ClientContext _context;
 
-    private readonly VertexArrayInstanced<Tilemap.GlobalData, Tilemap.InstanceData> _tilemapVertexArray;
-    private readonly VertexArrayInstanced<Entity.GlobalData, Entity.InstanceData> _entityVertexArray;
+    private readonly VertexArrayInstanced<TilemapShaderLayout.GlobalData, TilemapShaderLayout.InstanceData> _tilemapVertexArray;
+    private readonly VertexArrayInstanced<TilemapShaderLayout.GlobalData, TilemapShaderLayout.InstanceData> _entityVertexArray;
     private readonly GameWorld _world;
 
     private double _tickAccumulator;
@@ -20,10 +21,10 @@ public class GameScene : IScene {
     public GameScene(ClientContext context) {
         _context = context;
 
-        _tilemapVertexArray = new VertexArrayInstanced<Tilemap.GlobalData, Tilemap.InstanceData>();
-        _entityVertexArray = new VertexArrayInstanced<Entity.GlobalData, Entity.InstanceData>();
+        _tilemapVertexArray = new VertexArrayInstanced<TilemapShaderLayout.GlobalData, TilemapShaderLayout.InstanceData>();
+        _entityVertexArray = new VertexArrayInstanced<TilemapShaderLayout.GlobalData, TilemapShaderLayout.InstanceData>();
 
-        _world = new GameWorld(new Tilemap(), []);
+        _world = new GameWorld((int)(1.0f / 20.0f * 1000f), new Tilemap(), []);
         _world.Tilemap.SetMap(_context.AssetManager, new string?[,,] {
             {
                 { "null", "null", "null", "null", "null", "null", "null" },
@@ -63,9 +64,9 @@ public class GameScene : IScene {
 
     public void Update(FrameEventArgs args) {
         _tickAccumulator += args.Time;
-        while (_tickAccumulator >= 1.0 / 20.0) {
+        while (_tickAccumulator >= _world.TickInterval / 1000f) {
+            _tickAccumulator -= _world.TickInterval / 1000f;
             _world.Tick();
-            _tickAccumulator -= 1.0 / 20.0;
         }
     }
 
@@ -74,6 +75,7 @@ public class GameScene : IScene {
         TextureAtlas<string> atlasMinecraft = _context.AssetManager.GetTextureAtlas("textureatlas.dungeon");
         TextureAtlas<string> atlasPlayer = _context.AssetManager.GetTextureAtlas("textureatlas.player");
         Matrix4 projection = Matrix4.CreateOrthographicOffCenter(0, _context.WindowSize.X / 80, 0, _context.WindowSize.Y / 80, -1, 1);
+        long timeMilliseconds = (long)DateTime.UtcNow.TimeOfDay.TotalMilliseconds;
 
         GL.UseProgram(shader.Id);
 
@@ -87,7 +89,7 @@ public class GameScene : IScene {
             _world.Tilemap.Dirty = false;
         }
         GL.UniformMatrix4(GL.GetUniformLocation(shader.Id, "uProjection"), false, ref projection);
-        GL.Uniform2(GL.GetUniformLocation(shader.Id, "uTimeMilliseconds"), (uint)((long)DateTime.UtcNow.TimeOfDay.TotalMilliseconds >> 32), (uint)((long)DateTime.UtcNow.TimeOfDay.TotalMilliseconds & 0xFFFFFFFF));
+        GL.Uniform2(GL.GetUniformLocation(shader.Id, "uTimeMilliseconds"), (uint)(timeMilliseconds >> 32), (uint)(timeMilliseconds & 0xFFFFFFFF));
         GL.Uniform2(GL.GetUniformLocation(shader.Id, "uTextureSize"), atlasMinecraft.AtlasWidth, atlasMinecraft.AtlasHeight);
         GL.Uniform2(GL.GetUniformLocation(shader.Id, "uTileSize"), atlasMinecraft.EntryWidth, atlasMinecraft.EntryHeight);
         GL.Uniform1(GL.GetUniformLocation(shader.Id, "uPadding"), atlasMinecraft.EntryPadding);
@@ -98,7 +100,7 @@ public class GameScene : IScene {
         GL.ActiveTexture(TextureUnit.Texture0);
         GL.BindTexture(TextureTarget.Texture2D, atlasPlayer.Id);
         GL.UniformMatrix4(GL.GetUniformLocation(shader.Id, "uProjection"), false, ref projection);
-        GL.Uniform2(GL.GetUniformLocation(shader.Id, "uTimeMilliseconds"), (uint)((long)DateTime.UtcNow.TimeOfDay.TotalMilliseconds >> 32), (uint)((long)DateTime.UtcNow.TimeOfDay.TotalMilliseconds & 0xFFFFFFFF));
+        GL.Uniform2(GL.GetUniformLocation(shader.Id, "uTimeMilliseconds"), (uint)(timeMilliseconds >> 32), (uint)(timeMilliseconds & 0xFFFFFFFF));
         GL.Uniform2(GL.GetUniformLocation(shader.Id, "uTextureSize"), atlasPlayer.AtlasWidth, atlasPlayer.AtlasHeight);
         GL.Uniform2(GL.GetUniformLocation(shader.Id, "uTileSize"), atlasPlayer.EntryWidth, atlasPlayer.EntryHeight);
         GL.Uniform1(GL.GetUniformLocation(shader.Id, "uPadding"), atlasPlayer.EntryPadding);

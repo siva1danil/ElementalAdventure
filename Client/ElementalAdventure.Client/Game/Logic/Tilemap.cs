@@ -1,7 +1,6 @@
-using System.Runtime.InteropServices;
-
 using ElementalAdventure.Client.Core.Resource;
 using ElementalAdventure.Client.Game.Assets;
+using ElementalAdventure.Client.Game.Data;
 using ElementalAdventure.Client.Game.Utils;
 
 using OpenTK.Mathematics;
@@ -46,12 +45,12 @@ public class Tilemap {
         }
     }
 
-    public GlobalData[] GetGlobalData() {
+    public TilemapShaderLayout.GlobalData[] GetGlobalData() {
         return [new(new(0.0f, 0.0f, 0.0f)), new(new(1.0f, 0.0f, 0.0f)), new(new(0.0f, 1.0f, 0.0f)), new(new(1.0f, 0.0f, 0.0f)), new(new(0.0f, 1.0f, 0.0f)), new(new(1.0f, 1.0f, 0.0f))];
     }
 
-    public InstanceData[] GetInstanceData() {
-        List<InstanceData> data = new(_count);
+    public TilemapShaderLayout.InstanceData[] GetInstanceData() {
+        List<TilemapShaderLayout.InstanceData> data = new(_count);
         for (int z = 0; z < _map.GetLength(0); z++)
             for (int y = 0; y < _map.GetLength(1); y++)
                 for (int x = 0; x < _map.GetLength(2); x++)
@@ -61,17 +60,4 @@ public class Tilemap {
     }
 
     public readonly record struct Tile(bool Exists, Vector3 Position, int Index, int FrameCount, int FrameTime);
-
-    [StructLayout(LayoutKind.Explicit, Size = 12)]
-    public struct GlobalData(Vector3 position) {
-        [FieldOffset(0)] public Vector3 Position = position;
-    }
-
-    [StructLayout(LayoutKind.Explicit, Size = 24)]
-    public struct InstanceData(Vector3 position, int index, int frameCount, int frameTime) {
-        [FieldOffset(0)] public Vector3 Position = position;
-        [FieldOffset(12)] public int Index = index;
-        [FieldOffset(16)] public int FrameCount = frameCount;
-        [FieldOffset(20)] public int FrameTime = frameTime;
-    }
 }
