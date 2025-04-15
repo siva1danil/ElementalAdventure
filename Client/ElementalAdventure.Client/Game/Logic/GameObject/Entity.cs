@@ -7,13 +7,13 @@ using OpenTK.Mathematics;
 
 namespace ElementalAdventure.Client.Game.Logic.GameObject;
 
+// TODO: refactor internal format
 public class Entity {
     private readonly AssetManager _assetManager;
     private readonly EntityType _entityType;
 
     private readonly PositionComponent _positionComponent;
     private readonly PlayerControllableComponent? _playerControllableComponent;
-
 
     public EntityType EntityType => _entityType;
 

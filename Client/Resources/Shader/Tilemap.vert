@@ -7,7 +7,7 @@ layout (location = 3) in int aInstanceIndex;
 layout (location = 4) in int aInstanceFrameCount;
 layout (location = 5) in int aInstanceFrameTime;
 
-layout(std140) uniform Uniforms {
+layout (std140) uniform Uniforms {
     mat4 uProjection;
     uvec2 uTimeMilliseconds;
     float uAlpha;
