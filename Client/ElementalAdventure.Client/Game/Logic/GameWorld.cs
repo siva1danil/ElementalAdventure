@@ -42,6 +42,7 @@ public class GameWorld {
         foreach (Entity entity in _entities) {
             entity.ControllableBehaviourComponent?.Update(this, entity);
             entity.MovingBehaviourComponent?.Update(this, entity);
+            entity.PlayerAnimatorBehaviourComponent?.Update(this, entity);
         }
 
         _tickTimestamp = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();

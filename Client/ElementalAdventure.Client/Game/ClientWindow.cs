@@ -82,15 +82,15 @@ public class ClientWindow : GameWindow {
                 ], 100) }
             }, 1));
             _context.AssetManager.AddTextureAtlas("textureatlas.player", new TextureAtlas<string>(new Dictionary<string, TextureAtlas<string>.EntryDef> {
-                { "mage_idle", new ([
-                    _context.AssetLoader.LoadBinary("TextureAtlas/Player/mage_idle.0.png"),
-                    _context.AssetLoader.LoadBinary("TextureAtlas/Player/mage_idle.1.png"),
-                    _context.AssetLoader.LoadBinary("TextureAtlas/Player/mage_idle.2.png"),
-                    _context.AssetLoader.LoadBinary("TextureAtlas/Player/mage_idle.3.png"),
-                    _context.AssetLoader.LoadBinary("TextureAtlas/Player/mage_idle.4.png"),
-                    _context.AssetLoader.LoadBinary("TextureAtlas/Player/mage_idle.5.png"),
-                    _context.AssetLoader.LoadBinary("TextureAtlas/Player/mage_idle.6.png"),
-                    _context.AssetLoader.LoadBinary("TextureAtlas/Player/mage_idle.7.png")
+                { "mage_idle_left", new ([
+                    _context.AssetLoader.LoadBinary("TextureAtlas/Player/mage_idle_left.0.png"),
+                    _context.AssetLoader.LoadBinary("TextureAtlas/Player/mage_idle_left.1.png"),
+                    _context.AssetLoader.LoadBinary("TextureAtlas/Player/mage_idle_left.2.png"),
+                    _context.AssetLoader.LoadBinary("TextureAtlas/Player/mage_idle_left.3.png"),
+                    _context.AssetLoader.LoadBinary("TextureAtlas/Player/mage_idle_left.4.png"),
+                    _context.AssetLoader.LoadBinary("TextureAtlas/Player/mage_idle_left.5.png"),
+                    _context.AssetLoader.LoadBinary("TextureAtlas/Player/mage_idle_left.6.png"),
+                    _context.AssetLoader.LoadBinary("TextureAtlas/Player/mage_idle_left.7.png")
                 ], 150) },
                 { "mage_idle_right", new ([
                     _context.AssetLoader.LoadBinary("TextureAtlas/Player/mage_idle_right.0.png"),
@@ -102,15 +102,15 @@ public class ClientWindow : GameWindow {
                     _context.AssetLoader.LoadBinary("TextureAtlas/Player/mage_idle_right.6.png"),
                     _context.AssetLoader.LoadBinary("TextureAtlas/Player/mage_idle_right.7.png")
                 ], 150) },
-                { "mage_walk", new ([
-                    _context.AssetLoader.LoadBinary("TextureAtlas/Player/mage_walk.0.png"),
-                    _context.AssetLoader.LoadBinary("TextureAtlas/Player/mage_walk.1.png"),
-                    _context.AssetLoader.LoadBinary("TextureAtlas/Player/mage_walk.2.png"),
-                    _context.AssetLoader.LoadBinary("TextureAtlas/Player/mage_walk.3.png"),
-                    _context.AssetLoader.LoadBinary("TextureAtlas/Player/mage_walk.4.png"),
-                    _context.AssetLoader.LoadBinary("TextureAtlas/Player/mage_walk.5.png"),
-                    _context.AssetLoader.LoadBinary("TextureAtlas/Player/mage_walk.6.png"),
-                    _context.AssetLoader.LoadBinary("TextureAtlas/Player/mage_walk.7.png")
+                { "mage_walk_left", new ([
+                    _context.AssetLoader.LoadBinary("TextureAtlas/Player/mage_walk_left.0.png"),
+                    _context.AssetLoader.LoadBinary("TextureAtlas/Player/mage_walk_left.1.png"),
+                    _context.AssetLoader.LoadBinary("TextureAtlas/Player/mage_walk_left.2.png"),
+                    _context.AssetLoader.LoadBinary("TextureAtlas/Player/mage_walk_left.3.png"),
+                    _context.AssetLoader.LoadBinary("TextureAtlas/Player/mage_walk_left.4.png"),
+                    _context.AssetLoader.LoadBinary("TextureAtlas/Player/mage_walk_left.5.png"),
+                    _context.AssetLoader.LoadBinary("TextureAtlas/Player/mage_walk_left.6.png"),
+                    _context.AssetLoader.LoadBinary("TextureAtlas/Player/mage_walk_left.7.png")
                 ], 150) },
                 { "mage_walk_right", new ([
                     _context.AssetLoader.LoadBinary("TextureAtlas/Player/mage_walk_right.0.png"),
@@ -152,7 +152,7 @@ public class ClientWindow : GameWindow {
             _context.AssetManager.AddTileType("fountain_2_bottom", new("textureatlas.dungeon", "fountain_2_bottom"));
             _context.AssetManager.AddTileType("fountain_2_top", new("textureatlas.dungeon", "fountain_2_top"));
 
-            _context.AssetManager.AddEntityType("player", new EntityType("textureatlas.player", "mage_idle", "mage_idle_right", "mage_walk_left", "mage_walk_right", 0.25f));
+            _context.AssetManager.AddEntityType("player", new EntityType("textureatlas.player", "mage_idle_left", "mage_idle_right", "mage_walk_left", "mage_walk_right", 0.25f));
         } catch (Exception e) {
             Console.WriteLine(e.Message);
             Close();

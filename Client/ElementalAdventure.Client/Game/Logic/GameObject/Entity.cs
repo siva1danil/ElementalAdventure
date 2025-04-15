@@ -18,6 +18,7 @@ public class Entity {
     private readonly TextureDataComponent _textureDataComponent;
     private readonly ControllableBehaviourComponent? _controllableBehaviourComponent;
     private readonly MovingBehaviourComponent? _movingBehaviourComponent;
+    private readonly PlayerAnimatorBehaviourComponent? _playerAnimatorBehaviourComponent;
 
     public EntityType EntityType => _entityType;
 
@@ -25,6 +26,7 @@ public class Entity {
     public TextureDataComponent TextureDataComponent => _textureDataComponent;
     public ControllableBehaviourComponent? ControllableBehaviourComponent => _controllableBehaviourComponent;
     public MovingBehaviourComponent? MovingBehaviourComponent => _movingBehaviourComponent;
+    public PlayerAnimatorBehaviourComponent? PlayerAnimatorBehaviourComponent => _playerAnimatorBehaviourComponent;
 
     public Entity(AssetManager assetManager, EntityType entityType, Vector2 position, bool controllable) {
         _assetManager = assetManager;
@@ -34,8 +36,7 @@ public class Entity {
         _textureDataComponent = new TextureDataComponent(entityType.TextureAtlas, entityType.TextureIdleLeft);
         _controllableBehaviourComponent = controllable ? new ControllableBehaviourComponent() : null;
         _movingBehaviourComponent = new MovingBehaviourComponent();
-
-        _positionDataComponent.Z = 1.0f; // TODO: remove hardcode
+        _playerAnimatorBehaviourComponent = new PlayerAnimatorBehaviourComponent();
     }
 
     public TilemapShaderLayout.GlobalData[] GetGlobalData() {
@@ -43,8 +44,8 @@ public class Entity {
     }
 
     public TilemapShaderLayout.InstanceData[] GetInstanceData() {
-        TextureAtlas<string> atlas = _assetManager.GetTextureAtlas(_entityType.TextureAtlas);
-        TextureAtlas<string>.Entry entry = atlas.GetEntry(_entityType.TextureIdleLeft);
+        TextureAtlas<string> atlas = _assetManager.GetTextureAtlas(_textureDataComponent.TextureAtlas);
+        TextureAtlas<string>.Entry entry = atlas.GetEntry(_textureDataComponent.Texture);
         return [new(new(_positionDataComponent.LastPosition.X, _positionDataComponent.LastPosition.Y, _positionDataComponent.Z), new(_positionDataComponent.Position.X, _positionDataComponent.Position.Y, _positionDataComponent.Z), entry.Index, entry.FrameCount, entry.FrameTime)];
     }
 }
