@@ -164,6 +164,8 @@ public class GameScene : IScene {
     }
 
     public void Dispose() {
-        //
+        _tilemapVertexArray.Dispose();
+        _entityVertexArray.Dispose();
+        _uniformBuffer.Dispose();
     }
 }
