@@ -74,57 +74,84 @@ public class GameScene : IScene {
     }
 
     public void Render(FrameEventArgs args) {
-        /* Init */
         ShaderProgram shader = _context.AssetManager.GetShader("shader.tilemap");
-        TextureAtlas<string> atlasMinecraft = _context.AssetManager.GetTextureAtlas("textureatlas.dungeon");
+        TextureAtlas<string> atlasDungeon = _context.AssetManager.GetTextureAtlas("textureatlas.dungeon");
         TextureAtlas<string> atlasPlayer = _context.AssetManager.GetTextureAtlas("textureatlas.player");
 
-        long timeMilliseconds = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
-        TilemapShaderLayout.UniformData uniform = new() {
-            Projection = Matrix4.CreateOrthographicOffCenter(0, _context.WindowSize.X / 80, 0, _context.WindowSize.Y / 80, -1, 1),
-            TimeMilliseconds = new Vector2i((int)(uint)(timeMilliseconds >> 32), (int)(uint)(timeMilliseconds & 0xFFFFFFFF)),
-            Alpha = (timeMilliseconds - _world.TickTimestamp) / (float)_world.TickInterval / 1000.0f
-        };
-
         GL.UseProgram(shader.Id);
+        {
+            // Tilemap: set uniforms
+            TilemapShaderLayout.UniformData uniform = new() {
+                Projection = Matrix4.CreateOrthographicOffCenter(0, _context.WindowSize.X / 80, 0, _context.WindowSize.Y / 80, -1, 1),
+                TimeMilliseconds = new Vector2i((int)(uint)(DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() >> 32), (int)(uint)(DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() & 0xFFFFFFFF)),
+                Alpha = (DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() - _world.TickTimestamp) / (float)_world.TickInterval / 1000.0f,
+                TextureSize = new Vector2i(atlasDungeon.AtlasWidth, atlasDungeon.AtlasHeight),
+                TileSize = new Vector2i(atlasDungeon.EntryWidth, atlasDungeon.EntryHeight),
+                Padding = atlasDungeon.EntryPadding
+            };
+            _uniformBuffer.SetData(ref uniform);
 
-        /* Tilemap */
-        uniform.TextureSize = new Vector2i(atlasMinecraft.AtlasWidth, atlasMinecraft.AtlasHeight);
-        uniform.TileSize = new Vector2i(atlasMinecraft.EntryWidth, atlasMinecraft.EntryHeight);
-        uniform.Padding = atlasMinecraft.EntryPadding;
-        _uniformBuffer.SetData(ref uniform);
-        if (_world.Tilemap.Dirty) {
-            _tilemapVertexArray.SetGlobalData(_world.Tilemap.GetGlobalData(), BufferUsageHint.DynamicDraw);
-            _tilemapVertexArray.SetInstanceData(_world.Tilemap.GetInstanceData(), BufferUsageHint.DynamicDraw);
-            _world.Tilemap.Dirty = false;
+            // Tilemap: set vertex array
+            if (_world.Tilemap.Dirty) {
+                _tilemapVertexArray.SetGlobalData(_world.Tilemap.GetGlobalData(), BufferUsageHint.DynamicDraw);
+                _tilemapVertexArray.SetInstanceData(_world.Tilemap.GetInstanceData(), BufferUsageHint.DynamicDraw);
+                _world.Tilemap.Dirty = false;
+            }
+
+            // Tilemap: draw
+            GL.BindVertexArray(_tilemapVertexArray.Id);
+            {
+                GL.BindBuffer(BufferTarget.UniformBuffer, _uniformBuffer.Id);
+                GL.BindBufferBase(BufferRangeTarget.UniformBuffer, 0, _uniformBuffer.Id);
+                {
+                    GL.ActiveTexture(TextureUnit.Texture0);
+                    GL.BindTexture(TextureTarget.Texture2D, atlasDungeon.Id);
+                    {
+                        GL.DrawArraysInstanced(PrimitiveType.Triangles, 0, 6, _world.Tilemap.Count);
+                    }
+                    GL.BindTexture(TextureTarget.Texture2D, 0);
+                    GL.ActiveTexture(TextureUnit.Texture0);
+                }
+                GL.BindBuffer(BufferTarget.UniformBuffer, 0);
+            }
+            GL.BindVertexArray(0);
+
+            // Entity: set uniforms
+            uniform = new() {
+                Projection = Matrix4.CreateOrthographicOffCenter(0, _context.WindowSize.X / 80, 0, _context.WindowSize.Y / 80, -1, 1),
+                TimeMilliseconds = new Vector2i((int)(uint)(DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() >> 32), (int)(uint)(DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() & 0xFFFFFFFF)),
+                Alpha = (DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() - _world.TickTimestamp) / (float)_world.TickInterval / 1000.0f,
+                TextureSize = new Vector2i(atlasPlayer.AtlasWidth, atlasPlayer.AtlasHeight),
+                TileSize = new Vector2i(atlasPlayer.EntryWidth, atlasPlayer.EntryHeight),
+                Padding = atlasPlayer.EntryPadding
+            };
+            _uniformBuffer.SetData(ref uniform);
+
+            // Entity: set vertex array and draw
+            GL.ActiveTexture(TextureUnit.Texture0);
+            GL.BindTexture(TextureTarget.Texture2D, atlasPlayer.Id);
+            {
+                GL.BindBuffer(BufferTarget.UniformBuffer, _uniformBuffer.Id);
+                GL.BindBufferBase(BufferRangeTarget.UniformBuffer, 0, _uniformBuffer.Id);
+                {
+                    foreach (Entity entity in _world.Entities) {
+                        // Entity: set vertex array
+                        _entityVertexArray.SetGlobalData(entity.GetGlobalData(), BufferUsageHint.DynamicDraw);
+                        _entityVertexArray.SetInstanceData(entity.GetInstanceData(), BufferUsageHint.DynamicDraw);
+
+                        // Entity: draw
+                        GL.BindVertexArray(_entityVertexArray.Id);
+                        {
+                            GL.DrawArraysInstanced(PrimitiveType.Triangles, 0, 6, 1);
+                        }
+                        GL.BindVertexArray(0);
+                    }
+                }
+                GL.BindBuffer(BufferTarget.UniformBuffer, 0);
+            }
+            GL.BindTexture(TextureTarget.Texture2D, 0);
+            GL.ActiveTexture(TextureUnit.Texture0);
         }
-
-        GL.BindVertexArray(_tilemapVertexArray.Id);
-        GL.BindBuffer(BufferTarget.UniformBuffer, _uniformBuffer.Id);
-        GL.BindBufferBase(BufferRangeTarget.UniformBuffer, 0, _uniformBuffer.Id);
-        GL.ActiveTexture(TextureUnit.Texture0);
-        GL.BindTexture(TextureTarget.Texture2D, atlasMinecraft.Id);
-        GL.DrawArraysInstanced(PrimitiveType.Triangles, 0, 6, _world.Tilemap.Count);
-
-        /* Entities */
-        uniform.TextureSize = new Vector2i(atlasPlayer.AtlasWidth, atlasPlayer.AtlasHeight);
-        uniform.TileSize = new Vector2i(atlasPlayer.EntryWidth, atlasPlayer.EntryHeight);
-        uniform.Padding = atlasPlayer.EntryPadding;
-        _uniformBuffer.SetData(ref uniform);
-
-        GL.BindVertexArray(_entityVertexArray.Id);
-        GL.BindBuffer(BufferTarget.UniformBuffer, _uniformBuffer.Id);
-        GL.BindBufferBase(BufferRangeTarget.UniformBuffer, 0, _uniformBuffer.Id);
-        GL.ActiveTexture(TextureUnit.Texture0);
-        GL.BindTexture(TextureTarget.Texture2D, atlasPlayer.Id);
-        foreach (Entity entity in _world.Entities) {
-            _entityVertexArray.SetGlobalData(entity.GetGlobalData(), BufferUsageHint.DynamicDraw);
-            _entityVertexArray.SetInstanceData(entity.GetInstanceData(), BufferUsageHint.DynamicDraw);
-            GL.DrawArraysInstanced(PrimitiveType.Triangles, 0, 6, 1);
-        }
-
-        /* Cleanup */
-        GL.BindVertexArray(0);
         GL.UseProgram(0);
     }
 
