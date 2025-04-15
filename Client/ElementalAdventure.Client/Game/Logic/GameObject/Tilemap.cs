@@ -5,7 +5,7 @@ using ElementalAdventure.Client.Game.Utils;
 
 using OpenTK.Mathematics;
 
-namespace ElementalAdventure.Client.Game.Logic;
+namespace ElementalAdventure.Client.Game.Logic.GameObject;
 
 // TODO: refactor internal format
 public class Tilemap {

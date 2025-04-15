@@ -19,6 +19,8 @@ public class ClientWindow : GameWindow {
         UpdateFrame += UpdateFrameHandler;
         RenderFrame += RenderFrameHandler;
         Resize += ResizeHandler;
+        KeyDown += KeyDownHandler;
+        KeyUp += KeyUpHandler;
 
         _context = new ClientContext(new AssetLoader(Path.Combine(root, "Resources")), new AssetManager(), ClientSize);
     }
@@ -182,6 +184,16 @@ public class ClientWindow : GameWindow {
     private void ResizeHandler(ResizeEventArgs e) {
         GL.Viewport(0, 0, e.Width, e.Height);
         _context.WindowSize = new(e.Width, e.Height);
+    }
+
+    private void KeyDownHandler(KeyboardKeyEventArgs e) {
+        Console.WriteLine($"KeyDown: {e.Key}");
+        _context.PressedKeys.Add(e.Key);
+    }
+
+    private void KeyUpHandler(KeyboardKeyEventArgs e) {
+        Console.WriteLine($"KeyUp: {e.Key}");
+        _context.PressedKeys.Remove(e.Key);
     }
 
     public static void Main() => new ClientWindow(AppDomain.CurrentDomain.BaseDirectory).Run();

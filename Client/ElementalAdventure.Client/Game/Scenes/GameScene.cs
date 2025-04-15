@@ -2,10 +2,13 @@ using ElementalAdventure.Client.Core.OpenGL;
 using ElementalAdventure.Client.Core.Resource;
 using ElementalAdventure.Client.Game.Data;
 using ElementalAdventure.Client.Game.Logic;
+using ElementalAdventure.Client.Game.Logic.Command;
+using ElementalAdventure.Client.Game.Logic.GameObject;
 
 using OpenTK.Graphics.OpenGL4;
 using OpenTK.Mathematics;
 using OpenTK.Windowing.Common;
+using OpenTK.Windowing.GraphicsLibraryFramework;
 
 namespace ElementalAdventure.Client.Game.Scenes;
 
@@ -54,10 +57,8 @@ public class GameScene : IScene {
                 { "wall_bottomleft_outer", "wall_bottom", "wall_bottom", "wall_bottom", "wall_bottom", "wall_bottom", "wall_bottomright_outer" }
             }
         });
-        _world.Entities.Add(new Entity(_context.AssetManager, _context.AssetManager.GetEntityType("player"), new Vector3(0.0f, 0.0f, 1.0f)));
-        _world.Entities.Add(new Entity(_context.AssetManager, _context.AssetManager.GetEntityType("player"), new Vector3(0.0f, 0.0f, 1.0f)));
-        _world.Entities[0].Velocity = new Vector3(0.0f, 0.1f, 0.0f);
-        _world.Entities[1].Velocity = new Vector3(0.1f, 0.0f, 0.0f);
+        _world.Entities.Add(new Entity(_context.AssetManager, _context.AssetManager.GetEntityType("player"), new(2.0f, 0.0f), true));
+        _world.Entities.Add(new Entity(_context.AssetManager, _context.AssetManager.GetEntityType("player"), new(0.0f, 2.0f), true));
 
         _tickAccumulator = 0.0;
     }
@@ -66,6 +67,9 @@ public class GameScene : IScene {
         _tickAccumulator += args.Time;
         while (_tickAccumulator >= _world.TickInterval / 1000f) {
             _tickAccumulator -= _world.TickInterval / 1000f;
+
+            _world.AddCommand(new SetMovementCommand(_context.PressedKeys.Contains(Keys.W), _context.PressedKeys.Contains(Keys.A), _context.PressedKeys.Contains(Keys.S), _context.PressedKeys.Contains(Keys.D)));
+
             _world.Tick();
         }
     }
