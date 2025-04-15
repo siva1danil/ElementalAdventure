@@ -2,6 +2,8 @@ using ElementalAdventure.Client.Core.Resource;
 using ElementalAdventure.Client.Game.Assets;
 using ElementalAdventure.Client.Game.Data;
 using ElementalAdventure.Client.Game.Logic.Component;
+using ElementalAdventure.Client.Game.Logic.Component.Behaviour;
+using ElementalAdventure.Client.Game.Logic.Component.Data;
 
 using OpenTK.Mathematics;
 
@@ -12,22 +14,28 @@ public class Entity {
     private readonly AssetManager _assetManager;
     private readonly EntityType _entityType;
 
-    private readonly PositionComponent _positionComponent;
-    private readonly PlayerControllableComponent? _playerControllableComponent;
+    private readonly PositionDataComponent _positionDataComponent;
+    private readonly TextureDataComponent _textureDataComponent;
+    private readonly ControllableBehaviourComponent? _controllableBehaviourComponent;
+    private readonly MovingBehaviourComponent _movingBehaviourComponentl;
 
     public EntityType EntityType => _entityType;
 
-    public PositionComponent PositionComponent => _positionComponent;
-    public PlayerControllableComponent? PlayerControllableComponent => _playerControllableComponent;
+    public PositionDataComponent PositionDataComponent => _positionDataComponent;
+    public TextureDataComponent TextureDataComponent => _textureDataComponent;
+    public ControllableBehaviourComponent? ControllableBehaviourComponent => _controllableBehaviourComponent;
+    public MovingBehaviourComponent? MovingBehaviourComponent => _movingBehaviourComponentl;
 
     public Entity(AssetManager assetManager, EntityType entityType, Vector2 position, bool controllable) {
         _assetManager = assetManager;
         _entityType = entityType;
 
-        _positionComponent = new PositionComponent(position);
-        _playerControllableComponent = controllable ? new PlayerControllableComponent() : null;
+        _positionDataComponent = new PositionDataComponent(position);
+        _textureDataComponent = new TextureDataComponent(entityType.TextureAtlas, entityType.TextureIdleLeft);
+        _controllableBehaviourComponent = controllable ? new ControllableBehaviourComponent() : null;
+        _movingBehaviourComponentl = new MovingBehaviourComponent();
 
-        _positionComponent.Z = 1.0f; // TODO: remove hardcode
+        _positionDataComponent.Z = 1.0f; // TODO: remove hardcode
     }
 
     public TilemapShaderLayout.GlobalData[] GetGlobalData() {
@@ -37,6 +45,6 @@ public class Entity {
     public TilemapShaderLayout.InstanceData[] GetInstanceData() {
         TextureAtlas<string> atlas = _assetManager.GetTextureAtlas(_entityType.TextureAtlas);
         TextureAtlas<string>.Entry entry = atlas.GetEntry(_entityType.TextureIdleLeft);
-        return [new(new(_positionComponent.LastPosition.X, _positionComponent.LastPosition.Y, _positionComponent.Z), new(_positionComponent.Position.X, _positionComponent.Position.Y, _positionComponent.Z), entry.Index, entry.FrameCount, entry.FrameTime)];
+        return [new(new(_positionDataComponent.LastPosition.X, _positionDataComponent.LastPosition.Y, _positionDataComponent.Z), new(_positionDataComponent.Position.X, _positionDataComponent.Position.Y, _positionDataComponent.Z), entry.Index, entry.FrameCount, entry.FrameTime)];
     }
 }

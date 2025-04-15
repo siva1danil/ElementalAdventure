@@ -59,7 +59,7 @@ public class GameScene : IScene {
                 { "wall_bottomleft_outer", "wall_bottom", "wall_bottom", "wall_bottom", "wall_bottom", "wall_bottom", "wall_bottomright_outer" }
             }
         });
-        _world.Entities.Add(new Entity(_context.AssetManager, _context.AssetManager.GetEntityType("player"), new(2.0f, 0.0f), true));
+        _world.Entities.Add(new Entity(_context.AssetManager, _context.AssetManager.GetEntityType("player"), new(2.0f, 0.0f), false));
         _world.Entities.Add(new Entity(_context.AssetManager, _context.AssetManager.GetEntityType("player"), new(0.0f, 2.0f), true));
 
         _tickAccumulator = 0.0;

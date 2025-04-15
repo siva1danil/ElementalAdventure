@@ -152,7 +152,7 @@ public class ClientWindow : GameWindow {
             _context.AssetManager.AddTileType("fountain_2_bottom", new("textureatlas.dungeon", "fountain_2_bottom"));
             _context.AssetManager.AddTileType("fountain_2_top", new("textureatlas.dungeon", "fountain_2_top"));
 
-            _context.AssetManager.AddEntityType("player", new EntityType("textureatlas.player", "mage_idle", "mage_idle_right", "mage_walk_right", "mage_walk_left", 0.25f));
+            _context.AssetManager.AddEntityType("player", new EntityType("textureatlas.player", "mage_idle", "mage_idle_right", "mage_walk_left", "mage_walk_right", 0.25f));
         } catch (Exception e) {
             Console.WriteLine(e.Message);
             Close();

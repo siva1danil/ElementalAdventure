@@ -40,8 +40,8 @@ public class GameWorld {
         }
 
         foreach (Entity entity in _entities) {
-            entity.PositionComponent.Update(this, entity);
-            entity.PlayerControllableComponent?.Update(this, entity);
+            entity.ControllableBehaviourComponent?.Update(this, entity);
+            entity.MovingBehaviourComponent?.Update(this, entity);
         }
 
         _tickTimestamp = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
