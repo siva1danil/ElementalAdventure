@@ -14,6 +14,9 @@ public class Entity {
     private readonly PositionComponent _positionComponent;
     private readonly PlayerControllableComponent? _playerControllableComponent;
 
+
+    public EntityType EntityType => _entityType;
+
     public PositionComponent PositionComponent => _positionComponent;
     public PlayerControllableComponent? PlayerControllableComponent => _playerControllableComponent;
 
@@ -33,7 +36,7 @@ public class Entity {
 
     public TilemapShaderLayout.InstanceData[] GetInstanceData() {
         TextureAtlas<string> atlas = _assetManager.GetTextureAtlas(_entityType.TextureAtlas);
-        TextureAtlas<string>.Entry entry = atlas.GetEntry(_entityType.Texture);
+        TextureAtlas<string>.Entry entry = atlas.GetEntry(_entityType.TextureIdleLeft);
         return [new(new(_positionComponent.LastPosition.X, _positionComponent.LastPosition.Y, _positionComponent.Z), new(_positionComponent.Position.X, _positionComponent.Position.Y, _positionComponent.Z), entry.Index, entry.FrameCount, entry.FrameTime)];
     }
 }

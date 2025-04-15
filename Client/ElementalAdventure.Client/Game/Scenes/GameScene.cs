@@ -69,9 +69,6 @@ public class GameScene : IScene {
         _tickAccumulator += args.Time;
         while (_tickAccumulator >= _world.TickInterval) {
             _tickAccumulator -= _world.TickInterval;
-
-            _world.AddCommand(new SetMovementCommand(_context.PressedKeys.Contains(Keys.W), _context.PressedKeys.Contains(Keys.A), _context.PressedKeys.Contains(Keys.S), _context.PressedKeys.Contains(Keys.D)));
-
             _world.Tick();
         }
     }
@@ -129,6 +126,14 @@ public class GameScene : IScene {
         /* Cleanup */
         GL.BindVertexArray(0);
         GL.UseProgram(0);
+    }
+
+    public void KeyDown(KeyboardKeyEventArgs args) {
+        _world.AddCommand(new SetMovementCommand(_context.PressedKeys.Contains(Keys.W), _context.PressedKeys.Contains(Keys.A), _context.PressedKeys.Contains(Keys.S), _context.PressedKeys.Contains(Keys.D)));
+    }
+
+    public void KeyUp(KeyboardKeyEventArgs args) {
+        _world.AddCommand(new SetMovementCommand(_context.PressedKeys.Contains(Keys.W), _context.PressedKeys.Contains(Keys.A), _context.PressedKeys.Contains(Keys.S), _context.PressedKeys.Contains(Keys.D)));
     }
 
     public void Dispose() {

@@ -35,8 +35,8 @@ public class GameWorld {
     }
 
     public void Tick() {
-        foreach (ICommand command in _commands) {
-            command.Execute(this);
+        while (_commands.Count > 0) {
+            _commands.Dequeue().Execute(this);
         }
 
         foreach (Entity entity in _entities) {

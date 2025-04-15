@@ -21,6 +21,6 @@ public class PositionComponent : IComponent {
 
     public void Update(GameWorld world, Entity entity) {
         _lastPosition = _position;
-        _position += _velocity;
+        _position += _velocity * entity.EntityType.Speed;
     }
 }

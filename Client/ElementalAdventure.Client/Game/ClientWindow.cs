@@ -152,7 +152,7 @@ public class ClientWindow : GameWindow {
             _context.AssetManager.AddTileType("fountain_2_bottom", new("textureatlas.dungeon", "fountain_2_bottom"));
             _context.AssetManager.AddTileType("fountain_2_top", new("textureatlas.dungeon", "fountain_2_top"));
 
-            _context.AssetManager.AddEntityType("player", new EntityType("textureatlas.player", "mage_idle"));
+            _context.AssetManager.AddEntityType("player", new EntityType("textureatlas.player", "mage_idle", "mage_idle_right", "mage_walk_right", "mage_walk_left", 0.25f));
         } catch (Exception e) {
             Console.WriteLine(e.Message);
             Close();
@@ -187,11 +187,17 @@ public class ClientWindow : GameWindow {
     }
 
     private void KeyDownHandler(KeyboardKeyEventArgs e) {
-        _context.PressedKeys.Add(e.Key);
+        if (!_context.PressedKeys.Contains(e.Key)) {
+            _context.PressedKeys.Add(e.Key);
+            _scene?.KeyDown(e);
+        }
     }
 
     private void KeyUpHandler(KeyboardKeyEventArgs e) {
-        _context.PressedKeys.Remove(e.Key);
+        if (_context.PressedKeys.Contains(e.Key)) {
+            _context.PressedKeys.Remove(e.Key);
+            _scene?.KeyUp(e);
+        }
     }
 
     public static void Main() => new ClientWindow(AppDomain.CurrentDomain.BaseDirectory).Run();
