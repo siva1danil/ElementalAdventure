@@ -86,7 +86,7 @@ public class GameScene : IScene {
         TilemapShaderLayout.UniformData uniform = new() {
             Projection = Matrix4.CreateOrthographicOffCenter(0, _context.WindowSize.X / 80, 0, _context.WindowSize.Y / 80, -1, 1),
             TimeMilliseconds = new Vector2i((int)(uint)(timeMilliseconds >> 32), (int)(uint)(timeMilliseconds & 0xFFFFFFFF)),
-            Alpha = (timeMilliseconds - _world.TickTimestamp) / (float)_world.TickInterval
+            Alpha = (timeMilliseconds - _world.TickTimestamp) / (float)_world.TickInterval / 1000.0f
         };
 
         GL.UseProgram(shader.Id);
