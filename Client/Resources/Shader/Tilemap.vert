@@ -7,12 +7,14 @@ layout (location = 3) in int aInstanceIndex;
 layout (location = 4) in int aInstanceFrameCount;
 layout (location = 5) in int aInstanceFrameTime;
 
-uniform mat4 uProjection;
-uniform uvec2 uTimeMilliseconds;
-uniform float uAlpha;
-uniform ivec2 uTextureSize;
-uniform ivec2 uTileSize;
-uniform int uPadding;
+layout(std140) uniform Uniforms {
+    mat4 uProjection;
+    uvec2 uTimeMilliseconds;
+    float uAlpha;
+    ivec2 uTextureSize;
+    ivec2 uTileSize;
+    int uPadding;
+};
 
 out vec2 vUV;
 

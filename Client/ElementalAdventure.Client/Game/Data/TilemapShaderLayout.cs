@@ -18,4 +18,14 @@ public static class TilemapShaderLayout {
         [FieldOffset(28)] public int FrameCount = frameCount;
         [FieldOffset(32)] public int FrameTime = frameTime;
     }
+
+    [StructLayout(LayoutKind.Explicit, Size = 112)]
+    public struct UniformData(Matrix4 projection, Vector2i timeMilliseconds, float alpha, Vector2i textureSize, Vector2i tileSize, int padding) {
+        [FieldOffset(0)] public Matrix4 Projection = projection;
+        [FieldOffset(64)] public Vector2i TimeMilliseconds = timeMilliseconds;
+        [FieldOffset(72)] public float Alpha = alpha;
+        [FieldOffset(80)] public Vector2i TextureSize = textureSize;
+        [FieldOffset(88)] public Vector2i TileSize = tileSize;
+        [FieldOffset(96)] public int Padding = padding;
+    }
 }
