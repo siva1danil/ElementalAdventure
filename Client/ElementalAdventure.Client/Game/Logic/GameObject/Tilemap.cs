@@ -10,9 +10,11 @@ namespace ElementalAdventure.Client.Game.Logic.GameObject;
 // TODO: refactor internal format
 public class Tilemap {
     private Tile[,,] _map;
+    private float _midgroundZ;
     private int _count;
     private bool _dirty;
 
+    public float MidgroundZ => _midgroundZ;
     public int Count => _count;
     public bool Dirty { get => _dirty; set => _dirty = value; }
 
@@ -22,12 +24,13 @@ public class Tilemap {
         _dirty = true;
     }
 
-    public void SetMap(AssetManager assetManager, string?[,,] map) {
+    public void SetMap(AssetManager assetManager, string?[,,] map, int midground) {
         _map = new Tile[map.GetLength(0), map.GetLength(1), map.GetLength(2)];
         _count = 0;
         _dirty = true;
 
         float zFactor = MathF.BitDecrement(1.0f / (map.GetLength(0) - 1));
+        _midgroundZ = midground * zFactor;
         for (int z = 0; z < map.GetLength(0); z++) {
             for (int y = 0; y < map.GetLength(1); y++) {
                 for (int x = 0; x < map.GetLength(2); x++) {

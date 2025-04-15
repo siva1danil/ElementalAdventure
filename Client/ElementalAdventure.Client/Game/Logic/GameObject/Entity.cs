@@ -17,14 +17,14 @@ public class Entity {
     private readonly PositionDataComponent _positionDataComponent;
     private readonly TextureDataComponent _textureDataComponent;
     private readonly ControllableBehaviourComponent? _controllableBehaviourComponent;
-    private readonly MovingBehaviourComponent? _movingBehaviourComponentl;
+    private readonly MovingBehaviourComponent? _movingBehaviourComponent;
 
     public EntityType EntityType => _entityType;
 
     public PositionDataComponent PositionDataComponent => _positionDataComponent;
     public TextureDataComponent TextureDataComponent => _textureDataComponent;
     public ControllableBehaviourComponent? ControllableBehaviourComponent => _controllableBehaviourComponent;
-    public MovingBehaviourComponent? MovingBehaviourComponent => _movingBehaviourComponentl;
+    public MovingBehaviourComponent? MovingBehaviourComponent => _movingBehaviourComponent;
 
     public Entity(AssetManager assetManager, EntityType entityType, Vector2 position, bool controllable) {
         _assetManager = assetManager;
@@ -33,7 +33,7 @@ public class Entity {
         _positionDataComponent = new PositionDataComponent(position);
         _textureDataComponent = new TextureDataComponent(entityType.TextureAtlas, entityType.TextureIdleLeft);
         _controllableBehaviourComponent = controllable ? new ControllableBehaviourComponent() : null;
-        _movingBehaviourComponentl = new MovingBehaviourComponent();
+        _movingBehaviourComponent = new MovingBehaviourComponent();
 
         _positionDataComponent.Z = 1.0f; // TODO: remove hardcode
     }
