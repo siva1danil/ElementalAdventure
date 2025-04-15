@@ -17,7 +17,7 @@ public class Entity {
     private readonly PositionDataComponent _positionDataComponent;
     private readonly TextureDataComponent _textureDataComponent;
     private readonly ControllableBehaviourComponent? _controllableBehaviourComponent;
-    private readonly MovingBehaviourComponent _movingBehaviourComponentl;
+    private readonly MovingBehaviourComponent? _movingBehaviourComponentl;
 
     public EntityType EntityType => _entityType;
 
