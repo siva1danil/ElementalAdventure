@@ -6,7 +6,7 @@ using OpenTK.Mathematics;
 namespace ElementalAdventure.Client.Game.Logic;
 
 public class GameWorld {
-    private readonly int _tickInterval;
+    private readonly double _tickInterval;
 
     private readonly Tilemap _tilemap;
     private readonly List<Entity> _entities;
@@ -15,7 +15,7 @@ public class GameWorld {
     private Vector2 _input;
     private long _tickTimestamp;
 
-    public int TickInterval => _tickInterval;
+    public double TickInterval => _tickInterval;
 
     public Tilemap Tilemap => _tilemap;
     public List<Entity> Entities => _entities;
@@ -23,7 +23,7 @@ public class GameWorld {
     public Vector2 Input { get => _input; set => _input = value; }
     public long TickTimestamp => _tickTimestamp;
 
-    public GameWorld(int tickInterval, Tilemap tilemap, List<Entity> entities) {
+    public GameWorld(double tickInterval, Tilemap tilemap, List<Entity> entities) {
         _tickInterval = tickInterval;
 
         _tilemap = tilemap;
@@ -33,8 +33,6 @@ public class GameWorld {
         _tickTimestamp = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
         _commands = [];
     }
-
-    public void AddCommand(ICommand command) => _commands.Enqueue(command);
 
     public void Tick() {
         foreach (ICommand command in _commands) {
@@ -47,5 +45,9 @@ public class GameWorld {
         }
 
         _tickTimestamp = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
+    }
+
+    public void AddCommand(ICommand command) {
+        _commands.Enqueue(command);
     }
 }

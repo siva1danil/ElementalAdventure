@@ -187,12 +187,10 @@ public class ClientWindow : GameWindow {
     }
 
     private void KeyDownHandler(KeyboardKeyEventArgs e) {
-        Console.WriteLine($"KeyDown: {e.Key}");
         _context.PressedKeys.Add(e.Key);
     }
 
     private void KeyUpHandler(KeyboardKeyEventArgs e) {
-        Console.WriteLine($"KeyUp: {e.Key}");
         _context.PressedKeys.Remove(e.Key);
     }
 

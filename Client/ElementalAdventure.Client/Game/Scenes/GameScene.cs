@@ -27,7 +27,7 @@ public class GameScene : IScene {
         _tilemapVertexArray = new VertexArrayInstanced<TilemapShaderLayout.GlobalData, TilemapShaderLayout.InstanceData>();
         _entityVertexArray = new VertexArrayInstanced<TilemapShaderLayout.GlobalData, TilemapShaderLayout.InstanceData>();
 
-        _world = new GameWorld((int)(1.0f / 20.0f * 1000f), new Tilemap(), []);
+        _world = new GameWorld(1.0f / 20.0f, new Tilemap(), []);
         _world.Tilemap.SetMap(_context.AssetManager, new string?[,,] {
             {
                 { "null", "null", "null", "null", "null", "null", "null" },
@@ -65,8 +65,8 @@ public class GameScene : IScene {
 
     public void Update(FrameEventArgs args) {
         _tickAccumulator += args.Time;
-        while (_tickAccumulator >= _world.TickInterval / 1000f) {
-            _tickAccumulator -= _world.TickInterval / 1000f;
+        while (_tickAccumulator >= _world.TickInterval) {
+            _tickAccumulator -= _world.TickInterval;
 
             _world.AddCommand(new SetMovementCommand(_context.PressedKeys.Contains(Keys.W), _context.PressedKeys.Contains(Keys.A), _context.PressedKeys.Contains(Keys.S), _context.PressedKeys.Contains(Keys.D)));
 
