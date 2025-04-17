@@ -32,35 +32,41 @@ public class GameScene : IScene {
         _world = new GameWorld(1.0f / 20.0f, new Tilemap(), []);
         _world.Tilemap.SetMap(_context.AssetManager, new string?[,,] {
             {
-                { "null", "null", "null", "null", "null", "null", "null" },
-                { "null", null,   null,   null,   null,   null,   "null" },
-                { "null", null,   null,   null,   null,   null,   "null" },
-                { "null", null,   null,   null,   null,   null,   "null" },
-                { "null", null,   null,   null,   null,   null,   "null" },
-                { "null", null,   null,   null,   null,   null,   "null" },
-                { "null", "null", "null", "null", "null", "null", "null" }
+                { "floor_1_righthalf", "wall_top", "wall_top", "wall_top", "wall_top", "wall_top", "wall_top", "wall_top", "wall_top", "wall_top", "wall_top", "wall_top", "floor_1_lefthalf" },
+                { "floor_1_righthalf", "floor_1",  "floor_1",  "floor_1",  "floor_1",  "floor_1",  "floor_1",  "floor_1",  "floor_1",  "floor_1",  "floor_1",  "floor_1",  "floor_1_lefthalf" },
+                { "floor_1_righthalf", "floor_1",  "floor_1",  "floor_1",  "floor_1",  "floor_1",  "floor_1",  "floor_1",  "floor_1",  "floor_1",  "floor_1",  "floor_1",  "floor_1_lefthalf" },
+                { "floor_1_righthalf", "floor_1",  "floor_1",  "floor_1",  "floor_1",  "floor_1",  "floor_1",  "floor_1",  "floor_1",  "floor_1",  "floor_1",  "floor_1",  "floor_1_lefthalf" },
+                { "floor_1_righthalf", "floor_1",  "floor_1",  "floor_1",  "floor_1",  "floor_1",  "floor_1",  "floor_1",  "floor_1",  "floor_1",  "floor_1",  "floor_1",  "floor_1_lefthalf" },
+                { "floor_1_righthalf", "floor_1",  "floor_1",  "floor_1",  "floor_1",  "floor_1",  "floor_1",  "floor_1",  "floor_1",  "floor_1",  "floor_1",  "floor_1",  "floor_1_lefthalf" },
+                { "floor_1_righthalf", "floor_1",  "floor_1",  "floor_1",  "floor_1",  "floor_1",  "floor_1",  "floor_1",  "floor_1",  "floor_1",  "floor_1",  "floor_1",  "floor_1_lefthalf" },
+                { "floor_1_righthalf", "floor_1",  "floor_1",  "floor_1",  "floor_1",  "floor_1",  "floor_1",  "floor_1",  "floor_1",  "floor_1",  "floor_1",  "floor_1",  "floor_1_lefthalf" },
+                { "floor_1_righthalf", "floor_1",  "floor_1",  "floor_1",  "floor_1",  "floor_1",  "floor_1",  "floor_1",  "floor_1",  "floor_1",  "floor_1",  "floor_1",  "floor_1_lefthalf" }
             },
             {
-                { "floor_1", "wall_top", "wall_top", "wall_top", "wall_top", "wall_top", "floor_1" },
-                { "floor_1", "floor_1",  "floor_1",  "floor_1",  "floor_1",  "floor_1",  "floor_1" },
-                { "floor_1", "floor_1",  "floor_1",  "floor_1",  "floor_1",  "floor_1",  "floor_1" },
-                { "floor_1", "floor_1",  "floor_1",  "floor_1",  "floor_1",  "floor_1",  "floor_1" },
-                { "floor_1", "floor_1",  "floor_1",  "floor_1",  "floor_1",  "floor_1",  "floor_1" },
-                { "floor_1", "floor_1",  "floor_1",  "floor_1",  "floor_1",  "floor_1",  "floor_1" },
-                { "floor_1", "floor_1",  "floor_1",  "floor_1",  "floor_1",  "floor_1",  "floor_1" }
+                { null, null, null, null, null, null, null, null, null, null, null, null, null },
+                { null, null, null, null, null, null, null, null, null, null, null, null, null },
+                { null, null, null, null, null, null, null, null, null, null, null, null, null },
+                { null, null, null, null, null, null, null, null, null, null, null, null, null },
+                { null, null, null, null, null, null, null, null, null, null, null, null, null },
+                { null, null, null, null, null, null, null, null, null, null, null, null, null },
+                { null, null, null, null, null, null, null, null, null, null, null, null, null },
+                { null, null, null, null, null, null, null, null, null, null, null, null, null },
+                { null, null, null, null, null, null, null, null, null, null, null, null, null }
             },
             {
-                { "wall_topleft_outer",    null,          null,          null,          null,          null,          "wall_topright_outer"    },
-                { "wall_left",             null,          null,          null,          null,          null,          "wall_right"             },
-                { "wall_left",             null,          null,          null,          null,          null,          "wall_right"             },
-                { "wall_left",             null,          null,          null,          null,          null,          "wall_right"             },
-                { "wall_left",             null,          null,          null,          null,          null,          "wall_right"             },
-                { "wall_left",             null,          null,          null,          null,          null,          "wall_right"             },
-                { "wall_bottomleft_outer", "wall_bottom", "wall_bottom", "wall_bottom", "wall_bottom", "wall_bottom", "wall_bottomright_outer" }
+                { "wall_topleft_outer",    null,          null,          null,          null,          null,          null,          null,          null,          null,          null,          null,          "wall_topright_outer"    },
+                { "wall_left",             null,          null,          null,          null,          null,          null,          null,          null,          null,          null,          null,          "wall_right"             },
+                { "wall_left",             null,          null,          null,          null,          null,          null,          null,          null,          null,          null,          null,          "wall_right"             },
+                { "wall_left",             null,          null,          null,          null,          null,          null,          null,          null,          null,          null,          null,          "wall_right"             },
+                { "wall_left",             null,          null,          null,          null,          null,          null,          null,          null,          null,          null,          null,          "wall_right"             },
+                { "wall_left",             null,          null,          null,          null,          null,          null,          null,          null,          null,          null,          null,          "wall_right"             },
+                { "wall_left",             null,          null,          null,          null,          null,          null,          null,          null,          null,          null,          null,          "wall_right"             },
+                { "wall_left",             null,          null,          null,          null,          null,          null,          null,          null,          null,          null,          null,          "wall_right"             },
+                { "wall_bottomleft_outer", "wall_bottom", "wall_bottom", "wall_bottom", "wall_bottom", "wall_bottom", "wall_bottom", "wall_bottom", "wall_bottom", "wall_bottom", "wall_bottom", "wall_bottom", "wall_bottomright_outer" }
             }
-        }, 2);
-        _world.Entities.Add(new Entity(_context.AssetManager, _context.AssetManager.GetEntityType("player"), new(2.0f, 0.0f), false));
-        _world.Entities.Add(new Entity(_context.AssetManager, _context.AssetManager.GetEntityType("player"), new(0.0f, 2.0f), true));
+        }, 1);
+        _world.Entities.Add(new Entity(_context.AssetManager, _context.AssetManager.GetEntityType("player"), new(2.0f, 2.0f), false));
+        _world.Entities.Add(new Entity(_context.AssetManager, _context.AssetManager.GetEntityType("player"), new(2.0f, 4.0f), true));
 
         _tickAccumulator = 0.0;
     }
