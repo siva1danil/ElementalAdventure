@@ -91,7 +91,7 @@ public class ClientWindow : GameWindow {
                     _context.AssetLoader.LoadBinary("TextureAtlas/Player/mage_idle_left.5.png"),
                     _context.AssetLoader.LoadBinary("TextureAtlas/Player/mage_idle_left.6.png"),
                     _context.AssetLoader.LoadBinary("TextureAtlas/Player/mage_idle_left.7.png")
-                ], 150) },
+                ], 100) },
                 { "mage_idle_right", new ([
                     _context.AssetLoader.LoadBinary("TextureAtlas/Player/mage_idle_right.0.png"),
                     _context.AssetLoader.LoadBinary("TextureAtlas/Player/mage_idle_right.1.png"),
@@ -101,7 +101,7 @@ public class ClientWindow : GameWindow {
                     _context.AssetLoader.LoadBinary("TextureAtlas/Player/mage_idle_right.5.png"),
                     _context.AssetLoader.LoadBinary("TextureAtlas/Player/mage_idle_right.6.png"),
                     _context.AssetLoader.LoadBinary("TextureAtlas/Player/mage_idle_right.7.png")
-                ], 150) },
+                ], 100) },
                 { "mage_walk_left", new ([
                     _context.AssetLoader.LoadBinary("TextureAtlas/Player/mage_walk_left.0.png"),
                     _context.AssetLoader.LoadBinary("TextureAtlas/Player/mage_walk_left.1.png"),
@@ -111,7 +111,7 @@ public class ClientWindow : GameWindow {
                     _context.AssetLoader.LoadBinary("TextureAtlas/Player/mage_walk_left.5.png"),
                     _context.AssetLoader.LoadBinary("TextureAtlas/Player/mage_walk_left.6.png"),
                     _context.AssetLoader.LoadBinary("TextureAtlas/Player/mage_walk_left.7.png")
-                ], 150) },
+                ], 100) },
                 { "mage_walk_right", new ([
                     _context.AssetLoader.LoadBinary("TextureAtlas/Player/mage_walk_right.0.png"),
                     _context.AssetLoader.LoadBinary("TextureAtlas/Player/mage_walk_right.1.png"),
@@ -121,7 +121,7 @@ public class ClientWindow : GameWindow {
                     _context.AssetLoader.LoadBinary("TextureAtlas/Player/mage_walk_right.5.png"),
                     _context.AssetLoader.LoadBinary("TextureAtlas/Player/mage_walk_right.6.png"),
                     _context.AssetLoader.LoadBinary("TextureAtlas/Player/mage_walk_right.7.png")
-                ], 150) }
+                ], 100) }
             }, 1));
 
             _context.AssetManager.AddTileType("null", new("textureatlas.dungeon", "null"));

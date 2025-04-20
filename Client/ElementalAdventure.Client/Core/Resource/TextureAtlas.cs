@@ -19,10 +19,10 @@ public class TextureAtlas<K> : IDisposable where K : notnull {
 
     public TextureAtlas(Dictionary<K, EntryDef> entries, int padding) {
         if (entries.Count == 0)
-            throw new ArgumentException("Tileset must contain at least one tile.");
+            throw new ArgumentException("TextureAtlas must contain at least one tile.");
         foreach (KeyValuePair<K, EntryDef> entry in entries)
             if (entry.Value.Frames.Length == 0)
-                throw new ArgumentException("Tileset tile must contain at least one frame.");
+                throw new ArgumentException("TextureAtlas entry must contain at least one frame.");
 
         _entryPadding = padding;
 
