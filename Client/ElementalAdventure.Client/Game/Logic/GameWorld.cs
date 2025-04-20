@@ -35,16 +35,10 @@ public class GameWorld {
     }
 
     public void Tick() {
-        while (_commands.Count > 0) {
+        while (_commands.Count > 0)
             _commands.Dequeue().Execute(this);
-        }
-
-        foreach (Entity entity in _entities) {
-            entity.ControllableBehaviourComponent?.Update(this, entity);
-            entity.MovingBehaviourComponent?.Update(this, entity);
-            entity.PlayerAnimatorBehaviourComponent?.Update(this, entity);
-        }
-
+        foreach (Entity entity in _entities)
+            entity.Update(this);
         _tickTimestamp = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
     }
 

@@ -124,6 +124,20 @@ public class ClientWindow : GameWindow {
                     _context.AssetLoader.LoadBinary("TextureAtlas/Player/mage_walk_right.7.png")
                 ], 100) }
             }, 1));
+            _context.AssetManager.Add("textureatlas.enemy", new TextureAtlas<string>(new Dictionary<string, TextureAtlas<string>.EntryDef> {
+                { "slime_walk_left", new ([
+                    _context.AssetLoader.LoadBinary("TextureAtlas/Enemy/slime_walk_left.0.png"),
+                    _context.AssetLoader.LoadBinary("TextureAtlas/Enemy/slime_walk_left.1.png"),
+                    _context.AssetLoader.LoadBinary("TextureAtlas/Enemy/slime_walk_left.2.png"),
+                    _context.AssetLoader.LoadBinary("TextureAtlas/Enemy/slime_walk_left.3.png")
+                ], 100) },
+                { "slime_walk_right", new ([
+                    _context.AssetLoader.LoadBinary("TextureAtlas/Enemy/slime_walk_right.0.png"),
+                    _context.AssetLoader.LoadBinary("TextureAtlas/Enemy/slime_walk_right.1.png"),
+                    _context.AssetLoader.LoadBinary("TextureAtlas/Enemy/slime_walk_right.2.png"),
+                    _context.AssetLoader.LoadBinary("TextureAtlas/Enemy/slime_walk_right.3.png")
+                ], 100) }
+            }, 1));
 
             _context.AssetManager.Add("null", new TileType("textureatlas.dungeon", "null"));
             _context.AssetManager.Add("floor_1", new TileType("textureatlas.dungeon", "floor_1"));
@@ -153,7 +167,8 @@ public class ClientWindow : GameWindow {
             _context.AssetManager.Add("fountain_2_bottom", new TileType("textureatlas.dungeon", "fountain_2_bottom"));
             _context.AssetManager.Add("fountain_2_top", new TileType("textureatlas.dungeon", "fountain_2_top"));
 
-            _context.AssetManager.Add("player", new EntityType("textureatlas.player", "mage_idle_left", "mage_idle_right", "mage_walk_left", "mage_walk_right", 0.25f));
+            _context.AssetManager.Add("mage", new PlayerType("textureatlas.player", "mage_idle_left", "mage_idle_right", "mage_walk_left", "mage_walk_right", 0.25f));
+            _context.AssetManager.Add("slime", new EnemyType("textureatlas.enemy", "slime_walk_left", "slime_walk_right", "slime_walk_left", "slime_walk_right", 0.125f));
         } catch (Exception e) {
             Console.WriteLine(e.Message);
             Close();

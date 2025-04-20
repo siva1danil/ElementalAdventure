@@ -11,31 +11,26 @@ namespace ElementalAdventure.Client.Game.Logic.GameObject;
 // TODO: refactor internal format
 public class Entity {
     private readonly AssetManager<string> _assetManager;
-    private readonly EntityType _entityType;
-
     private readonly PositionDataComponent _positionDataComponent;
     private readonly TextureDataComponent _textureDataComponent;
-    private readonly ControllableBehaviourComponent? _controllableBehaviourComponent;
-    private readonly MovingBehaviourComponent? _movingBehaviourComponent;
-    private readonly PlayerAnimatorBehaviourComponent? _playerAnimatorBehaviourComponent;
-
-    public EntityType EntityType => _entityType;
+    private readonly LivingDataComponent? _livingDataComponent;
+    private readonly IBehavourComponent[] _behaviourComponents;
 
     public PositionDataComponent PositionDataComponent => _positionDataComponent;
     public TextureDataComponent TextureDataComponent => _textureDataComponent;
-    public ControllableBehaviourComponent? ControllableBehaviourComponent => _controllableBehaviourComponent;
-    public MovingBehaviourComponent? MovingBehaviourComponent => _movingBehaviourComponent;
-    public PlayerAnimatorBehaviourComponent? PlayerAnimatorBehaviourComponent => _playerAnimatorBehaviourComponent;
+    public LivingDataComponent? LivingDataComponent => _livingDataComponent;
 
-    public Entity(AssetManager<string> assetManager, EntityType entityType, Vector2 position, bool controllable) {
+    public Entity(AssetManager<string> assetManager, LivingDataComponent? livingDataComponent, IBehavourComponent[] behaviourComponents) {
         _assetManager = assetManager;
-        _entityType = entityType;
+        _positionDataComponent = new PositionDataComponent(new Vector2(0.0f, 0.0f));
+        _textureDataComponent = new TextureDataComponent(false, "", "");
+        _livingDataComponent = livingDataComponent;
+        _behaviourComponents = behaviourComponents;
+    }
 
-        _positionDataComponent = new PositionDataComponent(position);
-        _textureDataComponent = new TextureDataComponent(entityType.TextureAtlas, entityType.TextureIdleLeft);
-        _controllableBehaviourComponent = controllable ? new ControllableBehaviourComponent() : null;
-        _movingBehaviourComponent = new MovingBehaviourComponent();
-        _playerAnimatorBehaviourComponent = new PlayerAnimatorBehaviourComponent();
+    public void Update(GameWorld world) {
+        foreach (IBehavourComponent behaviourComponent in _behaviourComponents)
+            behaviourComponent?.Update(world, this);
     }
 
     public TilemapShaderLayout.GlobalData[] GetGlobalData() {
@@ -43,8 +38,12 @@ public class Entity {
     }
 
     public TilemapShaderLayout.InstanceData[] GetInstanceData() {
-        TextureAtlas<string> atlas = _assetManager.Get<TextureAtlas<string>>(_textureDataComponent.TextureAtlas);
-        TextureAtlas<string>.Entry entry = atlas.GetEntry(_textureDataComponent.Texture);
-        return [new(new(_positionDataComponent.LastPosition.X, _positionDataComponent.LastPosition.Y, _positionDataComponent.Z), new(_positionDataComponent.Position.X, _positionDataComponent.Position.Y, _positionDataComponent.Z), entry.Index, entry.FrameCount, entry.FrameTime)];
+        if (_textureDataComponent.Visible) {
+            TextureAtlas<string> atlas = _assetManager.Get<TextureAtlas<string>>(_textureDataComponent.TextureAtlas);
+            TextureAtlas<string>.Entry entry = atlas.GetEntry(_textureDataComponent.Texture);
+            return [new(new(_positionDataComponent.LastPosition.X, _positionDataComponent.LastPosition.Y, _positionDataComponent.Z), new(_positionDataComponent.Position.X, _positionDataComponent.Position.Y, _positionDataComponent.Z), entry.Index, entry.FrameCount, entry.FrameTime)];
+        } else {
+            return [];
+        }
     }
 }

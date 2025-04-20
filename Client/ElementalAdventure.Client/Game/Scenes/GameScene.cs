@@ -3,6 +3,8 @@ using ElementalAdventure.Client.Core.Resource;
 using ElementalAdventure.Client.Game.Data;
 using ElementalAdventure.Client.Game.Logic;
 using ElementalAdventure.Client.Game.Logic.Command;
+using ElementalAdventure.Client.Game.Logic.Component.Behaviour;
+using ElementalAdventure.Client.Game.Logic.Component.Data;
 using ElementalAdventure.Client.Game.Logic.GameObject;
 
 using OpenTK.Graphics.OpenGL4;
@@ -65,8 +67,8 @@ public class GameScene : IScene {
                 { "wall_bottomleft_outer", "wall_bottom", "wall_bottom", "wall_bottom", "wall_bottom", "wall_bottom", "wall_bottom", "wall_bottom", "wall_bottom", "wall_bottom", "wall_bottom", "wall_bottom", "wall_bottomright_outer" }
             }
         }, 1);
-        _world.Entities.Add(new Entity(_context.AssetManager, _context.AssetManager.Get<EntityType>("player"), new(2.0f, 2.0f), false));
-        _world.Entities.Add(new Entity(_context.AssetManager, _context.AssetManager.Get<EntityType>("player"), new(2.0f, 4.0f), true));
+        _world.Entities.Add(new Entity(_context.AssetManager, new LivingDataComponent(true, false, _context.AssetManager.Get<PlayerType>("mage").Speed), [new PlayerBehaviourComponent(_context.AssetManager.Get<PlayerType>("mage"))]));
+        _world.Entities.Add(new Entity(_context.AssetManager, new LivingDataComponent(false, false, _context.AssetManager.Get<EnemyType>("slime").Speed), [new EnemyBehaviourComponent(_context.AssetManager.Get<EnemyType>("slime"))]));
 
         _tickAccumulator = 0.0;
     }
@@ -82,7 +84,6 @@ public class GameScene : IScene {
     public void Render(FrameEventArgs args) {
         ShaderProgram shader = _context.AssetManager.Get<ShaderProgram>("shader.tilemap");
         TextureAtlas<string> atlasDungeon = _context.AssetManager.Get<TextureAtlas<string>>("textureatlas.dungeon");
-        TextureAtlas<string> atlasPlayer = _context.AssetManager.Get<TextureAtlas<string>>("textureatlas.player");
 
         GL.UseProgram(shader.Id);
         {
@@ -122,39 +123,44 @@ public class GameScene : IScene {
             }
             GL.BindVertexArray(0);
 
-            // Entity: set uniforms
-            uniform = new() {
-                Projection = Matrix4.CreateOrthographicOffCenter(0, _context.WindowSize.X / 80, 0, _context.WindowSize.Y / 80, -1, 1),
-                TimeMilliseconds = new Vector2i((int)(uint)(DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() >> 32), (int)(uint)(DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() & 0xFFFFFFFF)),
-                Alpha = (DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() - _world.TickTimestamp) / (float)_world.TickInterval / 1000.0f,
-                TextureSize = new Vector2i(atlasPlayer.AtlasWidth, atlasPlayer.AtlasHeight),
-                TileSize = new Vector2i(atlasPlayer.EntryWidth, atlasPlayer.EntryHeight),
-                Padding = atlasPlayer.EntryPadding
-            };
-            _uniformBuffer.SetData(ref uniform);
+            // Entity
+            foreach (Entity entity in _world.Entities) {
+                if (!entity.TextureDataComponent.Visible) continue;
 
-            // Entity: set vertex array and draw
-            GL.ActiveTexture(TextureUnit.Texture0);
-            GL.BindTexture(TextureTarget.Texture2D, atlasPlayer.Id);
-            {
-                GL.BindBuffer(BufferTarget.UniformBuffer, _uniformBuffer.Id);
-                GL.BindBufferBase(BufferRangeTarget.UniformBuffer, 0, _uniformBuffer.Id);
+                TextureAtlas<string> atlas = _context.AssetManager.Get<TextureAtlas<string>>(entity.TextureDataComponent.TextureAtlas!);
+
+                // Entity: set uniforms
+                uniform = new() {
+                    Projection = Matrix4.CreateOrthographicOffCenter(0, _context.WindowSize.X / 80, 0, _context.WindowSize.Y / 80, -1, 1),
+                    TimeMilliseconds = new Vector2i((int)(uint)(DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() >> 32), (int)(uint)(DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() & 0xFFFFFFFF)),
+                    Alpha = (DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() - _world.TickTimestamp) / (float)_world.TickInterval / 1000.0f,
+                    TextureSize = new Vector2i(atlas.AtlasWidth, atlas.AtlasHeight),
+                    TileSize = new Vector2i(atlas.EntryWidth, atlas.EntryHeight),
+                    Padding = atlas.EntryPadding
+                };
+                _uniformBuffer.SetData(ref uniform);
+
+                // Entity: set vertex array
+                _entityVertexArray.SetGlobalData(entity.GetGlobalData(), BufferUsageHint.DynamicDraw);
+                _entityVertexArray.SetInstanceData(entity.GetInstanceData(), BufferUsageHint.DynamicDraw);
+
+                // Entity: draw
+                GL.ActiveTexture(TextureUnit.Texture0);
+                GL.BindTexture(TextureTarget.Texture2D, atlas.Id);
                 {
-                    foreach (Entity entity in _world.Entities) {
-                        // Entity: set vertex array
-                        _entityVertexArray.SetGlobalData(entity.GetGlobalData(), BufferUsageHint.DynamicDraw);
-                        _entityVertexArray.SetInstanceData(entity.GetInstanceData(), BufferUsageHint.DynamicDraw);
-
-                        // Entity: draw
+                    GL.BindBuffer(BufferTarget.UniformBuffer, _uniformBuffer.Id);
+                    GL.BindBufferBase(BufferRangeTarget.UniformBuffer, 0, _uniformBuffer.Id);
+                    {
                         GL.BindVertexArray(_entityVertexArray.Id);
                         {
                             GL.DrawArraysInstanced(PrimitiveType.Triangles, 0, 6, 1);
                         }
                         GL.BindVertexArray(0);
                     }
+                    GL.BindBuffer(BufferTarget.UniformBuffer, 0);
                 }
-                GL.BindBuffer(BufferTarget.UniformBuffer, 0);
             }
+
             GL.BindTexture(TextureTarget.Texture2D, 0);
             GL.ActiveTexture(TextureUnit.Texture0);
         }
