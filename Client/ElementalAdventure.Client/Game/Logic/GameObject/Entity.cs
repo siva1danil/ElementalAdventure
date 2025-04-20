@@ -1,7 +1,6 @@
+using ElementalAdventure.Client.Core.Assets;
 using ElementalAdventure.Client.Core.Resource;
-using ElementalAdventure.Client.Game.Assets;
 using ElementalAdventure.Client.Game.Data;
-using ElementalAdventure.Client.Game.Logic.Component;
 using ElementalAdventure.Client.Game.Logic.Component.Behaviour;
 using ElementalAdventure.Client.Game.Logic.Component.Data;
 
@@ -11,7 +10,7 @@ namespace ElementalAdventure.Client.Game.Logic.GameObject;
 
 // TODO: refactor internal format
 public class Entity {
-    private readonly AssetManager _assetManager;
+    private readonly AssetManager<string> _assetManager;
     private readonly EntityType _entityType;
 
     private readonly PositionDataComponent _positionDataComponent;
@@ -28,7 +27,7 @@ public class Entity {
     public MovingBehaviourComponent? MovingBehaviourComponent => _movingBehaviourComponent;
     public PlayerAnimatorBehaviourComponent? PlayerAnimatorBehaviourComponent => _playerAnimatorBehaviourComponent;
 
-    public Entity(AssetManager assetManager, EntityType entityType, Vector2 position, bool controllable) {
+    public Entity(AssetManager<string> assetManager, EntityType entityType, Vector2 position, bool controllable) {
         _assetManager = assetManager;
         _entityType = entityType;
 
@@ -44,7 +43,7 @@ public class Entity {
     }
 
     public TilemapShaderLayout.InstanceData[] GetInstanceData() {
-        TextureAtlas<string> atlas = _assetManager.GetTextureAtlas(_textureDataComponent.TextureAtlas);
+        TextureAtlas<string> atlas = _assetManager.Get<TextureAtlas<string>>(_textureDataComponent.TextureAtlas);
         TextureAtlas<string>.Entry entry = atlas.GetEntry(_textureDataComponent.Texture);
         return [new(new(_positionDataComponent.LastPosition.X, _positionDataComponent.LastPosition.Y, _positionDataComponent.Z), new(_positionDataComponent.Position.X, _positionDataComponent.Position.Y, _positionDataComponent.Z), entry.Index, entry.FrameCount, entry.FrameTime)];
     }

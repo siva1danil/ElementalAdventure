@@ -65,8 +65,8 @@ public class GameScene : IScene {
                 { "wall_bottomleft_outer", "wall_bottom", "wall_bottom", "wall_bottom", "wall_bottom", "wall_bottom", "wall_bottom", "wall_bottom", "wall_bottom", "wall_bottom", "wall_bottom", "wall_bottom", "wall_bottomright_outer" }
             }
         }, 1);
-        _world.Entities.Add(new Entity(_context.AssetManager, _context.AssetManager.GetEntityType("player"), new(2.0f, 2.0f), false));
-        _world.Entities.Add(new Entity(_context.AssetManager, _context.AssetManager.GetEntityType("player"), new(2.0f, 4.0f), true));
+        _world.Entities.Add(new Entity(_context.AssetManager, _context.AssetManager.Get<EntityType>("player"), new(2.0f, 2.0f), false));
+        _world.Entities.Add(new Entity(_context.AssetManager, _context.AssetManager.Get<EntityType>("player"), new(2.0f, 4.0f), true));
 
         _tickAccumulator = 0.0;
     }
@@ -80,9 +80,9 @@ public class GameScene : IScene {
     }
 
     public void Render(FrameEventArgs args) {
-        ShaderProgram shader = _context.AssetManager.GetShader("shader.tilemap");
-        TextureAtlas<string> atlasDungeon = _context.AssetManager.GetTextureAtlas("textureatlas.dungeon");
-        TextureAtlas<string> atlasPlayer = _context.AssetManager.GetTextureAtlas("textureatlas.player");
+        ShaderProgram shader = _context.AssetManager.Get<ShaderProgram>("shader.tilemap");
+        TextureAtlas<string> atlasDungeon = _context.AssetManager.Get<TextureAtlas<string>>("textureatlas.dungeon");
+        TextureAtlas<string> atlasPlayer = _context.AssetManager.Get<TextureAtlas<string>>("textureatlas.player");
 
         GL.UseProgram(shader.Id);
         {

@@ -1,5 +1,5 @@
+using ElementalAdventure.Client.Core.Assets;
 using ElementalAdventure.Client.Core.Resource;
-using ElementalAdventure.Client.Game.Assets;
 using ElementalAdventure.Client.Game.Data;
 using ElementalAdventure.Client.Game.Utils;
 
@@ -24,7 +24,7 @@ public class Tilemap {
         _dirty = true;
     }
 
-    public void SetMap(AssetManager assetManager, string?[,,] map, int midground) {
+    public void SetMap(AssetManager<string> assetManager, string?[,,] map, int midground) {
         _map = new Tile[map.GetLength(0), map.GetLength(1), map.GetLength(2)];
         _count = 0;
         _dirty = true;
@@ -38,8 +38,8 @@ public class Tilemap {
                         _map[z, map.GetLength(1) - y - 1, x] = new Tile(false, new Vector3(x, map.GetLength(1) - y - 1, z * zFactor), 0, 0, 0);
                     } else {
                         int wy = map.GetLength(1) - y - 1;
-                        TileType type = assetManager.GetTileType(map[z, y, x]!);
-                        TextureAtlas<string>.Entry value = assetManager.GetTextureAtlas(type.TextureAtlas).GetEntry(type.Texture);
+                        TileType type = assetManager.Get<TileType>(map[z, y, x]!);
+                        TextureAtlas<string>.Entry value = assetManager.Get<TextureAtlas<string>>(type.TextureAtlas).GetEntry(type.Texture);
                         _map[z, wy, x] = new Tile(true, new Vector3(x, wy, z * zFactor), value.Index, value.FrameCount, value.FrameTime);
                         _count++;
                     }

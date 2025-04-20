@@ -1,6 +1,4 @@
-namespace ElementalAdventure.Client.Game.Assets;
-
-// TODO: generic ids
+namespace ElementalAdventure.Client.Game.Data;
 
 public record class TileType(string TextureAtlas, string Texture);
 

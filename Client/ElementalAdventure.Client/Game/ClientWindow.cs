@@ -1,6 +1,7 @@
+using ElementalAdventure.Client.Core.Assets;
 using ElementalAdventure.Client.Core.OpenGL;
 using ElementalAdventure.Client.Core.Resource;
-using ElementalAdventure.Client.Game.Assets;
+using ElementalAdventure.Client.Game.Data;
 using ElementalAdventure.Client.Game.Scenes;
 
 using OpenTK.Graphics.OpenGL4;
@@ -22,13 +23,13 @@ public class ClientWindow : GameWindow {
         KeyDown += KeyDownHandler;
         KeyUp += KeyUpHandler;
 
-        _context = new ClientContext(new AssetLoader(Path.Combine(root, "Resources")), new AssetManager(), ClientSize);
+        _context = new ClientContext(new AssetLoader(Path.Combine(root, "Resources")), new AssetManager<string>(), ClientSize);
     }
 
     private void LoadHandler() {
         try {
-            _context.AssetManager.AddShader("shader.tilemap", new ShaderProgram(_context.AssetLoader.LoadText("Shader/Tilemap.vert"), _context.AssetLoader.LoadText("Shader/Tilemap.frag")));
-            _context.AssetManager.AddTextureAtlas("textureatlas.dungeon", new TextureAtlas<string>(new Dictionary<string, TextureAtlas<string>.EntryDef> {
+            _context.AssetManager.Add("shader.tilemap", new ShaderProgram(_context.AssetLoader.LoadText("Shader/Tilemap.vert"), _context.AssetLoader.LoadText("Shader/Tilemap.frag")));
+            _context.AssetManager.Add("textureatlas.dungeon", new TextureAtlas<string>(new Dictionary<string, TextureAtlas<string>.EntryDef> {
                 { "null", new([_context.AssetLoader.LoadBinary("TextureAtlas/Dungeon/null.png")], 100) },
                 { "floor_1", new([_context.AssetLoader.LoadBinary("TextureAtlas/Dungeon/floor_1.png")], 100) },
                 { "floor_1_bottomhalf", new([_context.AssetLoader.LoadBinary("TextureAtlas/Dungeon/floor_1_bottomhalf.png")], 100) },
@@ -81,7 +82,7 @@ public class ClientWindow : GameWindow {
                     _context.AssetLoader.LoadBinary("TextureAtlas/Dungeon/fountain_2_top.4.png")
                 ], 100) }
             }, 1));
-            _context.AssetManager.AddTextureAtlas("textureatlas.player", new TextureAtlas<string>(new Dictionary<string, TextureAtlas<string>.EntryDef> {
+            _context.AssetManager.Add("textureatlas.player", new TextureAtlas<string>(new Dictionary<string, TextureAtlas<string>.EntryDef> {
                 { "mage_idle_left", new ([
                     _context.AssetLoader.LoadBinary("TextureAtlas/Player/mage_idle_left.0.png"),
                     _context.AssetLoader.LoadBinary("TextureAtlas/Player/mage_idle_left.1.png"),
@@ -124,35 +125,35 @@ public class ClientWindow : GameWindow {
                 ], 100) }
             }, 1));
 
-            _context.AssetManager.AddTileType("null", new("textureatlas.dungeon", "null"));
-            _context.AssetManager.AddTileType("floor_1", new("textureatlas.dungeon", "floor_1"));
-            _context.AssetManager.AddTileType("floor_1_bottomhalf", new("textureatlas.dungeon", "floor_1_bottomhalf"));
-            _context.AssetManager.AddTileType("floor_1_lefthalf", new("textureatlas.dungeon", "floor_1_lefthalf"));
-            _context.AssetManager.AddTileType("floor_1_righthalf", new("textureatlas.dungeon", "floor_1_righthalf"));
-            _context.AssetManager.AddTileType("floor_1_tophalf", new("textureatlas.dungeon", "floor_1_tophalf"));
-            _context.AssetManager.AddTileType("floor_2", new("textureatlas.dungeon", "floor_2"));
-            _context.AssetManager.AddTileType("floor_2_bottomhalf", new("textureatlas.dungeon", "floor_2_bottomhalf"));
-            _context.AssetManager.AddTileType("floor_2_lefthalf", new("textureatlas.dungeon", "floor_2_lefthalf"));
-            _context.AssetManager.AddTileType("floor_2_righthalf", new("textureatlas.dungeon", "floor_2_righthalf"));
-            _context.AssetManager.AddTileType("floor_2_tophalf", new("textureatlas.dungeon", "floor_2_tophalf"));
-            _context.AssetManager.AddTileType("wall_bottom", new("textureatlas.dungeon", "wall_bottom"));
-            _context.AssetManager.AddTileType("wall_left", new("textureatlas.dungeon", "wall_left"));
-            _context.AssetManager.AddTileType("wall_right", new("textureatlas.dungeon", "wall_right"));
-            _context.AssetManager.AddTileType("wall_top", new("textureatlas.dungeon", "wall_top"));
-            _context.AssetManager.AddTileType("wall_bottomleft_inner", new("textureatlas.dungeon", "wall_bottomleft_inner"));
-            _context.AssetManager.AddTileType("wall_bottomright_inner", new("textureatlas.dungeon", "wall_bottomright_inner"));
-            _context.AssetManager.AddTileType("wall_topleft_inner", new("textureatlas.dungeon", "wall_topleft_inner"));
-            _context.AssetManager.AddTileType("wall_topright_inner", new("textureatlas.dungeon", "wall_topright_inner"));
-            _context.AssetManager.AddTileType("wall_bottomleft_outer", new("textureatlas.dungeon", "wall_bottomleft_outer"));
-            _context.AssetManager.AddTileType("wall_bottomright_outer", new("textureatlas.dungeon", "wall_bottomright_outer"));
-            _context.AssetManager.AddTileType("wall_topleft_outer", new("textureatlas.dungeon", "wall_topleft_outer"));
-            _context.AssetManager.AddTileType("wall_topright_outer", new("textureatlas.dungeon", "wall_topright_outer"));
-            _context.AssetManager.AddTileType("fountain_1_bottom", new("textureatlas.dungeon", "fountain_1_bottom"));
-            _context.AssetManager.AddTileType("fountain_1_top", new("textureatlas.dungeon", "fountain_1_top"));
-            _context.AssetManager.AddTileType("fountain_2_bottom", new("textureatlas.dungeon", "fountain_2_bottom"));
-            _context.AssetManager.AddTileType("fountain_2_top", new("textureatlas.dungeon", "fountain_2_top"));
+            _context.AssetManager.Add("null", new TileType("textureatlas.dungeon", "null"));
+            _context.AssetManager.Add("floor_1", new TileType("textureatlas.dungeon", "floor_1"));
+            _context.AssetManager.Add("floor_1_bottomhalf", new TileType("textureatlas.dungeon", "floor_1_bottomhalf"));
+            _context.AssetManager.Add("floor_1_lefthalf", new TileType("textureatlas.dungeon", "floor_1_lefthalf"));
+            _context.AssetManager.Add("floor_1_righthalf", new TileType("textureatlas.dungeon", "floor_1_righthalf"));
+            _context.AssetManager.Add("floor_1_tophalf", new TileType("textureatlas.dungeon", "floor_1_tophalf"));
+            _context.AssetManager.Add("floor_2", new TileType("textureatlas.dungeon", "floor_2"));
+            _context.AssetManager.Add("floor_2_bottomhalf", new TileType("textureatlas.dungeon", "floor_2_bottomhalf"));
+            _context.AssetManager.Add("floor_2_lefthalf", new TileType("textureatlas.dungeon", "floor_2_lefthalf"));
+            _context.AssetManager.Add("floor_2_righthalf", new TileType("textureatlas.dungeon", "floor_2_righthalf"));
+            _context.AssetManager.Add("floor_2_tophalf", new TileType("textureatlas.dungeon", "floor_2_tophalf"));
+            _context.AssetManager.Add("wall_bottom", new TileType("textureatlas.dungeon", "wall_bottom"));
+            _context.AssetManager.Add("wall_left", new TileType("textureatlas.dungeon", "wall_left"));
+            _context.AssetManager.Add("wall_right", new TileType("textureatlas.dungeon", "wall_right"));
+            _context.AssetManager.Add("wall_top", new TileType("textureatlas.dungeon", "wall_top"));
+            _context.AssetManager.Add("wall_bottomleft_inner", new TileType("textureatlas.dungeon", "wall_bottomleft_inner"));
+            _context.AssetManager.Add("wall_bottomright_inner", new TileType("textureatlas.dungeon", "wall_bottomright_inner"));
+            _context.AssetManager.Add("wall_topleft_inner", new TileType("textureatlas.dungeon", "wall_topleft_inner"));
+            _context.AssetManager.Add("wall_topright_inner", new TileType("textureatlas.dungeon", "wall_topright_inner"));
+            _context.AssetManager.Add("wall_bottomleft_outer", new TileType("textureatlas.dungeon", "wall_bottomleft_outer"));
+            _context.AssetManager.Add("wall_bottomright_outer", new TileType("textureatlas.dungeon", "wall_bottomright_outer"));
+            _context.AssetManager.Add("wall_topleft_outer", new TileType("textureatlas.dungeon", "wall_topleft_outer"));
+            _context.AssetManager.Add("wall_topright_outer", new TileType("textureatlas.dungeon", "wall_topright_outer"));
+            _context.AssetManager.Add("fountain_1_bottom", new TileType("textureatlas.dungeon", "fountain_1_bottom"));
+            _context.AssetManager.Add("fountain_1_top", new TileType("textureatlas.dungeon", "fountain_1_top"));
+            _context.AssetManager.Add("fountain_2_bottom", new TileType("textureatlas.dungeon", "fountain_2_bottom"));
+            _context.AssetManager.Add("fountain_2_top", new TileType("textureatlas.dungeon", "fountain_2_top"));
 
-            _context.AssetManager.AddEntityType("player", new EntityType("textureatlas.player", "mage_idle_left", "mage_idle_right", "mage_walk_left", "mage_walk_right", 0.25f));
+            _context.AssetManager.Add("player", new EntityType("textureatlas.player", "mage_idle_left", "mage_idle_right", "mage_walk_left", "mage_walk_right", 0.25f));
         } catch (Exception e) {
             Console.WriteLine(e.Message);
             Close();

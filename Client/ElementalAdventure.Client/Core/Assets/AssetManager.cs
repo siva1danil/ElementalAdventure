@@ -1,0 +1,40 @@
+using System.Diagnostics;
+
+namespace ElementalAdventure.Client.Core.Assets;
+
+public class AssetManager<K> : IDisposable where K : notnull {
+    private readonly Dictionary<Type, Dictionary<K, object>> _assets;
+
+    public AssetManager() {
+        _assets = [];
+    }
+
+    public void Add<T>(K key, T asset) where T : notnull {
+        Debug.WriteLine($"Adding asset of type {typeof(T)} with key {key}.");
+        Type type = typeof(T);
+        if (!_assets.ContainsKey(type)) _assets[type] = [];
+        else if (_assets[type].ContainsKey(key)) throw new ArgumentException($"Asset of type {type} with key {key} already exists.");
+        _assets[type][key] = asset;
+    }
+
+    public T Get<T>(K key) where T : notnull {
+        Type type = typeof(T);
+        if (!_assets.ContainsKey(type)) throw new ArgumentException($"There are no assets of type {type}.");
+        else if (!_assets[type].ContainsKey(key)) throw new ArgumentException($"There is no asset of type {type} with key {key}.");
+        return (T)_assets[type][key];
+    }
+
+    public void Dispose() {
+        foreach (KeyValuePair<Type, Dictionary<K, object>> entry in _assets) {
+            foreach (KeyValuePair<K, object> asset in entry.Value) {
+                if (asset.Value is IDisposable disposable) {
+                    Debug.WriteLine($"Disposing asset of type {entry.Key} with key {asset.Key}.");
+                    disposable.Dispose();
+                }
+            }
+            entry.Value.Clear();
+        }
+        _assets.Clear();
+        GC.SuppressFinalize(this);
+    }
+}
