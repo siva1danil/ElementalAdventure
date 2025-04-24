@@ -26,29 +26,32 @@ public class TextureAtlas<K> : IDisposable where K : notnull {
 
         _entryPadding = padding;
 
-        int entryCount = 0;
-        foreach (KeyValuePair<K, EntryDef> entry in entries)
-            entryCount += entry.Value.Frames.Length;
-
-        Dictionary<K, EntryDef>.Enumerator enumerator = entries.GetEnumerator();
-        enumerator.MoveNext();
-
-        ImageResult first = ImageResult.FromMemory(enumerator.Current.Value.Frames[0], ColorComponents.RedGreenBlueAlpha);
-        (_entryWidth, _entryHeight) = (first.Width, first.Height);
-
-        (int paddedWidth, int paddedHeight) = (_entryWidth + 2 * _entryPadding, _entryHeight + 2 * _entryPadding);
-        (int atlasCols, int atlasRows) = ((int)Math.Ceiling(Math.Sqrt(entryCount)), (int)Math.Ceiling(entryCount / Math.Ceiling(Math.Sqrt(entryCount))));
-        (int atlasWidth, int atlasHeight) = (atlasCols * paddedWidth, atlasRows * paddedHeight);
+        int count = 0;
+        _entryWidth = -1; _entryHeight = -1;
+        foreach (KeyValuePair<K, EntryDef> entry in entries) {
+            for (int i = 0; i < entry.Value.Frames.Length; i++) {
+                ImageResult frame = ImageResult.FromMemory(entry.Value.Frames[i], ColorComponents.RedGreenBlueAlpha);
+                if (_entryWidth == -1 && _entryHeight == -1)
+                    (_entryWidth, _entryHeight) = (frame.Width, frame.Height);
+                else if (_entryWidth != frame.Width || _entryHeight != frame.Height)
+                    throw new ArgumentException("All entries and frames in a TextureAtlas must have the same dimensions.");
+            }
+            count += entry.Value.Frames.Length;
+        }
+        int paddedWidth = _entryWidth + 2 * _entryPadding, paddedHeight = _entryHeight + 2 * _entryPadding;
+        int atlasCols = (int)Math.Ceiling(Math.Sqrt(count)), atlasRows = (int)Math.Ceiling(count / Math.Ceiling(Math.Sqrt(count)));
+        int atlasWidth = atlasCols * paddedWidth, atlasHeight = atlasRows * paddedHeight;
 
         _entries = new(entries.Count);
+
         byte[] data = new byte[atlasWidth * atlasHeight * 4];
         int index = 0;
         foreach (KeyValuePair<K, EntryDef> entry in entries) {
             _entries[entry.Key] = new Entry(index, entry.Value.Frames.Length, entry.Value.FrameTime);
             for (int i = 0; i < entry.Value.Frames.Length; i++) {
                 ImageResult frame = ImageResult.FromMemory(entry.Value.Frames[i], ColorComponents.RedGreenBlueAlpha);
-                (int col, int row) = (index % atlasCols, index / atlasCols);
-                (int offsetX, int offsetY) = (col * paddedWidth + _entryPadding, row * paddedHeight + _entryPadding);
+                int col = index % atlasCols, row = index / atlasCols;
+                int offsetX = col * paddedWidth + _entryPadding, offsetY = row * paddedHeight + _entryPadding;
                 for (int y = -_entryPadding; y < _entryHeight + _entryPadding; y++) {
                     int clampedY = Math.Clamp(y, 0, _entryHeight - 1);
                     for (int x = -_entryPadding; x < _entryWidth + _entryPadding; x++) {
@@ -63,6 +66,7 @@ public class TextureAtlas<K> : IDisposable where K : notnull {
                 index++;
             }
         }
+
         _atlas = new(data, atlasWidth, atlasHeight);
     }
 
@@ -75,14 +79,6 @@ public class TextureAtlas<K> : IDisposable where K : notnull {
         GC.SuppressFinalize(this);
     }
 
-    public struct EntryDef(byte[][] frames, int frameTime) {
-        public byte[][] Frames = frames;
-        public int FrameTime = frameTime;
-    }
-
-    public struct Entry(int index, int frameCount, int frameTime) {
-        public int Index = index;
-        public int FrameCount = frameCount;
-        public int FrameTime = frameTime;
-    }
+    public record struct EntryDef(byte[][] Frames, int FrameTime);
+    public record struct Entry(int Index, int FrameCount, int FrameTime);
 }
