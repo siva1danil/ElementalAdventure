@@ -21,6 +21,7 @@ public class GameScene : IScene {
     private readonly VertexArrayInstanced<TilemapShaderLayout.GlobalData, TilemapShaderLayout.InstanceData> _entityVertexArray;
     private readonly UniformBuffer<TilemapShaderLayout.UniformData> _uniformBuffer;
     private readonly GameWorld _world;
+    private readonly Camera _camera;
 
     private double _tickAccumulator;
 
@@ -32,6 +33,7 @@ public class GameScene : IScene {
         _uniformBuffer = new UniformBuffer<TilemapShaderLayout.UniformData>();
 
         _world = new GameWorld(1.0f / 20.0f, new Tilemap(), []);
+        _camera = new Camera(new Vector2(13.0f * 0.5f, 9.0f * 0.5f), new Vector2(14.0f, 10f), context.WindowSize);
         _world.Tilemap.SetMap(new Vector2(0.0f, 1.0f), _context.AssetManager, new string?[,,] {
             {
                 { "floor_1_righthalf", "wall_top", "wall_top", "wall_top", "wall_top", "wall_top", "wall_top", "wall_top", "wall_top", "wall_top", "wall_top", "wall_top", "floor_1_lefthalf" },
@@ -100,7 +102,7 @@ public class GameScene : IScene {
         {
             // Tilemap: set uniforms
             TilemapShaderLayout.UniformData uniform = new() {
-                Projection = Matrix4.CreateOrthographicOffCenter(0, _context.WindowSize.X / 80, 0, _context.WindowSize.Y / 80, -1, 1),
+                Projection = _camera.GetViewMatrix(),
                 TimeMilliseconds = new Vector2i((int)(uint)(DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() >> 32), (int)(uint)(DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() & 0xFFFFFFFF)),
                 Alpha = (DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() - _world.TickTimestamp) / (float)_world.TickInterval / 1000.0f,
                 TextureSize = new Vector2i(atlasDungeon.AtlasWidth, atlasDungeon.AtlasHeight),
@@ -142,7 +144,7 @@ public class GameScene : IScene {
 
                 // Entity: set uniforms
                 uniform = new() {
-                    Projection = Matrix4.CreateOrthographicOffCenter(0, _context.WindowSize.X / 80, 0, _context.WindowSize.Y / 80, -1, 1),
+                    Projection = _camera.GetViewMatrix(),
                     TimeMilliseconds = new Vector2i((int)(uint)(DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() >> 32), (int)(uint)(DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() & 0xFFFFFFFF)),
                     Alpha = (DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() - _world.TickTimestamp) / (float)_world.TickInterval / 1000.0f,
                     TextureSize = new Vector2i(atlas.AtlasWidth, atlas.AtlasHeight),
@@ -176,6 +178,10 @@ public class GameScene : IScene {
             GL.ActiveTexture(TextureUnit.Texture0);
         }
         GL.UseProgram(0);
+    }
+
+    public void Resize(ResizeEventArgs args) {
+        _camera.ScreenSize = new Vector2(args.Size.X, args.Size.Y);
     }
 
     public void KeyDown(KeyboardKeyEventArgs args) {

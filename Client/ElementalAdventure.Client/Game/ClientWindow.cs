@@ -202,6 +202,7 @@ public class ClientWindow : GameWindow {
     private void ResizeHandler(ResizeEventArgs e) {
         GL.Viewport(0, 0, e.Width, e.Height);
         _context.WindowSize = new(e.Width, e.Height);
+        _scene?.Resize(e);
     }
 
     private void KeyDownHandler(KeyboardKeyEventArgs e) {
