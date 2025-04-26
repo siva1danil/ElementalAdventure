@@ -24,6 +24,7 @@ public class GameScene : IScene {
     private readonly Camera _camera;
 
     private double _tickAccumulator;
+    private TilemapShaderLayout.UniformData _uniform;
 
     public GameScene(ClientContext context) {
         _context = context;
@@ -31,6 +32,7 @@ public class GameScene : IScene {
         _tilemapVertexArray = new VertexArrayInstanced<TilemapShaderLayout.GlobalData, TilemapShaderLayout.InstanceData>();
         _entityVertexArray = new VertexArrayInstanced<TilemapShaderLayout.GlobalData, TilemapShaderLayout.InstanceData>();
         _uniformBuffer = new UniformBuffer<TilemapShaderLayout.UniformData>();
+        _uniform = new TilemapShaderLayout.UniformData();
 
         _world = new GameWorld(1.0f / 20.0f, new Tilemap(), []);
         _camera = new Camera(new Vector2(13.0f * 0.5f, 9.0f * 0.5f), new Vector2(14.0f, 10f), context.WindowSize);
@@ -101,15 +103,13 @@ public class GameScene : IScene {
         GL.UseProgram(shader.Id);
         {
             // Tilemap: set uniforms
-            TilemapShaderLayout.UniformData uniform = new() {
-                Projection = _camera.GetViewMatrix(),
-                TimeMilliseconds = new Vector2i((int)(uint)(DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() >> 32), (int)(uint)(DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() & 0xFFFFFFFF)),
-                Alpha = (DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() - _world.TickTimestamp) / (float)_world.TickInterval / 1000.0f,
-                TextureSize = new Vector2i(atlasDungeon.AtlasWidth, atlasDungeon.AtlasHeight),
-                TileSize = new Vector2i(atlasDungeon.CellWidth, atlasDungeon.CellHeight),
-                Padding = atlasDungeon.CellPadding
-            };
-            _uniformBuffer.SetData(ref uniform);
+            _uniform.Projection = _camera.GetViewMatrix();
+            _uniform.TimeMilliseconds = new Vector2i((int)(uint)(DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() >> 32), (int)(uint)(DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() & 0xFFFFFFFF));
+            _uniform.Alpha = (DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() - _world.TickTimestamp) / (float)_world.TickInterval / 1000.0f;
+            _uniform.TextureSize = new Vector2i(atlasDungeon.AtlasWidth, atlasDungeon.AtlasHeight);
+            _uniform.CellSize = new Vector2i(atlasDungeon.CellWidth, atlasDungeon.CellHeight);
+            _uniform.Padding = atlasDungeon.CellPadding;
+            _uniformBuffer.SetData(ref _uniform);
 
             // Tilemap: set vertex array
             if (_world.Tilemap.Dirty) {
@@ -143,15 +143,13 @@ public class GameScene : IScene {
                 TextureAtlas<string> atlas = _context.AssetManager.Get<TextureAtlas<string>>(entity.TextureDataComponent.TextureAtlas!);
 
                 // Entity: set uniforms
-                uniform = new() {
-                    Projection = _camera.GetViewMatrix(),
-                    TimeMilliseconds = new Vector2i((int)(uint)(DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() >> 32), (int)(uint)(DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() & 0xFFFFFFFF)),
-                    Alpha = (DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() - _world.TickTimestamp) / (float)_world.TickInterval / 1000.0f,
-                    TextureSize = new Vector2i(atlas.AtlasWidth, atlas.AtlasHeight),
-                    TileSize = new Vector2i(atlas.CellWidth, atlas.CellHeight),
-                    Padding = atlas.CellPadding
-                };
-                _uniformBuffer.SetData(ref uniform);
+                _uniform.Projection = _camera.GetViewMatrix();
+                _uniform.TimeMilliseconds = new Vector2i((int)(uint)(DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() >> 32), (int)(uint)(DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() & 0xFFFFFFFF));
+                _uniform.Alpha = (DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() - _world.TickTimestamp) / (float)_world.TickInterval / 1000.0f;
+                _uniform.TextureSize = new Vector2i(atlas.AtlasWidth, atlas.AtlasHeight);
+                _uniform.CellSize = new Vector2i(atlas.CellWidth, atlas.CellHeight);
+                _uniform.Padding = atlas.CellPadding;
+                _uniformBuffer.SetData(ref _uniform);
 
                 // Entity: set vertex array
                 _entityVertexArray.SetGlobalData(entity.GetGlobalData(), BufferUsageHint.DynamicDraw);

@@ -41,7 +41,7 @@ public class Entity {
         if (_textureDataComponent.Visible) {
             TextureAtlas<string> atlas = _assetManager.Get<TextureAtlas<string>>(_textureDataComponent.TextureAtlas);
             TextureAtlas<string>.Entry entry = atlas.GetEntry(_textureDataComponent.Texture);
-            return [new(new(_positionDataComponent.LastPosition.X, _positionDataComponent.LastPosition.Y, _positionDataComponent.Z), new(_positionDataComponent.Position.X, _positionDataComponent.Position.Y, _positionDataComponent.Z), entry.Index, entry.FrameCount, entry.FrameTime)];
+            return [new(new(_positionDataComponent.LastPosition.X, _positionDataComponent.LastPosition.Y, _positionDataComponent.Z), new(_positionDataComponent.Position.X, _positionDataComponent.Position.Y, _positionDataComponent.Z), entry.Index, new(entry.Width, entry.Height), entry.FrameCount, entry.FrameTime)];
         } else {
             return [];
         }

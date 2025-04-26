@@ -50,11 +50,15 @@ public class TextureAtlas<K> : IDisposable where K : notnull {
         byte[] data = new byte[atlasWidth * atlasHeight * 4];
         int index = 0;
         foreach (KeyValuePair<K, EntryDef> entry in entries) {
-            _entries[entry.Key] = new Entry(index, entry.Value.Frames.Length, entry.Value.FrameTime);
+            int entryIndex = index, entryWidth = -1, entryHeight = -1;
             for (int i = 0; i < entry.Value.Frames.Length; i++) {
                 ImageResult frame = ImageResult.FromMemory(entry.Value.Frames[i], ColorComponents.RedGreenBlueAlpha);
+
+                if (entryWidth == -1 && entryHeight == -1)
+                    (entryWidth, entryHeight) = (frame.Width, frame.Height);
                 int col = index % atlasCols, row = index / atlasCols;
                 int offsetPixelsX = col * paddedCellWidth + _cellPadding, offsetPixelsY = row * paddedCellHeight + _cellPadding;
+
                 for (int y = 0; y < frame.Height; y++) {
                     int src = y * frame.Width * 4;
                     int dst = ((offsetPixelsY + y) * atlasWidth + offsetPixelsX) * 4;
@@ -86,6 +90,7 @@ public class TextureAtlas<K> : IDisposable where K : notnull {
                 }
                 index++;
             }
+            _entries[entry.Key] = new Entry(entryIndex, entryWidth, entryHeight, entry.Value.Frames.Length, entry.Value.FrameTime);
         }
 
         _atlas = new(data, atlasWidth, atlasHeight);
@@ -101,5 +106,5 @@ public class TextureAtlas<K> : IDisposable where K : notnull {
     }
 
     public record struct EntryDef(byte[][] Frames, int FrameTime);
-    public record struct Entry(int Index, int FrameCount, int FrameTime);
+    public record struct Entry(int Index, int Width, int Height, int FrameCount, int FrameTime);
 }
