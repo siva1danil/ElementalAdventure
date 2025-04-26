@@ -6,15 +6,15 @@ namespace ElementalAdventure.Client.Core.Resource;
 
 public class TextureAtlas<K> : IDisposable where K : notnull {
     private readonly Texture2D _atlas;
-    private readonly int _entryWidth, _entryHeight, _entryPadding;
+    private readonly int _cellWidth, _cellHeight, _cellPadding;
     private readonly Dictionary<K, Entry> _entries;
 
     public int Id => _atlas.Id;
     public int AtlasWidth => _atlas.Width;
     public int AtlasHeight => _atlas.Height;
-    public int EntryWidth => _entryWidth;
-    public int EntryHeight => _entryHeight;
-    public int EntryPadding => _entryPadding;
+    public int CellWidth => _cellWidth;
+    public int CellHeight => _cellHeight;
+    public int CellPadding => _cellPadding;
     public Dictionary<K, Entry> Entries => _entries;
 
     public TextureAtlas(Dictionary<K, EntryDef> entries, int padding) {
@@ -24,23 +24,26 @@ public class TextureAtlas<K> : IDisposable where K : notnull {
             if (entry.Value.Frames.Length == 0)
                 throw new ArgumentException("TextureAtlas entry must contain at least one frame.");
 
-        _entryPadding = padding;
+        _cellPadding = padding;
+        _cellWidth = 0;
+        _cellHeight = 0;
 
         int count = 0;
-        _entryWidth = -1; _entryHeight = -1;
         foreach (KeyValuePair<K, EntryDef> entry in entries) {
+            int frameWidth = -1, frameHeight = -1;
             for (int i = 0; i < entry.Value.Frames.Length; i++) {
                 ImageResult frame = ImageResult.FromMemory(entry.Value.Frames[i], ColorComponents.RedGreenBlueAlpha);
-                if (_entryWidth == -1 && _entryHeight == -1)
-                    (_entryWidth, _entryHeight) = (frame.Width, frame.Height);
-                else if (_entryWidth != frame.Width || _entryHeight != frame.Height)
-                    throw new ArgumentException("All entries and frames in a TextureAtlas must have the same dimensions.");
+                if (frameWidth == -1 && frameHeight == -1)
+                    (frameWidth, frameHeight) = (frame.Width, frame.Height);
+                else if (frameWidth != frame.Width || frameHeight != frame.Height)
+                    throw new ArgumentException("All frames of a TextureAtlas entry must have the same dimensions.");
             }
             count += entry.Value.Frames.Length;
+            _cellWidth = Math.Max(_cellWidth, frameWidth); _cellHeight = Math.Max(_cellHeight, frameHeight);
         }
-        int paddedWidth = _entryWidth + 2 * _entryPadding, paddedHeight = _entryHeight + 2 * _entryPadding;
+        int paddedCellWidth = _cellWidth + 2 * _cellPadding, paddedCellHeight = _cellHeight + 2 * _cellPadding;
         int atlasCols = (int)Math.Ceiling(Math.Sqrt(count)), atlasRows = (int)Math.Ceiling(count / Math.Ceiling(Math.Sqrt(count)));
-        int atlasWidth = atlasCols * paddedWidth, atlasHeight = atlasRows * paddedHeight;
+        int atlasWidth = atlasCols * paddedCellWidth, atlasHeight = atlasRows * paddedCellHeight;
 
         _entries = new(entries.Count);
 
@@ -51,17 +54,35 @@ public class TextureAtlas<K> : IDisposable where K : notnull {
             for (int i = 0; i < entry.Value.Frames.Length; i++) {
                 ImageResult frame = ImageResult.FromMemory(entry.Value.Frames[i], ColorComponents.RedGreenBlueAlpha);
                 int col = index % atlasCols, row = index / atlasCols;
-                int offsetX = col * paddedWidth + _entryPadding, offsetY = row * paddedHeight + _entryPadding;
-                for (int y = -_entryPadding; y < _entryHeight + _entryPadding; y++) {
-                    int clampedY = Math.Clamp(y, 0, _entryHeight - 1);
-                    for (int x = -_entryPadding; x < _entryWidth + _entryPadding; x++) {
-                        int clampedX = Math.Clamp(x, 0, _entryWidth - 1);
-                        int srcIndex = (clampedY * _entryWidth + clampedX) * 4;
-                        int dstX = offsetX + x;
-                        int dstY = offsetY + y;
-                        int dstIndex = (dstY * atlasWidth + dstX) * 4;
-                        Buffer.BlockCopy(frame.Data, srcIndex, data, dstIndex, 4);
+                int offsetPixelsX = col * paddedCellWidth + _cellPadding, offsetPixelsY = row * paddedCellHeight + _cellPadding;
+                for (int y = 0; y < frame.Height; y++) {
+                    int src = y * frame.Width * 4;
+                    int dst = ((offsetPixelsY + y) * atlasWidth + offsetPixelsX) * 4;
+                    int cnt = frame.Width * 4;
+                    Buffer.BlockCopy(frame.Data, src, data, dst, cnt);
+
+                    for (int x = 0; x < _cellPadding; x++) {
+                        int srcLeft = y * frame.Width * 4;
+                        int dstLeft = ((offsetPixelsY + y) * atlasWidth + offsetPixelsX - 1 - x) * 4;
+                        int cntLeft = 4;
+                        Buffer.BlockCopy(frame.Data, srcLeft, data, dstLeft, cntLeft);
+
+                        int srcRight = (y * frame.Width + frame.Width - 1) * 4;
+                        int dstRight = ((offsetPixelsY + y) * atlasWidth + offsetPixelsX + frame.Width + x) * 4;
+                        int cntRight = 4;
+                        Buffer.BlockCopy(frame.Data, srcRight, data, dstRight, cntRight);
                     }
+                }
+                for (int y = 0; y < _cellPadding; y++) {
+                    int srcTop = (offsetPixelsY * atlasWidth + offsetPixelsX - _cellPadding) * 4;
+                    int dstTop = ((offsetPixelsY - 1 - y) * atlasWidth + offsetPixelsX - _cellPadding) * 4;
+                    int cntTop = (frame.Width + _cellPadding * 2) * 4;
+                    Buffer.BlockCopy(data, srcTop, data, dstTop, cntTop);
+
+                    int srcBottom = ((offsetPixelsY + frame.Height - 1) * atlasWidth + offsetPixelsX - _cellPadding) * 4;
+                    int dstBottom = ((offsetPixelsY + frame.Height + y) * atlasWidth + offsetPixelsX - _cellPadding) * 4;
+                    int cntBottom = (frame.Width + _cellPadding * 2) * 4;
+                    Buffer.BlockCopy(data, srcBottom, data, dstBottom, cntBottom);
                 }
                 index++;
             }

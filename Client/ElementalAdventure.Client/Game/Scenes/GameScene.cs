@@ -106,8 +106,8 @@ public class GameScene : IScene {
                 TimeMilliseconds = new Vector2i((int)(uint)(DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() >> 32), (int)(uint)(DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() & 0xFFFFFFFF)),
                 Alpha = (DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() - _world.TickTimestamp) / (float)_world.TickInterval / 1000.0f,
                 TextureSize = new Vector2i(atlasDungeon.AtlasWidth, atlasDungeon.AtlasHeight),
-                TileSize = new Vector2i(atlasDungeon.EntryWidth, atlasDungeon.EntryHeight),
-                Padding = atlasDungeon.EntryPadding
+                TileSize = new Vector2i(atlasDungeon.CellWidth, atlasDungeon.CellHeight),
+                Padding = atlasDungeon.CellPadding
             };
             _uniformBuffer.SetData(ref uniform);
 
@@ -148,8 +148,8 @@ public class GameScene : IScene {
                     TimeMilliseconds = new Vector2i((int)(uint)(DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() >> 32), (int)(uint)(DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() & 0xFFFFFFFF)),
                     Alpha = (DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() - _world.TickTimestamp) / (float)_world.TickInterval / 1000.0f,
                     TextureSize = new Vector2i(atlas.AtlasWidth, atlas.AtlasHeight),
-                    TileSize = new Vector2i(atlas.EntryWidth, atlas.EntryHeight),
-                    Padding = atlas.EntryPadding
+                    TileSize = new Vector2i(atlas.CellWidth, atlas.CellHeight),
+                    Padding = atlas.CellPadding
                 };
                 _uniformBuffer.SetData(ref uniform);
 
