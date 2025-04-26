@@ -35,7 +35,7 @@ public class GameScene : IScene {
         _uniform = new TilemapShaderLayout.UniformData();
 
         _world = new GameWorld(1.0f / 20.0f, new Tilemap(), []);
-        _camera = new Camera(new Vector2(13.0f * 0.5f, 9.0f * 0.5f), new Vector2(14.0f, 10f), context.WindowSize);
+        _camera = new Camera(new Vector2(13.0f * 0.5f - 0.5f, 9.0f * 0.5f - 0.5f), new Vector2(14.0f, 10f), context.WindowSize);
         _world.Tilemap.SetMap(new Vector2(0.0f, 1.0f), _context.AssetManager, new string?[,,] {
             {
                 { "floor_1_righthalf", "wall_top", "wall_top", "wall_top", "wall_top", "wall_top", "wall_top", "wall_top", "wall_top", "wall_top", "wall_top", "wall_top", "floor_1_lefthalf" },

@@ -55,11 +55,11 @@ public class Tilemap {
     }
 
     public float GetNormalizedDepth(int z, float y, int layerOffset, float heightOffset) {
-        return _depth[z + layerOffset].X + (_depth[z + layerOffset].Y - _depth[z + layerOffset].X) * (1.0f - (y + heightOffset) / _dimensions.Y);
+        return _depth[z + layerOffset].X + (_depth[z + layerOffset].Y - _depth[z + layerOffset].X) * (1.0f - (y + heightOffset + 0.5f) / (_dimensions.Y + 1.0f));
     }
 
     public TilemapShaderLayout.GlobalData[] GetGlobalData() {
-        return [new(new(0.0f, 0.0f, 0.0f)), new(new(1.0f, 0.0f, 0.0f)), new(new(0.0f, 1.0f, 0.0f)), new(new(1.0f, 0.0f, 0.0f)), new(new(0.0f, 1.0f, 0.0f)), new(new(1.0f, 1.0f, 0.0f))];
+        return [new(new(-0.5f, -0.5f, 0.0f)), new(new(0.5f, -0.5f, 0.0f)), new(new(-0.5f, 0.5f, 0.0f)), new(new(0.5f, -0.5f, 0.0f)), new(new(-0.5f, 0.5f, 0.0f)), new(new(0.5f, 0.5f, 0.0f))];
     }
 
     public TilemapShaderLayout.InstanceData[] GetInstanceData() {
