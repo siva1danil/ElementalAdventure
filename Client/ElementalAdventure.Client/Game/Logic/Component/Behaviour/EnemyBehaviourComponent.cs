@@ -29,7 +29,7 @@ public class EnemyBehaviourComponent : IBehavourComponent {
         entity.PositionDataComponent.Position += entity.PositionDataComponent.Velocity * entity.LivingDataComponent!.MovementSpeed;
 
         // Update Z
-        if (entity.PositionDataComponent.Z != world.Tilemap.MidgroundZ) entity.PositionDataComponent.Z = world.Tilemap.MidgroundZ;
+        entity.PositionDataComponent.Z = world.Tilemap.GetNormalizedDepth(world.Tilemap.Midground, entity.PositionDataComponent.Position.Y, _enemyType.DepthLayerOffset, _enemyType.DepthHeightOffset);
 
         // Update texture
         if (entity.PositionDataComponent.Velocity.X > 0.0f) _facingRight = true;

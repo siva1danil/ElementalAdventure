@@ -10,42 +10,55 @@ namespace ElementalAdventure.Client.Game.Logic.GameObject;
 // TODO: refactor internal format
 public class Tilemap {
     private Tile[,,] _map;
-    private float _midgroundZ;
+    private Vector2[] _depth;
+
     private int _count;
+    private int _midground;
     private bool _dirty;
 
-    public float MidgroundZ => _midgroundZ;
     public int Count => _count;
+    public int Midground => _midground;
     public bool Dirty { get => _dirty; set => _dirty = value; }
 
     public Tilemap() {
         _map = new Tile[0, 0, 0];
+        _depth = [];
+
         _count = 0;
         _dirty = true;
     }
 
-    public void SetMap(AssetManager<string> assetManager, string?[,,] map, int midground) {
+    public void SetMap(Vector2 depthRange, AssetManager<string> assetManager, string?[,,] map, int midground) {
         _map = new Tile[map.GetLength(0), map.GetLength(1), map.GetLength(2)];
+        _depth = new Vector2[map.GetLength(0)];
+
         _count = 0;
+        _midground = midground;
         _dirty = true;
 
-        float zFactor = MathF.BitDecrement(1.0f / (map.GetLength(0) - 1));
-        _midgroundZ = midground * zFactor;
+        float factor = 1.0f / map.GetLength(0);
+        for (int z = 0; z < map.GetLength(0); z++)
+            _depth[z] = new Vector2(depthRange.X + (depthRange.Y - depthRange.X) * z * factor, MathF.BitDecrement(depthRange.X + (depthRange.Y - depthRange.X) * (z + 1) * factor));
+
         for (int z = 0; z < map.GetLength(0); z++) {
             for (int y = 0; y < map.GetLength(1); y++) {
                 for (int x = 0; x < map.GetLength(2); x++) {
                     if (map[z, y, x] == null) {
-                        _map[z, map.GetLength(1) - y - 1, x] = new Tile(false, new Vector3(x, map.GetLength(1) - y - 1, z * zFactor), 0, 0, 0);
+                        _map[z, map.GetLength(1) - y - 1, x] = new Tile(false, new Vector3(x, map.GetLength(1) - y - 1, GetNormalizedDepth(z, map.GetLength(1) - y - 1, 0, 0.0f)), 0, 0, 0);
                     } else {
                         int wy = map.GetLength(1) - y - 1;
                         TileType type = assetManager.Get<TileType>(map[z, y, x]!);
                         TextureAtlas<string>.Entry value = assetManager.Get<TextureAtlas<string>>(type.TextureAtlas).GetEntry(type.Texture);
-                        _map[z, wy, x] = new Tile(true, new Vector3(x, wy, z * zFactor), value.Index, value.FrameCount, value.FrameTime);
+                        _map[z, wy, x] = new Tile(true, new Vector3(x, wy, GetNormalizedDepth(z, wy, type.DepthLayerOffset, type.DepthHeightOffset)), value.Index, value.FrameCount, value.FrameTime);
                         _count++;
                     }
                 }
             }
         }
+    }
+
+    public float GetNormalizedDepth(int z, float y, int layerOffset, float heightOffset) {
+        return _depth[z + layerOffset].X + (_depth[z + layerOffset].Y - _depth[z + layerOffset].X) * (1.0f - (y + heightOffset) / _map.GetLength(1));
     }
 
     public TilemapShaderLayout.GlobalData[] GetGlobalData() {

@@ -32,7 +32,7 @@ public class GameScene : IScene {
         _uniformBuffer = new UniformBuffer<TilemapShaderLayout.UniformData>();
 
         _world = new GameWorld(1.0f / 20.0f, new Tilemap(), []);
-        _world.Tilemap.SetMap(_context.AssetManager, new string?[,,] {
+        _world.Tilemap.SetMap(new Vector2(0.0f, 1.0f), _context.AssetManager, new string?[,,] {
             {
                 { "floor_1_righthalf", "wall_top", "wall_top", "wall_top", "wall_top", "wall_top", "wall_top", "wall_top", "wall_top", "wall_top", "wall_top", "wall_top", "floor_1_lefthalf" },
                 { "floor_1_righthalf", "floor_1",  "floor_1",  "floor_1",  "floor_1",  "floor_1",  "floor_1",  "floor_1",  "floor_1",  "floor_1",  "floor_1",  "floor_1",  "floor_1_lefthalf" },
@@ -45,15 +45,26 @@ public class GameScene : IScene {
                 { "floor_1_righthalf", "floor_1",  "floor_1",  "floor_1",  "floor_1",  "floor_1",  "floor_1",  "floor_1",  "floor_1",  "floor_1",  "floor_1",  "floor_1",  "floor_1_lefthalf" }
             },
             {
-                { null, null, null, null, null, null, null, null, null, null, null, null, null },
-                { null, null, null, null, null, null, null, null, null, null, null, null, null },
-                { null, null, null, null, null, null, null, null, null, null, null, null, null },
-                { null, null, null, null, null, null, null, null, null, null, null, null, null },
-                { null, null, null, null, null, null, null, null, null, null, null, null, null },
-                { null, null, null, null, null, null, null, null, null, null, null, null, null },
-                { null, null, null, null, null, null, null, null, null, null, null, null, null },
-                { null, null, null, null, null, null, null, null, null, null, null, null, null },
-                { null, null, null, null, null, null, null, null, null, null, null, null, null }
+                { null, null, null, null,                null, null, null, null, null, null,                null, null, null },
+                { null, null, null, null,                null, null, null, null, null, null,                null, null, null },
+                { null, null, null, null,                null, null, null, null, null, null,                null, null, null },
+                { null, null, null, "fountain_1_bottom", null, null, null, null, null, "fountain_2_bottom", null, null, null },
+                { null, null, null, null,                null, null, null, null, null, null,                null, null, null },
+                { null, null, null, null,                null, null, null, null, null, null,                null, null, null },
+                { null, null, null, null,                null, null, null, null, null, null,                null, null, null },
+                { null, null, null, null,                null, null, null, null, null, null,                null, null, null },
+                { null, null, null, null,                null, null, null, null, null, null,                null, null, null }
+            },
+            {
+                { null, null, null, null,             null, null, null, null, null, null,             null, null, null },
+                { null, null, null, null,             null, null, null, null, null, null,             null, null, null },
+                { null, null, null, "fountain_1_top", null, null, null, null, null, "fountain_2_top", null, null, null },
+                { null, null, null, null,             null, null, null, null, null, null,             null, null, null },
+                { null, null, null, null,             null, null, null, null, null, null,             null, null, null },
+                { null, null, null, null,             null, null, null, null, null, null,             null, null, null },
+                { null, null, null, null,             null, null, null, null, null, null,             null, null, null },
+                { null, null, null, null,             null, null, null, null, null, null,             null, null, null },
+                { null, null, null, null,             null, null, null, null, null, null,             null, null, null }
             },
             {
                 { "wall_topleft_outer",    null,          null,          null,          null,          null,          null,          null,          null,          null,          null,          null,          "wall_topright_outer"    },
