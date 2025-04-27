@@ -1,3 +1,5 @@
+using System.Diagnostics;
+
 using ElementalAdventure.Client.Core.Assets;
 using ElementalAdventure.Client.Core.OpenGL;
 using ElementalAdventure.Client.Core.Resource;
@@ -13,6 +15,14 @@ namespace ElementalAdventure.Client.Game;
 public class ClientWindow : GameWindow {
     private readonly ClientContext _context;
     private IScene? _scene;
+
+    /* temp */
+    private double _gpuFrameTimeMs = 0.0;
+    private double _gpuFrameTimeAccum = 0.0;
+    private int _gpuFrameCount = 0;
+    private double _gpuReportTimer = 0.0;
+    private readonly Stopwatch _gpuTimer = new();
+    /* temp */
 
     public ClientWindow(string root) : base(GameWindowSettings.Default, new NativeWindowSettings { ClientSize = new(1280, 720) }) {
         Load += LoadHandler;
@@ -193,10 +203,28 @@ public class ClientWindow : GameWindow {
     }
 
     private void RenderFrameHandler(FrameEventArgs args) {
+        /* temp */
+        _gpuTimer.Restart();
+
         GL.ClearColor(0.0f, 0.0f, 0.0f, 1.0f);
         GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
         _scene?.Render(args);
+        GL.Finish();
+
+        _gpuTimer.Stop();
+        _gpuFrameTimeAccum += _gpuTimer.Elapsed.TotalMilliseconds;
+        _gpuFrameCount++;
+        _gpuReportTimer += args.Time;
+        if (_gpuReportTimer >= 1.0) {
+            _gpuFrameTimeMs = _gpuFrameTimeAccum / _gpuFrameCount;
+            Console.WriteLine($"[GPU] Avg Frame Time: {_gpuFrameTimeMs * 1000:F3} µs over {_gpuFrameCount} frames");
+            _gpuFrameTimeAccum = 0.0;
+            _gpuFrameCount = 0;
+            _gpuReportTimer = 0.0;
+        }
+
         SwapBuffers();
+        /* temp */
     }
 
     private void ResizeHandler(ResizeEventArgs e) {
