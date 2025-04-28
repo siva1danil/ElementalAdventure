@@ -1,3 +1,5 @@
+using System.Runtime.InteropServices;
+
 using ElementalAdventure.Client.Core.Assets;
 using ElementalAdventure.Client.Core.Resource;
 using ElementalAdventure.Client.Game.Data;
@@ -16,6 +18,9 @@ public class Entity {
     private readonly LivingDataComponent? _livingDataComponent;
     private readonly IBehavourComponent[] _behaviourComponents;
 
+    private readonly TilemapShaderLayout.GlobalData[] _globalData;
+    private readonly TilemapShaderLayout.InstanceData[] _instanceData;
+
     public PositionDataComponent PositionDataComponent => _positionDataComponent;
     public TextureDataComponent TextureDataComponent => _textureDataComponent;
     public LivingDataComponent? LivingDataComponent => _livingDataComponent;
@@ -26,6 +31,9 @@ public class Entity {
         _textureDataComponent = new TextureDataComponent(false, "", "");
         _livingDataComponent = livingDataComponent;
         _behaviourComponents = behaviourComponents;
+
+        _globalData = [new(new(-0.5f, -0.5f, 0.0f)), new(new(0.5f, -0.5f, 0.0f)), new(new(-0.5f, 0.5f, 0.0f)), new(new(0.5f, -0.5f, 0.0f)), new(new(-0.5f, 0.5f, 0.0f)), new(new(0.5f, 0.5f, 0.0f))];
+        _instanceData = new TilemapShaderLayout.InstanceData[1];
     }
 
     public void Update(GameWorld world) {
@@ -33,17 +41,12 @@ public class Entity {
             behaviourComponent?.Update(world, this);
     }
 
-    public TilemapShaderLayout.GlobalData[] GetGlobalData() {
-        return [new(new(-0.5f, -0.5f, 0.0f)), new(new(0.5f, -0.5f, 0.0f)), new(new(-0.5f, 0.5f, 0.0f)), new(new(0.5f, -0.5f, 0.0f)), new(new(-0.5f, 0.5f, 0.0f)), new(new(0.5f, 0.5f, 0.0f))];
-    }
-
-    public TilemapShaderLayout.InstanceData[] GetInstanceData() {
+    public void Render(BasicRenderer renderer) {
         if (_textureDataComponent.Visible) {
             TextureAtlas<string> atlas = _assetManager.Get<TextureAtlas<string>>(_textureDataComponent.TextureAtlas);
             TextureAtlas<string>.Entry entry = atlas.GetEntry(_textureDataComponent.Texture);
-            return [new(new(_positionDataComponent.LastPosition.X, _positionDataComponent.LastPosition.Y, _positionDataComponent.Z), new(_positionDataComponent.Position.X, _positionDataComponent.Position.Y, _positionDataComponent.Z), entry.Index, new(entry.Width, entry.Height), entry.FrameCount, entry.FrameTime)];
-        } else {
-            return [];
+            _instanceData[0] = new(new(_positionDataComponent.LastPosition.X, _positionDataComponent.LastPosition.Y, _positionDataComponent.Z), new(_positionDataComponent.Position.X, _positionDataComponent.Position.Y, _positionDataComponent.Z), entry.Index, new(entry.Width, entry.Height), entry.FrameCount, entry.FrameTime);
+            renderer.Enqueue("shader.tilemap", _textureDataComponent.TextureAtlas, MemoryMarshal.Cast<TilemapShaderLayout.GlobalData, byte>(_globalData.AsSpan()), MemoryMarshal.Cast<TilemapShaderLayout.InstanceData, byte>(_instanceData.AsSpan()));
         }
     }
 }

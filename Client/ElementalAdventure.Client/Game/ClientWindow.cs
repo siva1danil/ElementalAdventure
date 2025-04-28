@@ -151,6 +151,8 @@ public class ClientWindow : GameWindow {
 
             _context.AssetManager.Add("font.pixeloidsans", new Font(_context.AssetLoader.LoadBinary("Font/Pixeloid/PixeloidSans.ttf"), [new Font.Range(' ', '~')], 16, 1));
 
+            _context.AssetManager.Add("shader.tilemap", new ShaderLayout(typeof(TilemapShaderLayout.GlobalData), typeof(TilemapShaderLayout.InstanceData), typeof(TilemapShaderLayout.UniformData)));
+
             _context.AssetManager.Add("null", new TileType("textureatlas.dungeon", "null", 0, -0.5f));
             _context.AssetManager.Add("floor_1", new TileType("textureatlas.dungeon", "floor_1", 0, -0.5f));
             _context.AssetManager.Add("floor_1_bottomhalf", new TileType("textureatlas.dungeon", "floor_1_bottomhalf", 0, -0.5f));

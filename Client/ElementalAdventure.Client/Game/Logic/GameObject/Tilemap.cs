@@ -1,3 +1,5 @@
+using System.Runtime.InteropServices;
+
 using ElementalAdventure.Client.Core.Assets;
 using ElementalAdventure.Client.Core.Resource;
 using ElementalAdventure.Client.Game.Data;
@@ -14,18 +16,20 @@ public class Tilemap {
     private Vector2[] _depth;
 
     private int _midground;
-    private bool _dirty;
+
+    private readonly TilemapShaderLayout.GlobalData[] _globalData;
+    private TilemapShaderLayout.InstanceData[] _instanceData;
 
     public int Count => _map.Count;
     public int Midground => _midground;
-    public bool Dirty { get => _dirty; set => _dirty = value; }
 
     public Tilemap() {
         _map = [];
         _depth = [];
         _dimensions = new(0, 0, 0);
 
-        _dirty = true;
+        _globalData = [new(new(-0.5f, -0.5f, 0.0f)), new(new(0.5f, -0.5f, 0.0f)), new(new(-0.5f, 0.5f, 0.0f)), new(new(0.5f, -0.5f, 0.0f)), new(new(-0.5f, 0.5f, 0.0f)), new(new(0.5f, 0.5f, 0.0f))];
+        _instanceData = [];
     }
 
     public void SetMap(Vector2 depthRange, AssetManager<string> assetManager, string?[,,] map, int midground) {
@@ -34,7 +38,6 @@ public class Tilemap {
         _dimensions = new(map.GetLength(2), map.GetLength(1), map.GetLength(0));
 
         _midground = midground;
-        _dirty = true;
 
         float factor = 1.0f / _dimensions.Z;
         for (int z = 0; z < _dimensions.Z; z++)
@@ -52,21 +55,20 @@ public class Tilemap {
                 }
             }
         }
+
+        _instanceData = new TilemapShaderLayout.InstanceData[_map.Count];
+        for (int i = 0; i < _map.Count; i++) {
+            Tile tile = _map[i];
+            _instanceData[i] = new(tile.Position, tile.Position, tile.Index, tile.FrameSize, tile.FrameCount, tile.FrameTime);
+        }
     }
 
     public float GetNormalizedDepth(int z, float y, int layerOffset, float heightOffset) {
         return _depth[z + layerOffset].X + (_depth[z + layerOffset].Y - _depth[z + layerOffset].X) * (1.0f - (y + heightOffset + 0.5f) / (_dimensions.Y + 1.0f));
     }
 
-    public TilemapShaderLayout.GlobalData[] GetGlobalData() {
-        return [new(new(-0.5f, -0.5f, 0.0f)), new(new(0.5f, -0.5f, 0.0f)), new(new(-0.5f, 0.5f, 0.0f)), new(new(0.5f, -0.5f, 0.0f)), new(new(-0.5f, 0.5f, 0.0f)), new(new(0.5f, 0.5f, 0.0f))];
-    }
-
-    public TilemapShaderLayout.InstanceData[] GetInstanceData() {
-        List<TilemapShaderLayout.InstanceData> data = new(_map.Count);
-        foreach (Tile tile in _map)
-            data.Add(new(tile.Position, tile.Position, tile.Index, tile.FrameSize, tile.FrameCount, tile.FrameTime));
-        return data.GetBackingArray();
+    public void Render(BasicRenderer renderer) {
+        renderer.Enqueue("shader.tilemap", "textureatlas.dungeon", MemoryMarshal.Cast<TilemapShaderLayout.GlobalData, byte>(_globalData.AsSpan()), MemoryMarshal.Cast<TilemapShaderLayout.InstanceData, byte>(_instanceData.AsSpan()));
     }
 
     public readonly record struct Tile(Vector3 Position, int Index, Vector2i FrameSize, int FrameCount, int FrameTime);

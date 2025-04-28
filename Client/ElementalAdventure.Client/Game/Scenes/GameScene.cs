@@ -1,3 +1,5 @@
+using System.Runtime.InteropServices;
+
 using ElementalAdventure.Client.Core.OpenGL;
 using ElementalAdventure.Client.Core.Resource;
 using ElementalAdventure.Client.Game.Data;
@@ -17,22 +19,16 @@ namespace ElementalAdventure.Client.Game.Scenes;
 public class GameScene : IScene {
     private readonly ClientContext _context;
 
-    private readonly VertexArrayInstanced<TilemapShaderLayout.GlobalData, TilemapShaderLayout.InstanceData> _tilemapVertexArray;
-    private readonly VertexArrayInstanced<TilemapShaderLayout.GlobalData, TilemapShaderLayout.InstanceData> _entityVertexArray;
-    private readonly UniformBuffer<TilemapShaderLayout.UniformData> _uniformBuffer;
+    private readonly BasicRenderer _renderer;
     private readonly GameWorld _world;
     private readonly Camera _camera;
 
     private double _tickAccumulator;
-    private TilemapShaderLayout.UniformData _uniform;
 
     public GameScene(ClientContext context) {
         _context = context;
 
-        _tilemapVertexArray = new VertexArrayInstanced<TilemapShaderLayout.GlobalData, TilemapShaderLayout.InstanceData>();
-        _entityVertexArray = new VertexArrayInstanced<TilemapShaderLayout.GlobalData, TilemapShaderLayout.InstanceData>();
-        _uniformBuffer = new UniformBuffer<TilemapShaderLayout.UniformData>();
-        _uniform = new TilemapShaderLayout.UniformData();
+        _renderer = new BasicRenderer(_context.AssetManager);
 
         _world = new GameWorld(1.0f / 20.0f, new Tilemap(), []);
         _camera = new Camera(new Vector2(13.0f * 0.5f - 0.5f, 9.0f * 0.5f - 0.5f), new Vector2(14.0f, 10f), context.WindowSize);
@@ -84,6 +80,12 @@ public class GameScene : IScene {
         }, 1);
         _world.Entities.Add(new Entity(_context.AssetManager, new LivingDataComponent(true, false, _context.AssetManager.Get<PlayerType>("mage").Speed), [new PlayerBehaviourComponent(_context.AssetManager.Get<PlayerType>("mage"))]));
         _world.Entities.Add(new Entity(_context.AssetManager, new LivingDataComponent(false, false, _context.AssetManager.Get<EnemyType>("slime").Speed), [new EnemyBehaviourComponent(_context.AssetManager.Get<EnemyType>("slime"))]));
+        _world.Entities[1].PositionDataComponent.Position = new Vector2(5.0f, 0.0f);
+        _world.Entities.Add(new Entity(_context.AssetManager, new LivingDataComponent(false, false, _context.AssetManager.Get<EnemyType>("slime").Speed), [new EnemyBehaviourComponent(_context.AssetManager.Get<EnemyType>("slime"))]));
+        _world.Entities[2].PositionDataComponent.Position = new Vector2(15.0f, 4.0f);
+        _world.Entities.Add(new Entity(_context.AssetManager, new LivingDataComponent(false, false, _context.AssetManager.Get<EnemyType>("slime").Speed), [new EnemyBehaviourComponent(_context.AssetManager.Get<EnemyType>("slime"))]));
+        _world.Entities[3].PositionDataComponent.Position = new Vector2(5.0f, 4.0f);
+
 
         _tickAccumulator = 0.0;
     }
@@ -97,85 +99,42 @@ public class GameScene : IScene {
     }
 
     public void Render(FrameEventArgs args) {
-        ShaderProgram shader = _context.AssetManager.Get<ShaderProgram>("shader.tilemap");
         TextureAtlas<string> atlasDungeon = _context.AssetManager.Get<TextureAtlas<string>>("textureatlas.dungeon");
+        TextureAtlas<string> atlasPlayer = _context.AssetManager.Get<TextureAtlas<string>>("textureatlas.player");
+        TextureAtlas<string> atlasEnemy = _context.AssetManager.Get<TextureAtlas<string>>("textureatlas.enemy");
+        TilemapShaderLayout.UniformData uniformDataDungeon = new TilemapShaderLayout.UniformData {
+            Projection = _camera.GetViewMatrix(),
+            TimeMilliseconds = new Vector2i((int)(uint)(DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() >> 32), (int)(uint)(DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() & 0xFFFFFFFF)),
+            Alpha = (DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() - _world.TickTimestamp) / (float)_world.TickInterval / 1000.0f,
+            TextureSize = new Vector2i(atlasDungeon.AtlasWidth, atlasDungeon.AtlasHeight),
+            CellSize = new Vector2i(atlasDungeon.CellWidth, atlasDungeon.CellHeight),
+            Padding = atlasDungeon.CellPadding
+        };
+        TilemapShaderLayout.UniformData uniformDataPlayer = new TilemapShaderLayout.UniformData {
+            Projection = _camera.GetViewMatrix(),
+            TimeMilliseconds = new Vector2i((int)(uint)(DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() >> 32), (int)(uint)(DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() & 0xFFFFFFFF)),
+            Alpha = (DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() - _world.TickTimestamp) / (float)_world.TickInterval / 1000.0f,
+            TextureSize = new Vector2i(atlasPlayer.AtlasWidth, atlasPlayer.AtlasHeight),
+            CellSize = new Vector2i(atlasPlayer.CellWidth, atlasPlayer.CellHeight),
+            Padding = atlasPlayer.CellPadding
+        };
+        TilemapShaderLayout.UniformData uniformDataEnemy = new TilemapShaderLayout.UniformData {
+            Projection = _camera.GetViewMatrix(),
+            TimeMilliseconds = new Vector2i((int)(uint)(DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() >> 32), (int)(uint)(DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() & 0xFFFFFFFF)),
+            Alpha = (DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() - _world.TickTimestamp) / (float)_world.TickInterval / 1000.0f,
+            TextureSize = new Vector2i(atlasEnemy.AtlasWidth, atlasEnemy.AtlasHeight),
+            CellSize = new Vector2i(atlasEnemy.CellWidth, atlasEnemy.CellHeight),
+            Padding = atlasEnemy.CellPadding
+        };
+        _renderer.SetUniform("shader.tilemap", "textureatlas.dungeon", MemoryMarshal.Cast<TilemapShaderLayout.UniformData, byte>(MemoryMarshal.CreateSpan(ref uniformDataDungeon, 1)));
+        _renderer.SetUniform("shader.tilemap", "textureatlas.player", MemoryMarshal.Cast<TilemapShaderLayout.UniformData, byte>(MemoryMarshal.CreateSpan(ref uniformDataPlayer, 1)));
+        _renderer.SetUniform("shader.tilemap", "textureatlas.enemy", MemoryMarshal.Cast<TilemapShaderLayout.UniformData, byte>(MemoryMarshal.CreateSpan(ref uniformDataEnemy, 1)));
 
-        GL.UseProgram(shader.Id);
-        {
-            // Tilemap: set uniforms
-            _uniform.Projection = _camera.GetViewMatrix();
-            _uniform.TimeMilliseconds = new Vector2i((int)(uint)(DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() >> 32), (int)(uint)(DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() & 0xFFFFFFFF));
-            _uniform.Alpha = (DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() - _world.TickTimestamp) / (float)_world.TickInterval / 1000.0f;
-            _uniform.TextureSize = new Vector2i(atlasDungeon.AtlasWidth, atlasDungeon.AtlasHeight);
-            _uniform.CellSize = new Vector2i(atlasDungeon.CellWidth, atlasDungeon.CellHeight);
-            _uniform.Padding = atlasDungeon.CellPadding;
-            _uniformBuffer.SetData(ref _uniform);
+        _world.Tilemap.Render(_renderer);
+        foreach (Entity entity in _world.Entities)
+            entity.Render(_renderer);
 
-            // Tilemap: set vertex array
-            if (_world.Tilemap.Dirty) {
-                _tilemapVertexArray.SetGlobalData(_world.Tilemap.GetGlobalData(), BufferUsageHint.DynamicDraw);
-                _tilemapVertexArray.SetInstanceData(_world.Tilemap.GetInstanceData(), BufferUsageHint.DynamicDraw);
-                _world.Tilemap.Dirty = false;
-            }
-
-            // Tilemap: draw
-            GL.BindVertexArray(_tilemapVertexArray.Id);
-            {
-                GL.BindBuffer(BufferTarget.UniformBuffer, _uniformBuffer.Id);
-                GL.BindBufferBase(BufferRangeTarget.UniformBuffer, 0, _uniformBuffer.Id);
-                {
-                    GL.ActiveTexture(TextureUnit.Texture0);
-                    GL.BindTexture(TextureTarget.Texture2D, atlasDungeon.Id);
-                    {
-                        GL.DrawArraysInstanced(PrimitiveType.Triangles, 0, 6, _world.Tilemap.Count);
-                    }
-                    GL.BindTexture(TextureTarget.Texture2D, 0);
-                    GL.ActiveTexture(TextureUnit.Texture0);
-                }
-                GL.BindBuffer(BufferTarget.UniformBuffer, 0);
-            }
-            GL.BindVertexArray(0);
-
-            // Entity
-            foreach (Entity entity in _world.Entities) {
-                if (!entity.TextureDataComponent.Visible) continue;
-
-                TextureAtlas<string> atlas = _context.AssetManager.Get<TextureAtlas<string>>(entity.TextureDataComponent.TextureAtlas!);
-
-                // Entity: set uniforms
-                _uniform.Projection = _camera.GetViewMatrix();
-                _uniform.TimeMilliseconds = new Vector2i((int)(uint)(DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() >> 32), (int)(uint)(DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() & 0xFFFFFFFF));
-                _uniform.Alpha = (DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() - _world.TickTimestamp) / (float)_world.TickInterval / 1000.0f;
-                _uniform.TextureSize = new Vector2i(atlas.AtlasWidth, atlas.AtlasHeight);
-                _uniform.CellSize = new Vector2i(atlas.CellWidth, atlas.CellHeight);
-                _uniform.Padding = atlas.CellPadding;
-                _uniformBuffer.SetData(ref _uniform);
-
-                // Entity: set vertex array
-                _entityVertexArray.SetGlobalData(entity.GetGlobalData(), BufferUsageHint.DynamicDraw);
-                _entityVertexArray.SetInstanceData(entity.GetInstanceData(), BufferUsageHint.DynamicDraw);
-
-                // Entity: draw
-                GL.ActiveTexture(TextureUnit.Texture0);
-                GL.BindTexture(TextureTarget.Texture2D, atlas.Id);
-                {
-                    GL.BindBuffer(BufferTarget.UniformBuffer, _uniformBuffer.Id);
-                    GL.BindBufferBase(BufferRangeTarget.UniformBuffer, 0, _uniformBuffer.Id);
-                    {
-                        GL.BindVertexArray(_entityVertexArray.Id);
-                        {
-                            GL.DrawArraysInstanced(PrimitiveType.Triangles, 0, 6, 1);
-                        }
-                        GL.BindVertexArray(0);
-                    }
-                    GL.BindBuffer(BufferTarget.UniformBuffer, 0);
-                }
-            }
-
-            GL.BindTexture(TextureTarget.Texture2D, 0);
-            GL.ActiveTexture(TextureUnit.Texture0);
-        }
-        GL.UseProgram(0);
+        _renderer.Render();
     }
 
     public void Resize(ResizeEventArgs args) {
@@ -191,8 +150,6 @@ public class GameScene : IScene {
     }
 
     public void Dispose() {
-        _tilemapVertexArray.Dispose();
-        _entityVertexArray.Dispose();
-        _uniformBuffer.Dispose();
+        _renderer.Dispose();
     }
 }
