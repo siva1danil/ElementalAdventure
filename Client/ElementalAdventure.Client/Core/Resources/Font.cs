@@ -1,8 +1,8 @@
-using ElementalAdventure.Client.Core.OpenGL;
+using ElementalAdventure.Client.Core.Resources.OpenGL;
 
 using TrueTypeSharp;
 
-namespace ElementalAdventure.Client.Core.Resource;
+namespace ElementalAdventure.Client.Core.Resources;
 
 public class Font : IDisposable {
     private readonly Texture2D _atlas;

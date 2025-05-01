@@ -1,12 +1,11 @@
 using ElementalAdventure.Client.Core.Assets;
-using ElementalAdventure.Client.Core.OpenGL;
-using ElementalAdventure.Client.Core.Resource;
-using ElementalAdventure.Client.Game.Data;
-using ElementalAdventure.Client.Game.Utils;
+using ElementalAdventure.Client.Core.Resources;
+using ElementalAdventure.Client.Core.Resources.OpenGL;
+using ElementalAdventure.Client.Core.Utils;
 
 using OpenTK.Graphics.OpenGL4;
 
-namespace ElementalAdventure.Client.Game;
+namespace ElementalAdventure.Client.Core;
 
 public class BasicRenderer : IDisposable {
     private readonly AssetManager<string> _assetManager;
@@ -20,7 +19,7 @@ public class BasicRenderer : IDisposable {
     public void SetUniform(string shaderProgram, string textureAtlas, Span<byte> data) {
         BatchKey key = new(shaderProgram, textureAtlas);
         if (!_batches.ContainsKey(key))
-            _batches[key] = new BatchValue(_assetManager.Get<ShaderLayout>(shaderProgram));
+            _batches[key] = new BatchValue(_assetManager.Get<ShaderProgram>(shaderProgram).Layout);
         _batches[key].UniformBuffer.SetData(data.ToArray());
     }
 
@@ -28,10 +27,10 @@ public class BasicRenderer : IDisposable {
         BatchKey key = new(shaderProgram, textureAtlas);
         int hash = Hash(globalData);
         if (!_batches.ContainsKey(key)) {
-            _batches[key] = new BatchValue(_assetManager.Get<ShaderLayout>(shaderProgram));
+            _batches[key] = new BatchValue(_assetManager.Get<ShaderProgram>(shaderProgram).Layout);
         }
         if (!_batches[key].VertexArrays.ContainsKey(hash)) {
-            _batches[key].VertexArrays[hash] = new BatchData(new VertexArrayInstanced(_batches[key].ShaderLayout.GlobalType, _batches[key].ShaderLayout.InstanceType));
+            _batches[key].VertexArrays[hash] = new BatchData(new VertexArrayInstanced(_assetManager.Get<ShaderProgram>(shaderProgram).Layout));
             _batches[key].VertexArrays[hash].GlobalData.AddRange(globalData);
             _batches[key].VertexArrays[hash].GlobalCount = globalData.Length;
         }
@@ -62,7 +61,7 @@ public class BasicRenderer : IDisposable {
                 vertexArray.Value.VertexArray.SetGlobalData(vertexArray.Value.GlobalData.GetBackingArray(), BufferUsageHint.DynamicDraw);
                 vertexArray.Value.VertexArray.SetInstanceData(vertexArray.Value.InstanceData.GetBackingArray(), BufferUsageHint.DynamicDraw);
                 GL.BindVertexArray(vertexArray.Value.VertexArray.Id);
-                GL.DrawArraysInstanced(PrimitiveType.Triangles, 0, vertexArray.Value.GlobalData.Count / vertexArray.Value.VertexArray.GlobalStride, vertexArray.Value.InstanceData.Count / vertexArray.Value.VertexArray.InstanceStride);
+                GL.DrawArraysInstanced(PrimitiveType.Triangles, 0, vertexArray.Value.GlobalData.Count / vertexArray.Value.VertexArray.VertexDataSize, vertexArray.Value.InstanceData.Count / vertexArray.Value.VertexArray.InstanceDataSize);
                 vertexArray.Value.InstanceData.Clear();
                 vertexArray.Value.InstanceCount = 0;
             }
@@ -91,10 +90,9 @@ public class BasicRenderer : IDisposable {
     }
 
     private readonly record struct BatchKey(string ShaderProgram, string TextureAtlas);
-    private class BatchValue(ShaderLayout layout) {
-        public readonly ShaderLayout ShaderLayout = layout;
+    private class BatchValue(ShaderProgram.DataLayout layout) {
         public readonly Dictionary<int, BatchData> VertexArrays = [];
-        public readonly UniformBuffer UniformBuffer = new(layout.UniformType);
+        public readonly UniformBuffer UniformBuffer = new(layout);
     }
     private class BatchData(VertexArrayInstanced vertexArray) {
         public readonly List<byte> GlobalData = [];

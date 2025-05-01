@@ -1,21 +1,20 @@
-using System.Reflection;
-using System.Runtime.InteropServices;
-
 using OpenTK.Graphics.OpenGL4;
 
-namespace ElementalAdventure.Client.Core.OpenGL;
+namespace ElementalAdventure.Client.Core.Resources.OpenGL;
 
 public class VertexArrayInstanced : IDisposable {
     private readonly int _vao;
     private readonly int _vboGlobal, _vboInstance;
 
-    private readonly int _strideGlobal, _strideInstance;
+    private readonly ShaderProgram.DataLayout _layout;
 
     public int Id => _vao;
-    public int GlobalStride => _strideGlobal;
-    public int InstanceStride => _strideInstance;
+    public int VertexDataSize => _layout.VertexDataSize;
+    public int InstanceDataSize => _layout.InstanceDataSize;
 
-    public VertexArrayInstanced(Type globalType, Type instanceType) {
+    public VertexArrayInstanced(ShaderProgram.DataLayout layout) {
+        _layout = layout;
+
         _vao = GL.GenVertexArray();
         _vboGlobal = GL.GenBuffer();
         _vboInstance = GL.GenBuffer();
@@ -24,12 +23,9 @@ public class VertexArrayInstanced : IDisposable {
         GL.BindBuffer(BufferTarget.ArrayBuffer, _vboGlobal);
         GL.BufferData(BufferTarget.ArrayBuffer, 0, IntPtr.Zero, BufferUsageHint.DynamicDraw);
 
-        _strideGlobal = Marshal.SizeOf(globalType);
         int index = 0;
-        foreach (FieldInfo field in globalType.GetFields()) {
-            int size = Marshal.SizeOf(field.FieldType) / sizeof(float);
-            int offset = Marshal.OffsetOf(globalType, field.Name).ToInt32();
-            GL.VertexAttribPointer(index, size, VertexAttribPointerType.Float, false, _strideGlobal, offset);
+        foreach (ShaderProgram.DataLayout.Entry entry in layout.VertexData) {
+            GL.VertexAttribPointer(index, entry.Size, VertexAttribPointerType.Float, false, _layout.VertexDataSize, entry.Offset);
             GL.EnableVertexAttribArray(index);
             index++;
         }
@@ -37,11 +33,8 @@ public class VertexArrayInstanced : IDisposable {
         GL.BindBuffer(BufferTarget.ArrayBuffer, _vboInstance);
         GL.BufferData(BufferTarget.ArrayBuffer, 0, IntPtr.Zero, BufferUsageHint.DynamicDraw);
 
-        _strideInstance = Marshal.SizeOf(instanceType);
-        foreach (FieldInfo field in instanceType.GetFields()) {
-            int size = Marshal.SizeOf(field.FieldType) / sizeof(float);
-            int offset = Marshal.OffsetOf(instanceType, field.Name).ToInt32();
-            GL.VertexAttribPointer(index, size, VertexAttribPointerType.Float, false, _strideInstance, offset);
+        foreach (ShaderProgram.DataLayout.Entry entry in layout.InstanceData) {
+            GL.VertexAttribPointer(index, entry.Size, VertexAttribPointerType.Float, false, _layout.InstanceDataSize, entry.Offset);
             GL.EnableVertexAttribArray(index);
             GL.VertexAttribDivisor(index, 1);
             index++;
@@ -54,8 +47,8 @@ public class VertexArrayInstanced : IDisposable {
     public void SetGlobalData(byte[] data, BufferUsageHint usage = BufferUsageHint.StaticDraw, int length = -1) {
         if (length == -1)
             length = data.Length;
-        if (length % _strideGlobal != 0)
-            throw new ArgumentException($"Data length {data.Length} is not a multiple of stride {_strideGlobal}.");
+        if (length % _layout.VertexDataSize != 0)
+            throw new ArgumentException($"Data length {data.Length} is not a multiple of stride {_layout.VertexDataSize}.");
         GL.BindBuffer(BufferTarget.ArrayBuffer, _vboGlobal);
         GL.BufferData(BufferTarget.ArrayBuffer, length, data, usage);
         GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
@@ -64,8 +57,8 @@ public class VertexArrayInstanced : IDisposable {
     public void SetInstanceData(byte[] data, BufferUsageHint usage = BufferUsageHint.DynamicDraw, int length = -1) {
         if (length == -1)
             length = data.Length;
-        if (length % _strideInstance != 0)
-            throw new ArgumentException($"Data length {data.Length} is not a multiple of stride {_strideInstance}.");
+        if (length % _layout.InstanceDataSize != 0)
+            throw new ArgumentException($"Data length {data.Length} is not a multiple of stride {_layout.InstanceDataSize}.");
         GL.BindBuffer(BufferTarget.ArrayBuffer, _vboInstance);
         GL.BufferData(BufferTarget.ArrayBuffer, length, data, usage);
         GL.BindBuffer(BufferTarget.ArrayBuffer, 0);

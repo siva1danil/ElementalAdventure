@@ -1,7 +1,7 @@
 using System.Runtime.InteropServices;
 
-using ElementalAdventure.Client.Core.OpenGL;
-using ElementalAdventure.Client.Core.Resource;
+using ElementalAdventure.Client.Core;
+using ElementalAdventure.Client.Core.Resources;
 using ElementalAdventure.Client.Game.Data;
 using ElementalAdventure.Client.Game.Logic;
 using ElementalAdventure.Client.Game.Logic.Command;
@@ -9,7 +9,6 @@ using ElementalAdventure.Client.Game.Logic.Component.Behaviour;
 using ElementalAdventure.Client.Game.Logic.Component.Data;
 using ElementalAdventure.Client.Game.Logic.GameObject;
 
-using OpenTK.Graphics.OpenGL4;
 using OpenTK.Mathematics;
 using OpenTK.Windowing.Common;
 using OpenTK.Windowing.GraphicsLibraryFramework;

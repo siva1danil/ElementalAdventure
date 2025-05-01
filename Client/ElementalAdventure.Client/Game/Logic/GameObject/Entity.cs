@@ -1,7 +1,8 @@
 using System.Runtime.InteropServices;
 
+using ElementalAdventure.Client.Core;
 using ElementalAdventure.Client.Core.Assets;
-using ElementalAdventure.Client.Core.Resource;
+using ElementalAdventure.Client.Core.Resources;
 using ElementalAdventure.Client.Game.Data;
 using ElementalAdventure.Client.Game.Logic.Component.Behaviour;
 using ElementalAdventure.Client.Game.Logic.Component.Data;

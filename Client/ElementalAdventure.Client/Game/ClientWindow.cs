@@ -1,8 +1,8 @@
 using System.Diagnostics;
 
 using ElementalAdventure.Client.Core.Assets;
-using ElementalAdventure.Client.Core.OpenGL;
-using ElementalAdventure.Client.Core.Resource;
+using ElementalAdventure.Client.Core.Resources;
+using ElementalAdventure.Client.Core.Resources.OpenGL;
 using ElementalAdventure.Client.Game.Data;
 using ElementalAdventure.Client.Game.Scenes;
 
@@ -150,8 +150,6 @@ public class ClientWindow : GameWindow {
             }, 1));
 
             _context.AssetManager.Add("font.pixeloidsans", new Font(_context.AssetLoader.LoadBinary("Font/Pixeloid/PixeloidSans.ttf"), [new Font.Range(' ', '~')], 16, 1));
-
-            _context.AssetManager.Add("shader.tilemap", new ShaderLayout(typeof(TilemapShaderLayout.GlobalData), typeof(TilemapShaderLayout.InstanceData), typeof(TilemapShaderLayout.UniformData)));
 
             _context.AssetManager.Add("null", new TileType("textureatlas.dungeon", "null", 0, -0.5f));
             _context.AssetManager.Add("floor_1", new TileType("textureatlas.dungeon", "floor_1", 0, -0.5f));
