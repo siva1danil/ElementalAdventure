@@ -6,7 +6,7 @@ using OpenTK.Graphics.OpenGL4;
 
 namespace ElementalAdventure.Client.Core.Rendering;
 
-public class BasicRenderer<K> : IDisposable where K : notnull {
+public class BasicRenderer<K> : IRenderer<K> where K : notnull {
     private readonly AssetManager<K> _assetManager;
     private readonly IUniformProvider<K> _uniformProvider;
 
