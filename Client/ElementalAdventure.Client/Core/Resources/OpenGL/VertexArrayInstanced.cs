@@ -1,3 +1,5 @@
+using ElementalAdventure.Client.Core.Resources.Data;
+
 using OpenTK.Graphics.OpenGL4;
 
 namespace ElementalAdventure.Client.Core.Resources.OpenGL;
@@ -6,13 +8,13 @@ public class VertexArrayInstanced : IDisposable {
     private readonly int _vao;
     private readonly int _vboGlobal, _vboInstance;
 
-    private readonly ShaderProgram.DataLayout _layout;
+    private readonly DataLayout _layout;
 
     public int Id => _vao;
     public int VertexDataSize => _layout.VertexDataSize;
     public int InstanceDataSize => _layout.InstanceDataSize;
 
-    public VertexArrayInstanced(ShaderProgram.DataLayout layout) {
+    public VertexArrayInstanced(DataLayout layout) {
         _layout = layout;
 
         _vao = GL.GenVertexArray();
@@ -24,7 +26,7 @@ public class VertexArrayInstanced : IDisposable {
         GL.BufferData(BufferTarget.ArrayBuffer, 0, IntPtr.Zero, BufferUsageHint.DynamicDraw);
 
         int index = 0;
-        foreach (ShaderProgram.DataLayout.Entry entry in layout.VertexData) {
+        foreach (DataLayout.Entry entry in layout.VertexData) {
             GL.VertexAttribPointer(index, entry.Size, VertexAttribPointerType.Float, false, _layout.VertexDataSize, entry.Offset);
             GL.EnableVertexAttribArray(index);
             index++;
@@ -33,7 +35,7 @@ public class VertexArrayInstanced : IDisposable {
         GL.BindBuffer(BufferTarget.ArrayBuffer, _vboInstance);
         GL.BufferData(BufferTarget.ArrayBuffer, 0, IntPtr.Zero, BufferUsageHint.DynamicDraw);
 
-        foreach (ShaderProgram.DataLayout.Entry entry in layout.InstanceData) {
+        foreach (DataLayout.Entry entry in layout.InstanceData) {
             GL.VertexAttribPointer(index, entry.Size, VertexAttribPointerType.Float, false, _layout.InstanceDataSize, entry.Offset);
             GL.EnableVertexAttribArray(index);
             GL.VertexAttribDivisor(index, 1);

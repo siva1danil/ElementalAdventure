@@ -1,15 +1,17 @@
+using ElementalAdventure.Client.Core.Resources.Data;
+
 using OpenTK.Graphics.OpenGL4;
 
 namespace ElementalAdventure.Client.Core.Resources.OpenGL;
 
 public class UniformBuffer : IDisposable {
     private readonly int _id;
-    private readonly ShaderProgram.DataLayout _layout;
+    private readonly DataLayout _layout;
 
     public int Id => _id;
     public int Size => _layout.UniformDataSize;
 
-    public UniformBuffer(ShaderProgram.DataLayout layout) {
+    public UniformBuffer(DataLayout layout) {
         _layout = layout;
 
         _id = GL.GenBuffer();
