@@ -2,7 +2,9 @@ using System.Runtime.InteropServices;
 
 using ElementalAdventure.Client.Core;
 using ElementalAdventure.Client.Core.Assets;
+using ElementalAdventure.Client.Core.Rendering;
 using ElementalAdventure.Client.Core.Resources;
+using ElementalAdventure.Client.Core.Resources.Composed;
 using ElementalAdventure.Client.Game.Data;
 using ElementalAdventure.Client.Game.Logic.Component.Behaviour;
 using ElementalAdventure.Client.Game.Logic.Component.Data;
@@ -12,7 +14,7 @@ using OpenTK.Mathematics;
 namespace ElementalAdventure.Client.Game.Logic.GameObject;
 
 // TODO: refactor internal format
-public class Entity {
+public class Entity : IRenderable<string> {
     private readonly AssetManager<string> _assetManager;
     private readonly PositionDataComponent _positionDataComponent;
     private readonly TextureDataComponent _textureDataComponent;
@@ -42,12 +44,14 @@ public class Entity {
             behaviourComponent?.Update(world, this);
     }
 
-    public void Render(BasicRenderer renderer) {
+    public RenderCommand<string>[] Render() {
         if (_textureDataComponent.Visible) {
             TextureAtlas<string> atlas = _assetManager.Get<TextureAtlas<string>>(_textureDataComponent.TextureAtlas);
             TextureAtlas<string>.Entry entry = atlas.GetEntry(_textureDataComponent.Texture);
             _instanceData[0] = new(new(_positionDataComponent.LastPosition.X, _positionDataComponent.LastPosition.Y, _positionDataComponent.Z), new(_positionDataComponent.Position.X, _positionDataComponent.Position.Y, _positionDataComponent.Z), entry.Index, new(entry.Width, entry.Height), entry.FrameCount, entry.FrameTime);
-            renderer.Enqueue("shader.tilemap", _textureDataComponent.TextureAtlas, MemoryMarshal.Cast<TilemapShaderLayout.GlobalData, byte>(_globalData.AsSpan()), MemoryMarshal.Cast<TilemapShaderLayout.InstanceData, byte>(_instanceData.AsSpan()));
+            return [new RenderCommand<string>("shader.tilemap", _textureDataComponent.TextureAtlas, MemoryMarshal.Cast<TilemapShaderLayout.GlobalData, byte>(_globalData.AsSpan()).ToArray(), MemoryMarshal.Cast<TilemapShaderLayout.InstanceData, byte>(_instanceData.AsSpan()).ToArray())];
+        } else {
+            return [];
         }
     }
 }

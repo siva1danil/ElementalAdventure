@@ -1,7 +1,9 @@
 using System.Runtime.InteropServices;
 
 using ElementalAdventure.Client.Core;
+using ElementalAdventure.Client.Core.Rendering;
 using ElementalAdventure.Client.Core.Resources;
+using ElementalAdventure.Client.Core.Resources.Composed;
 using ElementalAdventure.Client.Game.Data;
 using ElementalAdventure.Client.Game.Logic;
 using ElementalAdventure.Client.Game.Logic.Command;
@@ -15,10 +17,10 @@ using OpenTK.Windowing.GraphicsLibraryFramework;
 
 namespace ElementalAdventure.Client.Game.Scenes;
 
-public class GameScene : IScene {
+public class GameScene : IScene, IUniformProvider<string> {
     private readonly ClientContext _context;
 
-    private readonly BasicRenderer _renderer;
+    private readonly BasicRenderer<string> _renderer;
     private readonly GameWorld _world;
     private readonly Camera _camera;
 
@@ -27,7 +29,7 @@ public class GameScene : IScene {
     public GameScene(ClientContext context) {
         _context = context;
 
-        _renderer = new BasicRenderer(_context.AssetManager);
+        _renderer = new BasicRenderer<string>(_context.AssetManager, this);
 
         _world = new GameWorld(1.0f / 20.0f, new Tilemap(), []);
         _camera = new Camera(new Vector2(13.0f * 0.5f - 0.5f, 9.0f * 0.5f - 0.5f), new Vector2(14.0f, 10f), context.WindowSize);
@@ -98,42 +100,10 @@ public class GameScene : IScene {
     }
 
     public void Render(FrameEventArgs args) {
-        TextureAtlas<string> atlasDungeon = _context.AssetManager.Get<TextureAtlas<string>>("textureatlas.dungeon");
-        TextureAtlas<string> atlasPlayer = _context.AssetManager.Get<TextureAtlas<string>>("textureatlas.player");
-        TextureAtlas<string> atlasEnemy = _context.AssetManager.Get<TextureAtlas<string>>("textureatlas.enemy");
-        TilemapShaderLayout.UniformData uniformDataDungeon = new TilemapShaderLayout.UniformData {
-            Projection = _camera.GetViewMatrix(),
-            TimeMilliseconds = new Vector2i((int)(uint)(DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() >> 32), (int)(uint)(DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() & 0xFFFFFFFF)),
-            Alpha = (DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() - _world.TickTimestamp) / (float)_world.TickInterval / 1000.0f,
-            TextureSize = new Vector2i(atlasDungeon.AtlasWidth, atlasDungeon.AtlasHeight),
-            CellSize = new Vector2i(atlasDungeon.CellWidth, atlasDungeon.CellHeight),
-            Padding = atlasDungeon.CellPadding
-        };
-        TilemapShaderLayout.UniformData uniformDataPlayer = new TilemapShaderLayout.UniformData {
-            Projection = _camera.GetViewMatrix(),
-            TimeMilliseconds = new Vector2i((int)(uint)(DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() >> 32), (int)(uint)(DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() & 0xFFFFFFFF)),
-            Alpha = (DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() - _world.TickTimestamp) / (float)_world.TickInterval / 1000.0f,
-            TextureSize = new Vector2i(atlasPlayer.AtlasWidth, atlasPlayer.AtlasHeight),
-            CellSize = new Vector2i(atlasPlayer.CellWidth, atlasPlayer.CellHeight),
-            Padding = atlasPlayer.CellPadding
-        };
-        TilemapShaderLayout.UniformData uniformDataEnemy = new TilemapShaderLayout.UniformData {
-            Projection = _camera.GetViewMatrix(),
-            TimeMilliseconds = new Vector2i((int)(uint)(DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() >> 32), (int)(uint)(DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() & 0xFFFFFFFF)),
-            Alpha = (DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() - _world.TickTimestamp) / (float)_world.TickInterval / 1000.0f,
-            TextureSize = new Vector2i(atlasEnemy.AtlasWidth, atlasEnemy.AtlasHeight),
-            CellSize = new Vector2i(atlasEnemy.CellWidth, atlasEnemy.CellHeight),
-            Padding = atlasEnemy.CellPadding
-        };
-        _renderer.SetUniform("shader.tilemap", "textureatlas.dungeon", MemoryMarshal.Cast<TilemapShaderLayout.UniformData, byte>(MemoryMarshal.CreateSpan(ref uniformDataDungeon, 1)));
-        _renderer.SetUniform("shader.tilemap", "textureatlas.player", MemoryMarshal.Cast<TilemapShaderLayout.UniformData, byte>(MemoryMarshal.CreateSpan(ref uniformDataPlayer, 1)));
-        _renderer.SetUniform("shader.tilemap", "textureatlas.enemy", MemoryMarshal.Cast<TilemapShaderLayout.UniformData, byte>(MemoryMarshal.CreateSpan(ref uniformDataEnemy, 1)));
-
-        _world.Tilemap.Render(_renderer);
+        _renderer.Enqueue(_world.Tilemap);
         foreach (Entity entity in _world.Entities)
-            entity.Render(_renderer);
-
-        _renderer.Render();
+            _renderer.Enqueue(entity);
+        _renderer.Flush();
     }
 
     public void Resize(ResizeEventArgs args) {
@@ -146,6 +116,21 @@ public class GameScene : IScene {
 
     public void KeyUp(KeyboardKeyEventArgs args) {
         _world.AddCommand(new SetMovementCommand(_context.PressedKeys.Contains(Keys.W), _context.PressedKeys.Contains(Keys.A), _context.PressedKeys.Contains(Keys.S), _context.PressedKeys.Contains(Keys.D)));
+    }
+
+    public byte[] GetUniformData(string shaderProgram, string textureAtlas) {
+        if (shaderProgram != "shader.tilemap")
+            throw new ArgumentException($"Unexpected shader program: {shaderProgram}");
+        TextureAtlas<string> atlas = _context.AssetManager.Get<TextureAtlas<string>>(textureAtlas);
+        TilemapShaderLayout.UniformData data = new TilemapShaderLayout.UniformData {
+            Projection = _camera.GetViewMatrix(),
+            TimeMilliseconds = new Vector2i((int)(uint)(DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() >> 32), (int)(uint)(DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() & 0xFFFFFFFF)),
+            Alpha = (DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() - _world.TickTimestamp) / (float)_world.TickInterval / 1000.0f,
+            TextureSize = new Vector2i(atlas.AtlasWidth, atlas.AtlasHeight),
+            CellSize = new Vector2i(atlas.CellWidth, atlas.CellHeight),
+            Padding = atlas.CellPadding
+        };
+        return MemoryMarshal.Cast<TilemapShaderLayout.UniformData, byte>(MemoryMarshal.CreateSpan(ref data, 1)).ToArray();
     }
 
     public void Dispose() {
