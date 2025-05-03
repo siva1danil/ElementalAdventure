@@ -1,8 +1,5 @@
 using System.Runtime.InteropServices;
 
-using ElementalAdventure.Client.Core;
-using ElementalAdventure.Client.Core.Rendering;
-using ElementalAdventure.Client.Core.Resources;
 using ElementalAdventure.Client.Core.Resources.Composed;
 using ElementalAdventure.Client.Game.Data;
 using ElementalAdventure.Client.Game.Logic;
@@ -17,10 +14,9 @@ using OpenTK.Windowing.GraphicsLibraryFramework;
 
 namespace ElementalAdventure.Client.Game.Scenes;
 
-public class GameScene : IScene, IUniformProvider<string> {
+public class GameScene : IScene {
     private readonly ClientContext _context;
 
-    private readonly BasicRenderer<string> _renderer;
     private readonly GameWorld _world;
     private readonly Camera _camera;
 
@@ -28,8 +24,6 @@ public class GameScene : IScene, IUniformProvider<string> {
 
     public GameScene(ClientContext context) {
         _context = context;
-
-        _renderer = new BasicRenderer<string>(_context.AssetManager, this);
 
         _world = new GameWorld(1.0f / 20.0f, new Tilemap(), []);
         _camera = new Camera(new Vector2(13.0f * 0.5f - 0.5f, 9.0f * 0.5f - 0.5f), new Vector2(14.0f, 10f), context.WindowSize);
@@ -100,10 +94,7 @@ public class GameScene : IScene, IUniformProvider<string> {
     }
 
     public void Render(FrameEventArgs args) {
-        _renderer.Enqueue(_world.Tilemap);
-        foreach (Entity entity in _world.Entities)
-            _renderer.Enqueue(entity);
-        _renderer.Flush();
+        // TODO: use new renderer
     }
 
     public void Resize(ResizeEventArgs args) {
@@ -134,6 +125,6 @@ public class GameScene : IScene, IUniformProvider<string> {
     }
 
     public void Dispose() {
-        _renderer.Dispose();
+        //
     }
 }

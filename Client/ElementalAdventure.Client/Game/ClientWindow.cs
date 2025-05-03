@@ -1,7 +1,6 @@
 using System.Diagnostics;
 
 using ElementalAdventure.Client.Core.Assets;
-using ElementalAdventure.Client.Core.Resources;
 using ElementalAdventure.Client.Core.Resources.Composed;
 using ElementalAdventure.Client.Core.Resources.OpenGL;
 using ElementalAdventure.Client.Game.Data;

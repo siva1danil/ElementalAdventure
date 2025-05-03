@@ -1,6 +1,5 @@
 namespace ElementalAdventure.Client.Core.Rendering;
 
-public interface IRenderer<K> : IDisposable where K : notnull {
-    public void Enqueue(IRenderable<K> renderable);
-    public void Flush();
+public interface IRenderer {
+    public Span<byte> AllocateInstance(object ownerIdentity, int ownerIndex, string shaderProgram, string textureAtlas, Span<byte> vertexData, int instanceSize);
 }
