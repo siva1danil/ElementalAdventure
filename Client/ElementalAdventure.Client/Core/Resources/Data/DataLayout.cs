@@ -73,9 +73,9 @@ public class DataLayout {
         (_vertexData, _instanceData, _uniformData) = ([.. vertexData], [.. instanceData], [.. uniformData]);
         (_vertexDataSize, _instanceDataSize, _uniformDataSize) = (vertexDataSize, instanceDataSize, uniformDataSize);
 
-        Debug.WriteLine($"Parsed shader layout: VertexData ({_vertexDataSize} bytes): {string.Join(", ", _vertexData.Select(e => $"{e.Name}({e.Type}, {e.Size}, {e.Offset})"))}");
-        Debug.WriteLine($"                      InstanceData ({_instanceDataSize} bytes): {string.Join(", ", _instanceData.Select(e => $"{e.Name}({e.Type}, {e.Size}, {e.Offset})"))}");
-        Debug.WriteLine($"                      UniformData ({_uniformDataSize} bytes): {string.Join(", ", _uniformData.Select(e => $"{e.Name}({e.Type}, {e.Size}, {e.Offset})"))}");
+        Debug.WriteLine($"Resolved shader layout: VertexData ({_vertexDataSize} bytes): {string.Join(", ", _vertexData.Select(e => $"{e.Name}({e.Type}, {e.Size}, {e.Offset})"))}");
+        Debug.WriteLine($"                        InstanceData ({_instanceDataSize} bytes): {string.Join(", ", _instanceData.Select(e => $"{e.Name}({e.Type}, {e.Size}, {e.Offset})"))}");
+        Debug.WriteLine($"                        UniformData ({_uniformDataSize} bytes): {string.Join(", ", _uniformData.Select(e => $"{e.Name}({e.Type}, {e.Size}, {e.Offset})"))}");
     }
 
     public record struct Entry(string Name, VertexAttribPointerType Type, int Size, int Offset);
