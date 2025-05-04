@@ -1,5 +1,5 @@
 namespace ElementalAdventure.Client.Core.Rendering;
 
-public interface IRenderer {
-    public Span<byte> AllocateInstance(object ownerIdentity, int ownerIndex, string shaderProgram, string textureAtlas, Span<byte> vertexData, int instanceSize);
+public interface IRenderer<T> where T : notnull {
+    public Span<byte> AllocateInstance(object ownerIdentity, int ownerIndex, T shaderProgram, T textureAtlas, Span<byte> vertexData, int instanceSize);
 }

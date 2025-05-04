@@ -1,24 +1,31 @@
 using System.Runtime.CompilerServices;
 
 using ElementalAdventure.Client.Core.Assets;
+using ElementalAdventure.Client.Core.Resources.Composed;
+using ElementalAdventure.Client.Core.Resources.Data;
+using ElementalAdventure.Client.Core.Resources.OpenGL;
+
+using OpenTK.Graphics.OpenGL4;
 
 namespace ElementalAdventure.Client.Core.Rendering;
 
-public class BatchedRenderer<T> : IRenderer where T : notnull {
+public class BatchedRenderer<T> : IRenderer<T> where T : notnull {
     private readonly AssetManager<T> _assetManager;
+    private readonly IUniformProvider<T> _uniformProvider;
     private readonly Dictionary<BatchKey, BatchData> _batches;
 
-    public BatchedRenderer(AssetManager<T> assetManager) {
+    public BatchedRenderer(AssetManager<T> assetManager, IUniformProvider<T> uniformProvider) {
         _assetManager = assetManager;
+        _uniformProvider = uniformProvider;
         _batches = [];
     }
 
-    public Span<byte> AllocateInstance(object ownerIdentity, int ownerIndex, string shaderProgram, string textureAtlas, Span<byte> vertexData, int instanceSize) {
+    public Span<byte> AllocateInstance(object ownerIdentity, int ownerIndex, T shaderProgram, T textureAtlas, Span<byte> vertexData, int instanceSize) {
         BatchKey key = new(shaderProgram, textureAtlas, FastHash(vertexData));
         long owner = (long)RuntimeHelpers.GetHashCode(ownerIdentity) << 32 | (long)ownerIndex;
 
         if (!_batches.ContainsKey(key))
-            _batches[key] = new BatchData(vertexData.ToArray(), [], []);
+            _batches[key] = new BatchData(_assetManager.Get<ShaderProgram>(shaderProgram).Layout, vertexData.ToArray(), [], new byte[_assetManager.Get<ShaderProgram>(shaderProgram).Layout.UniformDataSize], []);
 
         _batches[key].CurrentSlots.Add(owner);
         if (_batches[key].Slots.ContainsKey(owner)) {
@@ -79,7 +86,27 @@ public class BatchedRenderer<T> : IRenderer where T : notnull {
     }
 
     public void Render() {
-        // TODO: OpenGL rendering
+        foreach (KeyValuePair<BatchKey, BatchData> batch in _batches) {
+            // Upload VertexArray
+            _uniformProvider.GetUniformData(batch.Key.ShaderProgram, batch.Key.TextureAtlas, batch.Value.UniformData);
+            batch.Value.VertexArrayInstanced.SetGlobalData(batch.Value.VertexData);
+            batch.Value.VertexArrayInstanced.SetInstanceData(batch.Value.InstanceData);
+            batch.Value.UniformBuffer.SetData(batch.Value.UniformData);
+
+            // Use ShaderProgram
+            GL.UseProgram(_assetManager.Get<ShaderProgram>(batch.Key.ShaderProgram).Id);
+            // Use TextureAtlas
+            GL.ActiveTexture(TextureUnit.Texture0);
+            GL.BindTexture(TextureTarget.Texture2D, _assetManager.Get<TextureAtlas<T>>(batch.Key.TextureAtlas).Id);
+            // Use UniformBufferObject
+            GL.BindBuffer(BufferTarget.UniformBuffer, batch.Value.UniformBuffer.Id);
+            GL.BindBufferBase(BufferRangeTarget.UniformBuffer, 0, batch.Value.UniformBuffer.Id);
+            // Use VertexArray
+            GL.BindVertexArray(batch.Value.VertexArrayInstanced.Id);
+
+            // Draw instances
+            GL.DrawArraysInstanced(PrimitiveType.Triangles, 0, batch.Value.VertexData.Length / batch.Value.VertexArrayInstanced.VertexDataSize, batch.Value.InstanceData.Length / batch.Value.VertexArrayInstanced.InstanceDataSize);
+        }
     }
 
     private static int FastHash(Span<byte> span) {
@@ -89,10 +116,13 @@ public class BatchedRenderer<T> : IRenderer where T : notnull {
         return hash;
     }
 
-    private readonly record struct BatchKey(string ShaderProgram, string TextureAtlas, int VertexDataHash);
-    private class BatchData(byte[] vertexData, byte[] instanceData, Dictionary<long, BatchSlot> slots) {
+    private readonly record struct BatchKey(T ShaderProgram, T TextureAtlas, int VertexDataHash);
+    private class BatchData(DataLayout layout, byte[] vertexData, byte[] instanceData, byte[] uniformData, Dictionary<long, BatchSlot> slots) {
+        public VertexArrayInstanced VertexArrayInstanced = new VertexArrayInstanced(layout);
+        public UniformBuffer UniformBuffer = new UniformBuffer(layout);
         public byte[] VertexData = vertexData;
         public byte[] InstanceData = instanceData;
+        public byte[] UniformData = uniformData;
         public Dictionary<long, BatchSlot> Slots = slots;
         public HashSet<long> PreviousSlots = [.. slots.Keys], CurrentSlots = [.. slots.Keys];
     }

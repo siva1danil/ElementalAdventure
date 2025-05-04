@@ -1,5 +1,6 @@
 using System.Runtime.InteropServices;
 
+using ElementalAdventure.Client.Core.Rendering;
 using ElementalAdventure.Client.Core.Resources.Composed;
 using ElementalAdventure.Client.Game.Data;
 using ElementalAdventure.Client.Game.Logic;
@@ -14,9 +15,10 @@ using OpenTK.Windowing.GraphicsLibraryFramework;
 
 namespace ElementalAdventure.Client.Game.Scenes;
 
-public class GameScene : IScene {
+public class GameScene : IScene, IUniformProvider<string> {
     private readonly ClientContext _context;
 
+    private readonly BatchedRenderer<string> _renderer;
     private readonly GameWorld _world;
     private readonly Camera _camera;
 
@@ -24,6 +26,8 @@ public class GameScene : IScene {
 
     public GameScene(ClientContext context) {
         _context = context;
+
+        _renderer = new(_context.AssetManager, this);
 
         _world = new GameWorld(1.0f / 20.0f, new Tilemap(), []);
         _camera = new Camera(new Vector2(13.0f * 0.5f - 0.5f, 9.0f * 0.5f - 0.5f), new Vector2(14.0f, 10f), context.WindowSize);
@@ -94,7 +98,11 @@ public class GameScene : IScene {
     }
 
     public void Render(FrameEventArgs args) {
-        // TODO: use new renderer
+        _world.Tilemap.Render(_renderer);
+        foreach (Entity entity in _world.Entities)
+            entity.Render(_renderer);
+        _renderer.Commit();
+        _renderer.Render();
     }
 
     public void Resize(ResizeEventArgs args) {
@@ -109,9 +117,7 @@ public class GameScene : IScene {
         _world.AddCommand(new SetMovementCommand(_context.PressedKeys.Contains(Keys.W), _context.PressedKeys.Contains(Keys.A), _context.PressedKeys.Contains(Keys.S), _context.PressedKeys.Contains(Keys.D)));
     }
 
-    public byte[] GetUniformData(string shaderProgram, string textureAtlas) {
-        if (shaderProgram != "shader.tilemap")
-            throw new ArgumentException($"Unexpected shader program: {shaderProgram}");
+    public void GetUniformData(string shaderProgram, string textureAtlas, Span<byte> buffer) {
         TextureAtlas<string> atlas = _context.AssetManager.Get<TextureAtlas<string>>(textureAtlas);
         TilemapShaderLayout.UniformData data = new TilemapShaderLayout.UniformData {
             Projection = _camera.GetViewMatrix(),
@@ -121,7 +127,7 @@ public class GameScene : IScene {
             CellSize = new Vector2i(atlas.CellWidth, atlas.CellHeight),
             Padding = atlas.CellPadding
         };
-        return MemoryMarshal.Cast<TilemapShaderLayout.UniformData, byte>(MemoryMarshal.CreateSpan(ref data, 1)).ToArray();
+        MemoryMarshal.Cast<TilemapShaderLayout.UniformData, byte>(MemoryMarshal.CreateSpan(ref data, 1)).CopyTo(buffer);
     }
 
     public void Dispose() {

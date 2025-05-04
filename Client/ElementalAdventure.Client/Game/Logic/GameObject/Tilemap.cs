@@ -1,4 +1,7 @@
+using System.Runtime.InteropServices;
+
 using ElementalAdventure.Client.Core.Assets;
+using ElementalAdventure.Client.Core.Rendering;
 using ElementalAdventure.Client.Core.Resources.Composed;
 using ElementalAdventure.Client.Game.Data;
 
@@ -62,6 +65,11 @@ public class Tilemap {
 
     public float GetNormalizedDepth(int z, float y, int layerOffset, float heightOffset) {
         return _depth[z + layerOffset].X + (_depth[z + layerOffset].Y - _depth[z + layerOffset].X) * (1.0f - (y + heightOffset + 0.5f) / (_dimensions.Y + 1.0f));
+    }
+
+    public void Render(IRenderer<string> renderer) {
+        Span<byte> slot = renderer.AllocateInstance(this, 0, "shader.tilemap", "textureatlas.dungeon", MemoryMarshal.Cast<TilemapShaderLayout.GlobalData, byte>(_globalData.AsSpan()), Marshal.SizeOf<TilemapShaderLayout.InstanceData>() * _instanceData.Length);
+        MemoryMarshal.Cast<TilemapShaderLayout.InstanceData, byte>(_instanceData.AsSpan()).CopyTo(slot);
     }
 
     public readonly record struct Tile(Vector3 Position, int Index, Vector2i FrameSize, int FrameCount, int FrameTime);

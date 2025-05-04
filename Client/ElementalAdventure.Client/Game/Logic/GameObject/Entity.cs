@@ -1,4 +1,8 @@
+using System.Runtime.InteropServices;
+
 using ElementalAdventure.Client.Core.Assets;
+using ElementalAdventure.Client.Core.Rendering;
+using ElementalAdventure.Client.Core.Resources.Composed;
 using ElementalAdventure.Client.Game.Data;
 using ElementalAdventure.Client.Game.Logic.Component.Behaviour;
 using ElementalAdventure.Client.Game.Logic.Component.Data;
@@ -16,7 +20,6 @@ public class Entity {
     private readonly IBehavourComponent[] _behaviourComponents;
 
     private readonly TilemapShaderLayout.GlobalData[] _globalData;
-    private readonly TilemapShaderLayout.InstanceData[] _instanceData;
 
     public PositionDataComponent PositionDataComponent => _positionDataComponent;
     public TextureDataComponent TextureDataComponent => _textureDataComponent;
@@ -30,11 +33,20 @@ public class Entity {
         _behaviourComponents = behaviourComponents;
 
         _globalData = [new(new(-0.5f, -0.5f, 0.0f)), new(new(0.5f, -0.5f, 0.0f)), new(new(-0.5f, 0.5f, 0.0f)), new(new(0.5f, -0.5f, 0.0f)), new(new(-0.5f, 0.5f, 0.0f)), new(new(0.5f, 0.5f, 0.0f))];
-        _instanceData = new TilemapShaderLayout.InstanceData[1];
     }
 
     public void Update(GameWorld world) {
         foreach (IBehavourComponent behaviourComponent in _behaviourComponents)
             behaviourComponent?.Update(world, this);
+    }
+
+    public void Render(IRenderer<string> renderer) {
+        if (!TextureDataComponent.Visible)
+            return;
+
+        Span<byte> slot = renderer.AllocateInstance(this, 0, "shader.tilemap", TextureDataComponent.TextureAtlas, MemoryMarshal.Cast<TilemapShaderLayout.GlobalData, byte>(_globalData.AsSpan()), Marshal.SizeOf<TilemapShaderLayout.InstanceData>());
+        TextureAtlas<string>.Entry entry = _assetManager.Get<TextureAtlas<string>>(TextureDataComponent.TextureAtlas).GetEntry(TextureDataComponent.Texture);
+        TilemapShaderLayout.InstanceData instance = new(new(PositionDataComponent.LastPosition.X, PositionDataComponent.LastPosition.Y, PositionDataComponent.Z), new(PositionDataComponent.Position.X, PositionDataComponent.Position.Y, PositionDataComponent.Z), entry.Index, new Vector2i(entry.Width, entry.Height), entry.FrameCount, entry.FrameTime);
+        MemoryMarshal.Cast<TilemapShaderLayout.InstanceData, byte>(MemoryMarshal.CreateSpan(ref instance, 1)).CopyTo(slot);
     }
 }
