@@ -131,6 +131,6 @@ public class GameScene : IScene, IUniformProvider<string> {
     }
 
     public void Dispose() {
-        //
+        _renderer.Dispose();
     }
 }

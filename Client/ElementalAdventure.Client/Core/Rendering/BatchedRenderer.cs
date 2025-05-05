@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using System.Runtime.CompilerServices;
 
 using ElementalAdventure.Client.Core.Assets;
@@ -107,6 +108,16 @@ public class BatchedRenderer<T> : IRenderer<T> where T : notnull {
             // Draw instances
             GL.DrawArraysInstanced(PrimitiveType.Triangles, 0, batch.Value.VertexData.Length / batch.Value.VertexArrayInstanced.VertexDataSize, batch.Value.InstanceData.Length / batch.Value.VertexArrayInstanced.InstanceDataSize);
         }
+    }
+
+    public void Dispose() {
+        foreach (KeyValuePair<BatchKey, BatchData> batch in _batches) {
+            Debug.WriteLine($"Disposing batch BatchKey{{{batch.Key.ShaderProgram},{batch.Key.TextureAtlas},{batch.Key.VertexDataHash}}} of {batch.Value.VertexData.Length}+{batch.Value.InstanceData.Length} bytes");
+            batch.Value.VertexArrayInstanced.Dispose();
+            batch.Value.UniformBuffer.Dispose();
+        }
+        _batches.Clear();
+        GC.SuppressFinalize(this);
     }
 
     private static int FastHash(Span<byte> span) {
