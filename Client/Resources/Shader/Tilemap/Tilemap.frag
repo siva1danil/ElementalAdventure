@@ -4,11 +4,11 @@ uniform sampler2D uTexture;
 
 in vec2 vUV;
 
-out vec4 FragColor;
+out vec4 fColor;
 
 void main() {
     vec4 color = texture(uTexture, vUV);
     if (color.a == 0.0)
         discard;
-    FragColor = color;
+    fColor = color;
 }
