@@ -39,6 +39,7 @@ public class ClientWindow : GameWindow {
     private void LoadHandler() {
         try {
             _context.AssetManager.Add("shader.tilemap", new ShaderProgram(_context.AssetLoader.LoadText("Shader/Tilemap/Tilemap.vert"), _context.AssetLoader.LoadText("Shader/Tilemap/Tilemap.frag")));
+            _context.AssetManager.Add("shader.userinterface", new ShaderProgram(_context.AssetLoader.LoadText("Shader/UserInterface/UserInterface.vert"), _context.AssetLoader.LoadText("Shader/UserInterface/UserInterface.frag")));
             _context.AssetManager.Add("textureatlas.dungeon", new TextureAtlas<string>(new Dictionary<string, TextureAtlas<string>.EntryDef> {
                 { "null", new([_context.AssetLoader.LoadBinary("TextureAtlas/Dungeon/null.png")], 100) },
                 { "floor_1", new([_context.AssetLoader.LoadBinary("TextureAtlas/Dungeon/floor_1.png")], 100) },
@@ -184,6 +185,7 @@ public class ClientWindow : GameWindow {
         } catch (Exception e) {
             Console.WriteLine(e.Message);
             Close();
+            return;
         }
 
         _scene = new GameScene(_context);

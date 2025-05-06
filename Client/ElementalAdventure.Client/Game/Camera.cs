@@ -12,9 +12,9 @@ public class Camera {
     public Vector2 ScreenSize { set => _screenSize = value; get => _screenSize; }
 
 
-    public Camera(Vector2 center, Vector2 size, Vector2 screenSize) {
+    public Camera(Vector2 center, Vector2 targetWorldSize, Vector2 screenSize) {
         _center = center;
-        _targetWorldSize = size;
+        _targetWorldSize = targetWorldSize;
         _screenSize = screenSize;
     }
 

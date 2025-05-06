@@ -8,6 +8,10 @@ using ElementalAdventure.Client.Game.Logic.Command;
 using ElementalAdventure.Client.Game.Logic.Component.Behaviour;
 using ElementalAdventure.Client.Game.Logic.Component.Data;
 using ElementalAdventure.Client.Game.Logic.GameObject;
+using ElementalAdventure.Client.Game.UI;
+using ElementalAdventure.Client.Game.UI.Interface;
+using ElementalAdventure.Client.Game.UI.View;
+using ElementalAdventure.Client.Game.UI.ViewGroup;
 
 using OpenTK.Mathematics;
 using OpenTK.Windowing.Common;
@@ -19,8 +23,9 @@ public class GameScene : IScene, IUniformProvider<string> {
     private readonly ClientContext _context;
 
     private readonly BatchedRenderer<string> _renderer;
+    private readonly UIManager _ui;
+    private readonly Camera _worldCamera, _uiCamera;
     private readonly GameWorld _world;
-    private readonly Camera _camera;
 
     private double _tickAccumulator;
 
@@ -28,9 +33,34 @@ public class GameScene : IScene, IUniformProvider<string> {
         _context = context;
 
         _renderer = new(_context.AssetManager, this);
+        _ui = new();
+        _uiCamera = new Camera(context.WindowSize / 2.0f, context.WindowSize, context.WindowSize);
+        _worldCamera = new Camera(new Vector2(13.0f * 0.5f - 0.5f, 9.0f * 0.5f - 0.5f), new Vector2(14.0f, 10f), context.WindowSize);
+
+        AbsoluteLayout<string> layout = new();
+        LinearLayout<string> bottomLeft = new();
+        LinearLayout<string> bottomRight = new();
+        LinearLayout<string> center = new() { Orientation = LinearLayout<string>.OrientationType.Vertical };
+        ColorView bottomLeftView1 = new() { Size = new Vector2(100f, 100f), Color = new Vector3(1.0f, 0.0f, 0.0f) };
+        ColorView bottomLeftView2 = new() { Size = new Vector2(100f, 100f), Color = new Vector3(0.0f, 1.0f, 0.0f) };
+        ColorView bottomRightView1 = new() { Size = new Vector2(80f, 80f), Color = new Vector3(0.0f, 0.0f, 1.0f) };
+        ColorView bottomRightView2 = new() { Size = new Vector2(80f, 80f), Color = new Vector3(1.0f, 1.0f, 0.0f) };
+        ColorView centerView1 = new() { Size = new Vector2(200f, 200f), Color = new Vector3(0.0f, 1.0f, 1.0f) };
+        ColorView centerView2 = new() { Size = new Vector2(200f, 200f), Color = new Vector3(1.0f, 0.0f, 1.0f) };
+        layout.Add(bottomLeft, new AbsoluteLayout<string>.LayoutParams { Position = new Vector2(0.0f, 0.0f), Anchor = new Vector2(0.0f, 0.0f) });
+        layout.Add(bottomRight, new AbsoluteLayout<string>.LayoutParams { Position = new Vector2(1280.0f, 0.0f), Anchor = new Vector2(1.0f, 0.0f) });
+        layout.Add(center, new AbsoluteLayout<string>.LayoutParams { Position = new Vector2(1280.0f, 720f) * 0.5f, Anchor = new Vector2(0.5f, 0.5f) });
+        bottomLeft.Add(bottomLeftView1, new LinearLayout<string>.LayoutParams { });
+        bottomLeft.Add(bottomLeftView2, new LinearLayout<string>.LayoutParams { });
+        bottomRight.Add(bottomRightView1, new LinearLayout<string>.LayoutParams { });
+        bottomRight.Add(bottomRightView2, new LinearLayout<string>.LayoutParams { });
+        center.Add(centerView1, new LinearLayout<string>.LayoutParams { });
+        center.Add(centerView2, new LinearLayout<string>.LayoutParams { });
+        layout.Measure();
+        layout.Layout();
+        _ui.Push(layout);
 
         _world = new GameWorld(1.0f / 20.0f, new Tilemap(), []);
-        _camera = new Camera(new Vector2(13.0f * 0.5f - 0.5f, 9.0f * 0.5f - 0.5f), new Vector2(14.0f, 10f), context.WindowSize);
         _world.Tilemap.SetMap(new Vector2(0.0f, 1.0f), _context.AssetManager, new string?[,,] {
             {
                 { "floor_1_righthalf", "wall_top", "wall_top", "wall_top", "wall_top", "wall_top", "wall_top", "wall_top", "wall_top", "wall_top", "wall_top", "wall_top", "floor_1_lefthalf" },
@@ -85,7 +115,6 @@ public class GameScene : IScene, IUniformProvider<string> {
         _world.Entities.Add(new Entity(_context.AssetManager, new LivingDataComponent(false, false, _context.AssetManager.Get<EnemyType>("slime").Speed), [new EnemyBehaviourComponent(_context.AssetManager.Get<EnemyType>("slime"))]));
         _world.Entities[3].PositionDataComponent.Position = new Vector2(5.0f, 4.0f);
 
-
         _tickAccumulator = 0.0;
     }
 
@@ -101,12 +130,16 @@ public class GameScene : IScene, IUniformProvider<string> {
         _world.Tilemap.Render(_renderer);
         foreach (Entity entity in _world.Entities)
             entity.Render(_renderer);
+        _ui.Render(_renderer);
         _renderer.Commit();
         _renderer.Render();
     }
 
     public void Resize(ResizeEventArgs args) {
-        _camera.ScreenSize = new Vector2(args.Size.X, args.Size.Y);
+        _uiCamera.Center = new Vector2(args.Size.X, args.Size.Y) / 2.0f;
+        _uiCamera.ScreenSize = new Vector2(args.Size.X, args.Size.Y);
+        _uiCamera.TargetWorldSize = new Vector2(args.Size.X, args.Size.Y);
+        _worldCamera.ScreenSize = new Vector2(args.Size.X, args.Size.Y);
     }
 
     public void KeyDown(KeyboardKeyEventArgs args) {
@@ -118,16 +151,24 @@ public class GameScene : IScene, IUniformProvider<string> {
     }
 
     public void GetUniformData(string shaderProgram, string textureAtlas, Span<byte> buffer) {
-        TextureAtlas<string> atlas = _context.AssetManager.Get<TextureAtlas<string>>(textureAtlas);
-        TilemapShaderLayout.UniformData data = new TilemapShaderLayout.UniformData {
-            Projection = _camera.GetViewMatrix(),
-            TimeMilliseconds = new Vector2i((int)(uint)(DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() >> 32), (int)(uint)(DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() & 0xFFFFFFFF)),
-            Alpha = (DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() - _world.TickTimestamp) / (float)_world.TickInterval / 1000.0f,
-            TextureSize = new Vector2i(atlas.AtlasWidth, atlas.AtlasHeight),
-            CellSize = new Vector2i(atlas.CellWidth, atlas.CellHeight),
-            Padding = atlas.CellPadding
-        };
-        MemoryMarshal.Cast<TilemapShaderLayout.UniformData, byte>(MemoryMarshal.CreateSpan(ref data, 1)).CopyTo(buffer);
+        if (shaderProgram == "shader.userinterface") {
+            UserInterfaceShaderLayout.UniformData data = new UserInterfaceShaderLayout.UniformData {
+                Projection = _uiCamera.GetViewMatrix()
+            };
+            MemoryMarshal.Cast<UserInterfaceShaderLayout.UniformData, byte>(MemoryMarshal.CreateSpan(ref data, 1)).CopyTo(buffer);
+            return;
+        } else if (shaderProgram == "shader.tilemap") {
+            TextureAtlas<string> atlas = _context.AssetManager.Get<TextureAtlas<string>>(textureAtlas);
+            TilemapShaderLayout.UniformData data = new TilemapShaderLayout.UniformData {
+                Projection = _worldCamera.GetViewMatrix(),
+                TimeMilliseconds = new Vector2i((int)(uint)(DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() >> 32), (int)(uint)(DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() & 0xFFFFFFFF)),
+                Alpha = (DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() - _world.TickTimestamp) / (float)_world.TickInterval / 1000.0f,
+                TextureSize = new Vector2i(atlas.AtlasWidth, atlas.AtlasHeight),
+                CellSize = new Vector2i(atlas.CellWidth, atlas.CellHeight),
+                Padding = atlas.CellPadding
+            };
+            MemoryMarshal.Cast<TilemapShaderLayout.UniformData, byte>(MemoryMarshal.CreateSpan(ref data, 1)).CopyTo(buffer);
+        }
     }
 
     public void Dispose() {
