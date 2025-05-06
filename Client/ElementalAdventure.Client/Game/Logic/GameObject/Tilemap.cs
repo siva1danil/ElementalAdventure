@@ -32,7 +32,7 @@ public class Tilemap {
         _instanceData = [];
     }
 
-    public void SetMap(Vector2 depthRange, AssetManager<string> assetManager, string?[,,] map, int midground) {
+    public void SetMap(Vector2 depthRange, AssetManager assetManager, AssetID[,,] map, int midground) {
         _map = [];
         _depth = new Vector2[map.GetLength(0)];
         _dimensions = new(map.GetLength(2), map.GetLength(1), map.GetLength(0));
@@ -46,10 +46,10 @@ public class Tilemap {
         for (int z = 0; z < _dimensions.Z; z++) {
             for (int y = 0; y < _dimensions.Y; y++) {
                 for (int x = 0; x < _dimensions.X; x++) {
-                    if (map[z, y, x] != null) {
+                    if (map[z, y, x] != AssetID.None) {
                         int wy = _dimensions.Y - y - 1;
                         TileType type = assetManager.Get<TileType>(map[z, y, x]!);
-                        TextureAtlas<string>.Entry value = assetManager.Get<TextureAtlas<string>>(type.TextureAtlas).GetEntry(type.Texture);
+                        TextureAtlas.Entry value = assetManager.Get<TextureAtlas>(type.TextureAtlas).GetEntry(type.Texture);
                         _map.Add(new Tile(new Vector3(x, wy, GetNormalizedDepth(z, wy, type.DepthLayerOffset, type.DepthHeightOffset)), value.Index, new Vector2i(value.Width, value.Height), value.FrameCount, value.FrameTime));
                     }
                 }
@@ -67,8 +67,8 @@ public class Tilemap {
         return _depth[z + layerOffset].X + (_depth[z + layerOffset].Y - _depth[z + layerOffset].X) * (1.0f - (y + heightOffset + 0.5f) / (_dimensions.Y + 1.0f));
     }
 
-    public void Render(IRenderer<string> renderer) {
-        Span<byte> slot = renderer.AllocateInstance(this, 0, "shader.tilemap", "textureatlas.dungeon", MemoryMarshal.Cast<TilemapShaderLayout.GlobalData, byte>(_globalData.AsSpan()), Marshal.SizeOf<TilemapShaderLayout.InstanceData>() * _instanceData.Length);
+    public void Render(IRenderer renderer) {
+        Span<byte> slot = renderer.AllocateInstance(this, 0, new AssetID("shader.tilemap"), new AssetID("textureatlas.dungeon"), MemoryMarshal.Cast<TilemapShaderLayout.GlobalData, byte>(_globalData.AsSpan()), Marshal.SizeOf<TilemapShaderLayout.InstanceData>() * _instanceData.Length);
         MemoryMarshal.Cast<TilemapShaderLayout.InstanceData, byte>(_instanceData.AsSpan()).CopyTo(slot);
     }
 

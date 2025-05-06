@@ -4,13 +4,13 @@ using ElementalAdventure.Client.Game.UI.Interface;
 namespace ElementalAdventure.Client.Game.UI;
 
 public class UIManager {
-    private readonly Stack<IViewGroup<string>> _stack;
+    private readonly Stack<IViewGroup> _stack;
 
     public UIManager() {
         _stack = [];
     }
 
-    public void Push(IViewGroup<string> viewGroup) {
+    public void Push(IViewGroup viewGroup) {
         _stack.Push(viewGroup);
     }
 
@@ -19,7 +19,7 @@ public class UIManager {
             _stack.Pop();
     }
 
-    public void Render(IRenderer<string> renderer) {
+    public void Render(IRenderer renderer) {
         if (_stack.Count == 0)
             return;
         _stack.Peek().Render(renderer);

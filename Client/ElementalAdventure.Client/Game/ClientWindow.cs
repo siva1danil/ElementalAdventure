@@ -33,59 +33,59 @@ public class ClientWindow : GameWindow {
         KeyDown += KeyDownHandler;
         KeyUp += KeyUpHandler;
 
-        _context = new ClientContext(new AssetLoader(Path.Combine(root, "Resources")), new AssetManager<string>(), ClientSize);
+        _context = new ClientContext(new AssetLoader(Path.Combine(root, "Resources")), new AssetManager(), ClientSize);
     }
 
     private void LoadHandler() {
         try {
-            _context.AssetManager.Add("shader.tilemap", new ShaderProgram(_context.AssetLoader.LoadText("Shader/Tilemap/Tilemap.vert"), _context.AssetLoader.LoadText("Shader/Tilemap/Tilemap.frag")));
-            _context.AssetManager.Add("shader.userinterface", new ShaderProgram(_context.AssetLoader.LoadText("Shader/UserInterface/UserInterface.vert"), _context.AssetLoader.LoadText("Shader/UserInterface/UserInterface.frag")));
-            _context.AssetManager.Add("textureatlas.dungeon", new TextureAtlas<string>(new Dictionary<string, TextureAtlas<string>.EntryDef> {
-                { "null", new([_context.AssetLoader.LoadBinary("TextureAtlas/Dungeon/null.png")], 100) },
-                { "floor_1", new([_context.AssetLoader.LoadBinary("TextureAtlas/Dungeon/floor_1.png")], 100) },
-                { "floor_1_bottomhalf", new([_context.AssetLoader.LoadBinary("TextureAtlas/Dungeon/floor_1_bottomhalf.png")], 100) },
-                { "floor_1_lefthalf", new([_context.AssetLoader.LoadBinary("TextureAtlas/Dungeon/floor_1_lefthalf.png")], 100) },
-                { "floor_1_righthalf", new([_context.AssetLoader.LoadBinary("TextureAtlas/Dungeon/floor_1_righthalf.png")], 100) },
-                { "floor_1_tophalf", new([_context.AssetLoader.LoadBinary("TextureAtlas/Dungeon/floor_1_tophalf.png")], 100) },
-                { "floor_2", new([_context.AssetLoader.LoadBinary("TextureAtlas/Dungeon/floor_2.png")], 100) },
-                { "floor_2_bottomhalf", new([_context.AssetLoader.LoadBinary("TextureAtlas/Dungeon/floor_2_bottomhalf.png")], 100) },
-                { "floor_2_lefthalf", new([_context.AssetLoader.LoadBinary("TextureAtlas/Dungeon/floor_2_lefthalf.png")], 100) },
-                { "floor_2_righthalf", new([_context.AssetLoader.LoadBinary("TextureAtlas/Dungeon/floor_2_righthalf.png")], 100) },
-                { "floor_2_tophalf", new([_context.AssetLoader.LoadBinary("TextureAtlas/Dungeon/floor_2_tophalf.png")], 100) },
-                { "wall_bottom", new([_context.AssetLoader.LoadBinary("TextureAtlas/Dungeon/wall_bottom.png")], 100) },
-                { "wall_left", new([_context.AssetLoader.LoadBinary("TextureAtlas/Dungeon/wall_left.png")], 100) },
-                { "wall_right", new([_context.AssetLoader.LoadBinary("TextureAtlas/Dungeon/wall_right.png")], 100) },
-                { "wall_top", new([_context.AssetLoader.LoadBinary("TextureAtlas/Dungeon/wall_top.png")], 100) },
-                { "wall_bottomleft_inner", new([_context.AssetLoader.LoadBinary("TextureAtlas/Dungeon/wall_bottomleft_inner.png")], 100) },
-                { "wall_bottomright_inner", new([_context.AssetLoader.LoadBinary("TextureAtlas/Dungeon/wall_bottomright_inner.png")], 100) },
-                { "wall_topleft_inner", new([_context.AssetLoader.LoadBinary("TextureAtlas/Dungeon/wall_topleft_inner.png")], 100) },
-                { "wall_topright_inner", new([_context.AssetLoader.LoadBinary("TextureAtlas/Dungeon/wall_topright_inner.png")], 100) },
-                { "wall_bottomleft_outer", new([_context.AssetLoader.LoadBinary("TextureAtlas/Dungeon/wall_bottomleft_outer.png")], 100) },
-                { "wall_bottomright_outer", new([_context.AssetLoader.LoadBinary("TextureAtlas/Dungeon/wall_bottomright_outer.png")], 100) },
-                { "wall_topleft_outer", new([_context.AssetLoader.LoadBinary("TextureAtlas/Dungeon/wall_topleft_outer.png")], 100) },
-                { "wall_topright_outer", new([_context.AssetLoader.LoadBinary("TextureAtlas/Dungeon/wall_topright_outer.png")], 100) },
-                { "fountain_1_bottom", new([
+            _context.AssetManager.Add(new AssetID("shader.tilemap"), new ShaderProgram(_context.AssetLoader.LoadText("Shader/Tilemap/Tilemap.vert"), _context.AssetLoader.LoadText("Shader/Tilemap/Tilemap.frag")));
+            _context.AssetManager.Add(new AssetID("shader.userinterface"), new ShaderProgram(_context.AssetLoader.LoadText("Shader/UserInterface/UserInterface.vert"), _context.AssetLoader.LoadText("Shader/UserInterface/UserInterface.frag")));
+            _context.AssetManager.Add(new AssetID("textureatlas.dungeon"), new TextureAtlas(new Dictionary<AssetID, TextureAtlas.EntryDef> {
+                { new AssetID("null"), new([_context.AssetLoader.LoadBinary("TextureAtlas/Dungeon/null.png")], 100) },
+                { new AssetID("floor_1"), new([_context.AssetLoader.LoadBinary("TextureAtlas/Dungeon/floor_1.png")], 100) },
+                { new AssetID("floor_1_bottomhalf"), new([_context.AssetLoader.LoadBinary("TextureAtlas/Dungeon/floor_1_bottomhalf.png")], 100) },
+                { new AssetID("floor_1_lefthalf"), new([_context.AssetLoader.LoadBinary("TextureAtlas/Dungeon/floor_1_lefthalf.png")], 100) },
+                { new AssetID("floor_1_righthalf"), new([_context.AssetLoader.LoadBinary("TextureAtlas/Dungeon/floor_1_righthalf.png")], 100) },
+                { new AssetID("floor_1_tophalf"), new([_context.AssetLoader.LoadBinary("TextureAtlas/Dungeon/floor_1_tophalf.png")], 100) },
+                { new AssetID("floor_2"), new([_context.AssetLoader.LoadBinary("TextureAtlas/Dungeon/floor_2.png")], 100) },
+                { new AssetID("floor_2_bottomhalf"), new([_context.AssetLoader.LoadBinary("TextureAtlas/Dungeon/floor_2_bottomhalf.png")], 100) },
+                { new AssetID("floor_2_lefthalf"), new([_context.AssetLoader.LoadBinary("TextureAtlas/Dungeon/floor_2_lefthalf.png")], 100) },
+                { new AssetID("floor_2_righthalf"), new([_context.AssetLoader.LoadBinary("TextureAtlas/Dungeon/floor_2_righthalf.png")], 100) },
+                { new AssetID("floor_2_tophalf"), new([_context.AssetLoader.LoadBinary("TextureAtlas/Dungeon/floor_2_tophalf.png")], 100) },
+                { new AssetID("wall_bottom"), new([_context.AssetLoader.LoadBinary("TextureAtlas/Dungeon/wall_bottom.png")], 100) },
+                { new AssetID("wall_left"), new([_context.AssetLoader.LoadBinary("TextureAtlas/Dungeon/wall_left.png")], 100) },
+                { new AssetID("wall_right"), new([_context.AssetLoader.LoadBinary("TextureAtlas/Dungeon/wall_right.png")], 100) },
+                { new AssetID("wall_top"), new([_context.AssetLoader.LoadBinary("TextureAtlas/Dungeon/wall_top.png")], 100) },
+                { new AssetID("wall_bottomleft_inner"), new([_context.AssetLoader.LoadBinary("TextureAtlas/Dungeon/wall_bottomleft_inner.png")], 100) },
+                { new AssetID("wall_bottomright_inner"), new([_context.AssetLoader.LoadBinary("TextureAtlas/Dungeon/wall_bottomright_inner.png")], 100) },
+                { new AssetID("wall_topleft_inner"), new([_context.AssetLoader.LoadBinary("TextureAtlas/Dungeon/wall_topleft_inner.png")], 100) },
+                { new AssetID("wall_topright_inner"), new([_context.AssetLoader.LoadBinary("TextureAtlas/Dungeon/wall_topright_inner.png")], 100) },
+                { new AssetID("wall_bottomleft_outer"), new([_context.AssetLoader.LoadBinary("TextureAtlas/Dungeon/wall_bottomleft_outer.png")], 100) },
+                { new AssetID("wall_bottomright_outer"), new([_context.AssetLoader.LoadBinary("TextureAtlas/Dungeon/wall_bottomright_outer.png")], 100) },
+                { new AssetID("wall_topleft_outer"), new([_context.AssetLoader.LoadBinary("TextureAtlas/Dungeon/wall_topleft_outer.png")], 100) },
+                { new AssetID("wall_topright_outer"), new([_context.AssetLoader.LoadBinary("TextureAtlas/Dungeon/wall_topright_outer.png")], 100) },
+                { new AssetID("fountain_1_bottom"), new([
                     _context.AssetLoader.LoadBinary("TextureAtlas/Dungeon/fountain_1_bottom.0.png"),
                     _context.AssetLoader.LoadBinary("TextureAtlas/Dungeon/fountain_1_bottom.1.png"),
                     _context.AssetLoader.LoadBinary("TextureAtlas/Dungeon/fountain_1_bottom.2.png"),
                     _context.AssetLoader.LoadBinary("TextureAtlas/Dungeon/fountain_1_bottom.3.png"),
                     _context.AssetLoader.LoadBinary("TextureAtlas/Dungeon/fountain_1_bottom.4.png")
                 ], 100) },
-                { "fountain_1_top", new([
+                { new AssetID("fountain_1_top"), new([
                     _context.AssetLoader.LoadBinary("TextureAtlas/Dungeon/fountain_1_top.0.png"),
                     _context.AssetLoader.LoadBinary("TextureAtlas/Dungeon/fountain_1_top.1.png"),
                     _context.AssetLoader.LoadBinary("TextureAtlas/Dungeon/fountain_1_top.2.png"),
                     _context.AssetLoader.LoadBinary("TextureAtlas/Dungeon/fountain_1_top.3.png"),
                     _context.AssetLoader.LoadBinary("TextureAtlas/Dungeon/fountain_1_top.4.png")
                 ], 100) },
-                { "fountain_2_bottom", new([
+                { new AssetID("fountain_2_bottom"), new([
                     _context.AssetLoader.LoadBinary("TextureAtlas/Dungeon/fountain_2_bottom.0.png"),
                     _context.AssetLoader.LoadBinary("TextureAtlas/Dungeon/fountain_2_bottom.1.png"),
                     _context.AssetLoader.LoadBinary("TextureAtlas/Dungeon/fountain_2_bottom.2.png"),
                     _context.AssetLoader.LoadBinary("TextureAtlas/Dungeon/fountain_2_bottom.3.png"),
                     _context.AssetLoader.LoadBinary("TextureAtlas/Dungeon/fountain_2_bottom.4.png")
                 ], 100) },
-                { "fountain_2_top", new([
+                { new AssetID("fountain_2_top"), new([
                     _context.AssetLoader.LoadBinary("TextureAtlas/Dungeon/fountain_2_top.0.png"),
                     _context.AssetLoader.LoadBinary("TextureAtlas/Dungeon/fountain_2_top.1.png"),
                     _context.AssetLoader.LoadBinary("TextureAtlas/Dungeon/fountain_2_top.2.png"),
@@ -93,8 +93,8 @@ public class ClientWindow : GameWindow {
                     _context.AssetLoader.LoadBinary("TextureAtlas/Dungeon/fountain_2_top.4.png")
                 ], 100) }
             }, 1));
-            _context.AssetManager.Add("textureatlas.player", new TextureAtlas<string>(new Dictionary<string, TextureAtlas<string>.EntryDef> {
-                { "mage_idle_left", new ([
+            _context.AssetManager.Add(new AssetID("textureatlas.player"), new TextureAtlas(new Dictionary<AssetID, TextureAtlas.EntryDef> {
+                { new AssetID("mage_idle_left"), new ([
                     _context.AssetLoader.LoadBinary("TextureAtlas/Player/mage_idle_left.0.png"),
                     _context.AssetLoader.LoadBinary("TextureAtlas/Player/mage_idle_left.1.png"),
                     _context.AssetLoader.LoadBinary("TextureAtlas/Player/mage_idle_left.2.png"),
@@ -104,7 +104,7 @@ public class ClientWindow : GameWindow {
                     _context.AssetLoader.LoadBinary("TextureAtlas/Player/mage_idle_left.6.png"),
                     _context.AssetLoader.LoadBinary("TextureAtlas/Player/mage_idle_left.7.png")
                 ], 100) },
-                { "mage_idle_right", new ([
+                { new AssetID("mage_idle_right"), new ([
                     _context.AssetLoader.LoadBinary("TextureAtlas/Player/mage_idle_right.0.png"),
                     _context.AssetLoader.LoadBinary("TextureAtlas/Player/mage_idle_right.1.png"),
                     _context.AssetLoader.LoadBinary("TextureAtlas/Player/mage_idle_right.2.png"),
@@ -114,7 +114,7 @@ public class ClientWindow : GameWindow {
                     _context.AssetLoader.LoadBinary("TextureAtlas/Player/mage_idle_right.6.png"),
                     _context.AssetLoader.LoadBinary("TextureAtlas/Player/mage_idle_right.7.png")
                 ], 100) },
-                { "mage_walk_left", new ([
+                { new AssetID("mage_walk_left"), new ([
                     _context.AssetLoader.LoadBinary("TextureAtlas/Player/mage_walk_left.0.png"),
                     _context.AssetLoader.LoadBinary("TextureAtlas/Player/mage_walk_left.1.png"),
                     _context.AssetLoader.LoadBinary("TextureAtlas/Player/mage_walk_left.2.png"),
@@ -124,7 +124,7 @@ public class ClientWindow : GameWindow {
                     _context.AssetLoader.LoadBinary("TextureAtlas/Player/mage_walk_left.6.png"),
                     _context.AssetLoader.LoadBinary("TextureAtlas/Player/mage_walk_left.7.png")
                 ], 100) },
-                { "mage_walk_right", new ([
+                { new AssetID("mage_walk_right"), new ([
                     _context.AssetLoader.LoadBinary("TextureAtlas/Player/mage_walk_right.0.png"),
                     _context.AssetLoader.LoadBinary("TextureAtlas/Player/mage_walk_right.1.png"),
                     _context.AssetLoader.LoadBinary("TextureAtlas/Player/mage_walk_right.2.png"),
@@ -135,14 +135,14 @@ public class ClientWindow : GameWindow {
                     _context.AssetLoader.LoadBinary("TextureAtlas/Player/mage_walk_right.7.png")
                 ], 100) }
             }, 1));
-            _context.AssetManager.Add("textureatlas.enemy", new TextureAtlas<string>(new Dictionary<string, TextureAtlas<string>.EntryDef> {
-                { "slime_walk_left", new ([
+            _context.AssetManager.Add(new AssetID("textureatlas.enemy"), new TextureAtlas(new Dictionary<AssetID, TextureAtlas.EntryDef> {
+                { new AssetID("slime_walk_left"), new ([
                     _context.AssetLoader.LoadBinary("TextureAtlas/Enemy/slime_walk_left.0.png"),
                     _context.AssetLoader.LoadBinary("TextureAtlas/Enemy/slime_walk_left.1.png"),
                     _context.AssetLoader.LoadBinary("TextureAtlas/Enemy/slime_walk_left.2.png"),
                     _context.AssetLoader.LoadBinary("TextureAtlas/Enemy/slime_walk_left.3.png")
                 ], 100) },
-                { "slime_walk_right", new ([
+                { new AssetID("slime_walk_right"), new ([
                     _context.AssetLoader.LoadBinary("TextureAtlas/Enemy/slime_walk_right.0.png"),
                     _context.AssetLoader.LoadBinary("TextureAtlas/Enemy/slime_walk_right.1.png"),
                     _context.AssetLoader.LoadBinary("TextureAtlas/Enemy/slime_walk_right.2.png"),
@@ -150,38 +150,38 @@ public class ClientWindow : GameWindow {
                 ], 100) }
             }, 1));
 
-            _context.AssetManager.Add("font.pixeloidsans", new Font(_context.AssetLoader.LoadBinary("Font/Pixeloid/PixeloidSans.ttf"), [new Font.Range(' ', '~')], 16, 1));
+            _context.AssetManager.Add(new AssetID("font.pixeloidsans"), new Font(_context.AssetLoader.LoadBinary("Font/Pixeloid/PixeloidSans.ttf"), [new Font.Range(' ', '~')], 16, 1));
 
-            _context.AssetManager.Add("null", new TileType("textureatlas.dungeon", "null", 0, -0.5f));
-            _context.AssetManager.Add("floor_1", new TileType("textureatlas.dungeon", "floor_1", 0, -0.5f));
-            _context.AssetManager.Add("floor_1_bottomhalf", new TileType("textureatlas.dungeon", "floor_1_bottomhalf", 0, -0.5f));
-            _context.AssetManager.Add("floor_1_lefthalf", new TileType("textureatlas.dungeon", "floor_1_lefthalf", 0, -0.5f));
-            _context.AssetManager.Add("floor_1_righthalf", new TileType("textureatlas.dungeon", "floor_1_righthalf", 0, -0.5f));
-            _context.AssetManager.Add("floor_1_tophalf", new TileType("textureatlas.dungeon", "floor_1_tophalf", 0, -0.5f));
-            _context.AssetManager.Add("floor_2", new TileType("textureatlas.dungeon", "floor_2", 0, -0.5f));
-            _context.AssetManager.Add("floor_2_bottomhalf", new TileType("textureatlas.dungeon", "floor_2_bottomhalf", 0, -0.5f));
-            _context.AssetManager.Add("floor_2_lefthalf", new TileType("textureatlas.dungeon", "floor_2_lefthalf", 0, -0.5f));
-            _context.AssetManager.Add("floor_2_righthalf", new TileType("textureatlas.dungeon", "floor_2_righthalf", 0, -0.5f));
-            _context.AssetManager.Add("floor_2_tophalf", new TileType("textureatlas.dungeon", "floor_2_tophalf", 0, -0.5f));
-            _context.AssetManager.Add("wall_bottom", new TileType("textureatlas.dungeon", "wall_bottom", 0, -0.5f));
-            _context.AssetManager.Add("wall_left", new TileType("textureatlas.dungeon", "wall_left", 0, -0.5f));
-            _context.AssetManager.Add("wall_right", new TileType("textureatlas.dungeon", "wall_right", 0, -0.5f));
-            _context.AssetManager.Add("wall_top", new TileType("textureatlas.dungeon", "wall_top", 0, -0.5f));
-            _context.AssetManager.Add("wall_bottomleft_inner", new TileType("textureatlas.dungeon", "wall_bottomleft_inner", 0, -0.5f));
-            _context.AssetManager.Add("wall_bottomright_inner", new TileType("textureatlas.dungeon", "wall_bottomright_inner", 0, -0.5f));
-            _context.AssetManager.Add("wall_topleft_inner", new TileType("textureatlas.dungeon", "wall_topleft_inner", 0, -0.5f));
-            _context.AssetManager.Add("wall_topright_inner", new TileType("textureatlas.dungeon", "wall_topright_inner", 0, -0.5f));
-            _context.AssetManager.Add("wall_bottomleft_outer", new TileType("textureatlas.dungeon", "wall_bottomleft_outer", 0, -0.5f));
-            _context.AssetManager.Add("wall_bottomright_outer", new TileType("textureatlas.dungeon", "wall_bottomright_outer", 0, -0.5f));
-            _context.AssetManager.Add("wall_topleft_outer", new TileType("textureatlas.dungeon", "wall_topleft_outer", 0, -0.5f));
-            _context.AssetManager.Add("wall_topright_outer", new TileType("textureatlas.dungeon", "wall_topright_outer", 0, -0.5f));
-            _context.AssetManager.Add("fountain_1_bottom", new TileType("textureatlas.dungeon", "fountain_1_bottom", 0, -0.5f + 7.0f / 32.0f));
-            _context.AssetManager.Add("fountain_1_top", new TileType("textureatlas.dungeon", "fountain_1_top", -1, -0.5f - 1.0f + 7.0f / 32.0f));
-            _context.AssetManager.Add("fountain_2_bottom", new TileType("textureatlas.dungeon", "fountain_2_bottom", 0, -0.5f + 7.0f / 32.0f));
-            _context.AssetManager.Add("fountain_2_top", new TileType("textureatlas.dungeon", "fountain_2_top", -1, -0.5f - 1.0f + 7.0f / 32.0f));
+            _context.AssetManager.Add(new AssetID("null"), new TileType(new AssetID("textureatlas.dungeon"), new AssetID("null"), 0, -0.5f));
+            _context.AssetManager.Add(new AssetID("floor_1"), new TileType(new AssetID("textureatlas.dungeon"), new AssetID("floor_1"), 0, -0.5f));
+            _context.AssetManager.Add(new AssetID("floor_1_bottomhalf"), new TileType(new AssetID("textureatlas.dungeon"), new AssetID("floor_1_bottomhalf"), 0, -0.5f));
+            _context.AssetManager.Add(new AssetID("floor_1_lefthalf"), new TileType(new AssetID("textureatlas.dungeon"), new AssetID("floor_1_lefthalf"), 0, -0.5f));
+            _context.AssetManager.Add(new AssetID("floor_1_righthalf"), new TileType(new AssetID("textureatlas.dungeon"), new AssetID("floor_1_righthalf"), 0, -0.5f));
+            _context.AssetManager.Add(new AssetID("floor_1_tophalf"), new TileType(new AssetID("textureatlas.dungeon"), new AssetID("floor_1_tophalf"), 0, -0.5f));
+            _context.AssetManager.Add(new AssetID("floor_2"), new TileType(new AssetID("textureatlas.dungeon"), new AssetID("floor_2"), 0, -0.5f));
+            _context.AssetManager.Add(new AssetID("floor_2_bottomhalf"), new TileType(new AssetID("textureatlas.dungeon"), new AssetID("floor_2_bottomhalf"), 0, -0.5f));
+            _context.AssetManager.Add(new AssetID("floor_2_lefthalf"), new TileType(new AssetID("textureatlas.dungeon"), new AssetID("floor_2_lefthalf"), 0, -0.5f));
+            _context.AssetManager.Add(new AssetID("floor_2_righthalf"), new TileType(new AssetID("textureatlas.dungeon"), new AssetID("floor_2_righthalf"), 0, -0.5f));
+            _context.AssetManager.Add(new AssetID("floor_2_tophalf"), new TileType(new AssetID("textureatlas.dungeon"), new AssetID("floor_2_tophalf"), 0, -0.5f));
+            _context.AssetManager.Add(new AssetID("wall_bottom"), new TileType(new AssetID("textureatlas.dungeon"), new AssetID("wall_bottom"), 0, -0.5f));
+            _context.AssetManager.Add(new AssetID("wall_left"), new TileType(new AssetID("textureatlas.dungeon"), new AssetID("wall_left"), 0, -0.5f));
+            _context.AssetManager.Add(new AssetID("wall_right"), new TileType(new AssetID("textureatlas.dungeon"), new AssetID("wall_right"), 0, -0.5f));
+            _context.AssetManager.Add(new AssetID("wall_top"), new TileType(new AssetID("textureatlas.dungeon"), new AssetID("wall_top"), 0, -0.5f));
+            _context.AssetManager.Add(new AssetID("wall_bottomleft_inner"), new TileType(new AssetID("textureatlas.dungeon"), new AssetID("wall_bottomleft_inner"), 0, -0.5f));
+            _context.AssetManager.Add(new AssetID("wall_bottomright_inner"), new TileType(new AssetID("textureatlas.dungeon"), new AssetID("wall_bottomright_inner"), 0, -0.5f));
+            _context.AssetManager.Add(new AssetID("wall_topleft_inner"), new TileType(new AssetID("textureatlas.dungeon"), new AssetID("wall_topleft_inner"), 0, -0.5f));
+            _context.AssetManager.Add(new AssetID("wall_topright_inner"), new TileType(new AssetID("textureatlas.dungeon"), new AssetID("wall_topright_inner"), 0, -0.5f));
+            _context.AssetManager.Add(new AssetID("wall_bottomleft_outer"), new TileType(new AssetID("textureatlas.dungeon"), new AssetID("wall_bottomleft_outer"), 0, -0.5f));
+            _context.AssetManager.Add(new AssetID("wall_bottomright_outer"), new TileType(new AssetID("textureatlas.dungeon"), new AssetID("wall_bottomright_outer"), 0, -0.5f));
+            _context.AssetManager.Add(new AssetID("wall_topleft_outer"), new TileType(new AssetID("textureatlas.dungeon"), new AssetID("wall_topleft_outer"), 0, -0.5f));
+            _context.AssetManager.Add(new AssetID("wall_topright_outer"), new TileType(new AssetID("textureatlas.dungeon"), new AssetID("wall_topright_outer"), 0, -0.5f));
+            _context.AssetManager.Add(new AssetID("fountain_1_bottom"), new TileType(new AssetID("textureatlas.dungeon"), new AssetID("fountain_1_bottom"), 0, -0.5f + 7.0f / 32.0f));
+            _context.AssetManager.Add(new AssetID("fountain_1_top"), new TileType(new AssetID("textureatlas.dungeon"), new AssetID("fountain_1_top"), -1, -0.5f - 1.0f + 7.0f / 32.0f));
+            _context.AssetManager.Add(new AssetID("fountain_2_bottom"), new TileType(new AssetID("textureatlas.dungeon"), new AssetID("fountain_2_bottom"), 0, -0.5f + 7.0f / 32.0f));
+            _context.AssetManager.Add(new AssetID("fountain_2_top"), new TileType(new AssetID("textureatlas.dungeon"), new AssetID("fountain_2_top"), -1, -0.5f - 1.0f + 7.0f / 32.0f));
 
-            _context.AssetManager.Add("mage", new PlayerType("textureatlas.player", "mage_idle_left", "mage_idle_right", "mage_walk_left", "mage_walk_right", 0, -0.5f + 2.0f / 32.0f, 0.25f));
-            _context.AssetManager.Add("slime", new EnemyType("textureatlas.enemy", "slime_walk_left", "slime_walk_right", "slime_walk_left", "slime_walk_right", 0, -0.5f + 2.0f / 32.0f, 0.125f));
+            _context.AssetManager.Add(new AssetID("mage"), new PlayerType(new AssetID("textureatlas.player"), new AssetID("mage_idle_left"), new AssetID("mage_idle_right"), new AssetID("mage_walk_left"), new AssetID("mage_walk_right"), 0, -0.5f + 2.0f / 32.0f, 0.25f));
+            _context.AssetManager.Add(new AssetID("slime"), new EnemyType(new AssetID("textureatlas.enemy"), new AssetID("slime_walk_left"), new AssetID("slime_walk_right"), new AssetID("slime_walk_left"), new AssetID("slime_walk_right"), 0, -0.5f + 2.0f / 32.0f, 0.125f));
         } catch (Exception e) {
             Console.WriteLine(e.Message);
             Close();

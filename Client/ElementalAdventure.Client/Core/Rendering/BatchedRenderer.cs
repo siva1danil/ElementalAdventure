@@ -10,18 +10,18 @@ using OpenTK.Graphics.OpenGL4;
 
 namespace ElementalAdventure.Client.Core.Rendering;
 
-public class BatchedRenderer<T> : IRenderer<T> where T : notnull {
-    private readonly AssetManager<T> _assetManager;
-    private readonly IUniformProvider<T> _uniformProvider;
+public class BatchedRenderer : IRenderer {
+    private readonly AssetManager _assetManager;
+    private readonly IUniformProvider _uniformProvider;
     private readonly Dictionary<BatchKey, BatchData> _batches;
 
-    public BatchedRenderer(AssetManager<T> assetManager, IUniformProvider<T> uniformProvider) {
+    public BatchedRenderer(AssetManager assetManager, IUniformProvider uniformProvider) {
         _assetManager = assetManager;
         _uniformProvider = uniformProvider;
         _batches = [];
     }
 
-    public Span<byte> AllocateInstance(object ownerIdentity, int ownerIndex, T shaderProgram, T textureAtlas, Span<byte> vertexData, int instanceSize) {
+    public Span<byte> AllocateInstance(object ownerIdentity, int ownerIndex, AssetID shaderProgram, AssetID textureAtlas, Span<byte> vertexData, int instanceSize) {
         BatchKey key = new(shaderProgram, textureAtlas, FastHash(vertexData));
         long owner = (long)RuntimeHelpers.GetHashCode(ownerIdentity) << 32 | (long)ownerIndex;
 
@@ -98,7 +98,7 @@ public class BatchedRenderer<T> : IRenderer<T> where T : notnull {
             GL.UseProgram(_assetManager.Get<ShaderProgram>(batch.Key.ShaderProgram).Id);
             // Use TextureAtlas
             GL.ActiveTexture(TextureUnit.Texture0);
-            GL.BindTexture(TextureTarget.Texture2D, _assetManager.Get<TextureAtlas<T>>(batch.Key.TextureAtlas).Id);
+            GL.BindTexture(TextureTarget.Texture2D, batch.Key.TextureAtlas == AssetID.None ? 0 : _assetManager.Get<TextureAtlas>(batch.Key.TextureAtlas).Id);
             // Use UniformBufferObject
             GL.BindBuffer(BufferTarget.UniformBuffer, batch.Value.UniformBuffer.Id);
             GL.BindBufferBase(BufferRangeTarget.UniformBuffer, 0, batch.Value.UniformBuffer.Id);
@@ -127,7 +127,7 @@ public class BatchedRenderer<T> : IRenderer<T> where T : notnull {
         return hash;
     }
 
-    private readonly record struct BatchKey(T ShaderProgram, T TextureAtlas, int VertexDataHash);
+    private readonly record struct BatchKey(AssetID ShaderProgram, AssetID TextureAtlas, int VertexDataHash);
     private class BatchData(DataLayout layout, byte[] vertexData, byte[] instanceData, byte[] uniformData, Dictionary<long, BatchSlot> slots) {
         public VertexArrayInstanced VertexArrayInstanced = new VertexArrayInstanced(layout);
         public UniformBuffer UniformBuffer = new UniformBuffer(layout);

@@ -1,5 +1,6 @@
 using System.Runtime.InteropServices;
 
+using ElementalAdventure.Client.Core.Assets;
 using ElementalAdventure.Client.Core.Rendering;
 using ElementalAdventure.Client.Game.Data;
 using ElementalAdventure.Client.Game.UI.Interface;
@@ -8,7 +9,7 @@ using OpenTK.Mathematics;
 
 namespace ElementalAdventure.Client.Game.UI.View;
 
-public class ColorView : IView<string> {
+public class ColorView : IView {
     private Vector2 _size = Vector2.One;
     private Vector3 _calculatedPosition = Vector3.Zero;
     private Vector3 _color = Vector3.One;
@@ -27,8 +28,8 @@ public class ColorView : IView<string> {
         // No measurement needed
     }
 
-    public void Render(IRenderer<string> renderer) {
-        Span<byte> slot = renderer.AllocateInstance(this, 0, "shader.userinterface", "textureatlas.dungeon", MemoryMarshal.Cast<UserInterfaceShaderLayout.GlobalData, byte>(_globalData.AsSpan()), Marshal.SizeOf<UserInterfaceShaderLayout.InstanceData>());
+    public void Render(IRenderer renderer) {
+        Span<byte> slot = renderer.AllocateInstance(this, 0, new AssetID("shader.userinterface"), AssetID.None, MemoryMarshal.Cast<UserInterfaceShaderLayout.GlobalData, byte>(_globalData.AsSpan()), Marshal.SizeOf<UserInterfaceShaderLayout.InstanceData>());
         UserInterfaceShaderLayout.InstanceData instance = new(_calculatedPosition, _size, _color);
         MemoryMarshal.Write(slot, instance);
     }

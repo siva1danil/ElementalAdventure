@@ -13,7 +13,7 @@ namespace ElementalAdventure.Client.Game.Logic.GameObject;
 
 // TODO: refactor internal format
 public class Entity {
-    private readonly AssetManager<string> _assetManager;
+    private readonly AssetManager _assetManager;
     private readonly PositionDataComponent _positionDataComponent;
     private readonly TextureDataComponent _textureDataComponent;
     private readonly LivingDataComponent? _livingDataComponent;
@@ -25,10 +25,10 @@ public class Entity {
     public TextureDataComponent TextureDataComponent => _textureDataComponent;
     public LivingDataComponent? LivingDataComponent => _livingDataComponent;
 
-    public Entity(AssetManager<string> assetManager, LivingDataComponent? livingDataComponent, IBehavourComponent[] behaviourComponents) {
+    public Entity(AssetManager assetManager, LivingDataComponent? livingDataComponent, IBehavourComponent[] behaviourComponents) {
         _assetManager = assetManager;
         _positionDataComponent = new PositionDataComponent(new Vector2(0.0f, 0.0f));
-        _textureDataComponent = new TextureDataComponent(false, "", "");
+        _textureDataComponent = new TextureDataComponent(false, AssetID.None, AssetID.None);
         _livingDataComponent = livingDataComponent;
         _behaviourComponents = behaviourComponents;
 
@@ -40,12 +40,12 @@ public class Entity {
             behaviourComponent?.Update(world, this);
     }
 
-    public void Render(IRenderer<string> renderer) {
+    public void Render(IRenderer renderer) {
         if (!TextureDataComponent.Visible)
             return;
 
-        Span<byte> slot = renderer.AllocateInstance(this, 0, "shader.tilemap", TextureDataComponent.TextureAtlas, MemoryMarshal.Cast<TilemapShaderLayout.GlobalData, byte>(_globalData.AsSpan()), Marshal.SizeOf<TilemapShaderLayout.InstanceData>());
-        TextureAtlas<string>.Entry entry = _assetManager.Get<TextureAtlas<string>>(TextureDataComponent.TextureAtlas).GetEntry(TextureDataComponent.Texture);
+        Span<byte> slot = renderer.AllocateInstance(this, 0, new AssetID("shader.tilemap"), TextureDataComponent.TextureAtlas, MemoryMarshal.Cast<TilemapShaderLayout.GlobalData, byte>(_globalData.AsSpan()), Marshal.SizeOf<TilemapShaderLayout.InstanceData>());
+        TextureAtlas.Entry entry = _assetManager.Get<TextureAtlas>(TextureDataComponent.TextureAtlas).GetEntry(TextureDataComponent.Texture);
         TilemapShaderLayout.InstanceData instance = new(new(PositionDataComponent.LastPosition.X, PositionDataComponent.LastPosition.Y, PositionDataComponent.Z), new(PositionDataComponent.Position.X, PositionDataComponent.Position.Y, PositionDataComponent.Z), entry.Index, new Vector2i(entry.Width, entry.Height), entry.FrameCount, entry.FrameTime);
         MemoryMarshal.Cast<TilemapShaderLayout.InstanceData, byte>(MemoryMarshal.CreateSpan(ref instance, 1)).CopyTo(slot);
     }

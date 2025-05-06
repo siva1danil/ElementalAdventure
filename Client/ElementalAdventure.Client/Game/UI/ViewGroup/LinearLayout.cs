@@ -4,9 +4,9 @@ using OpenTK.Mathematics;
 
 namespace ElementalAdventure.Client.Game.UI.Interface;
 
-public class LinearLayout<T> : IViewGroup<T> where T : notnull {
-    private readonly List<IView<T>> _views;
-    private readonly Dictionary<IView<T>, IViewGroup<T>.ILayoutParams> _layoutParams;
+public class LinearLayout : IViewGroup {
+    private readonly List<IView> _views;
+    private readonly Dictionary<IView, IViewGroup.ILayoutParams> _layoutParams;
 
     private Vector2 _size;
     private Vector3 _calculatedPosition;
@@ -22,14 +22,14 @@ public class LinearLayout<T> : IViewGroup<T> where T : notnull {
         _layoutParams = [];
     }
 
-    public void Add(IView<T> view, IViewGroup<T>.ILayoutParams layoutParams) {
+    public void Add(IView view, IViewGroup.ILayoutParams layoutParams) {
         if (layoutParams is not LayoutParams)
             throw new ArgumentException($"Expected LayoutParams of type {nameof(LayoutParams)}, but got {layoutParams.GetType().Name}.");
         _views.Add(view);
         _layoutParams[view] = layoutParams;
     }
 
-    public void Remove(IView<T> view) {
+    public void Remove(IView view) {
         _views.Remove(view);
         _layoutParams.Remove(view);
     }
@@ -41,7 +41,7 @@ public class LinearLayout<T> : IViewGroup<T> where T : notnull {
 
     public void Measure() {
         _size = Vector2.Zero;
-        foreach (IView<T> view in _views) {
+        foreach (IView view in _views) {
             view.Measure();
             _size.X = _orientation == OrientationType.Horizontal ? _size.X + view.Size.X : Math.Max(_size.X, view.Size.X);
             _size.Y = _orientation == OrientationType.Vertical ? _size.Y + view.Size.Y : Math.Max(_size.Y, view.Size.Y);
@@ -50,21 +50,21 @@ public class LinearLayout<T> : IViewGroup<T> where T : notnull {
 
     public void Layout() {
         Vector2 position = _calculatedPosition.Xy;
-        foreach (IView<T> view in _views) {
+        foreach (IView view in _views) {
             view.CalculatedPosition = new Vector3(position.X, position.Y, 0.0f);
             if (_orientation == OrientationType.Horizontal) position.X += view.Size.X;
             else position.Y += view.Size.Y;
 
-            if (view is IViewGroup<T> group)
+            if (view is IViewGroup group)
                 group.Layout();
         }
     }
 
-    public void Render(IRenderer<T> renderer) {
-        foreach (IView<T> view in _views)
+    public void Render(IRenderer renderer) {
+        foreach (IView view in _views)
             view.Render(renderer);
     }
 
     public enum OrientationType { Horizontal, Vertical }
-    public class LayoutParams : IViewGroup<T>.ILayoutParams { }
+    public class LayoutParams : IViewGroup.ILayoutParams { }
 }

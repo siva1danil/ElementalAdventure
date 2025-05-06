@@ -4,10 +4,10 @@ using OpenTK.Mathematics;
 
 namespace ElementalAdventure.Client.Game.UI.Interface;
 
-public interface IView<T> where T : notnull {
+public interface IView {
     public Vector2 Size { get; set; }
     public Vector3 CalculatedPosition { get; set; }
 
     public void Measure();
-    public void Render(IRenderer<T> renderer);
+    public void Render(IRenderer renderer);
 }

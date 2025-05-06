@@ -1,5 +1,7 @@
+using ElementalAdventure.Client.Core.Assets;
+
 namespace ElementalAdventure.Client.Core.Rendering;
 
-public interface IUniformProvider<T> {
-    public void GetUniformData(T shaderProgram, T textureAtlas, Span<byte> buffer);
+public interface IUniformProvider {
+    public void GetUniformData(AssetID shaderProgram, AssetID textureAtlas, Span<byte> buffer);
 }

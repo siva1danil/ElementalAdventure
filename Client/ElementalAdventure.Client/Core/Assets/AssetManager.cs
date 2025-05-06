@@ -2,14 +2,14 @@ using System.Diagnostics;
 
 namespace ElementalAdventure.Client.Core.Assets;
 
-public class AssetManager<K> : IDisposable where K : notnull {
-    private readonly Dictionary<Type, Dictionary<K, object>> _assets;
+public class AssetManager : IDisposable {
+    private readonly Dictionary<Type, Dictionary<AssetID, object>> _assets;
 
     public AssetManager() {
         _assets = [];
     }
 
-    public void Add<T>(K key, T asset) where T : notnull {
+    public void Add<T>(AssetID key, T asset) where T : notnull {
         Debug.WriteLine($"Adding asset of type {typeof(T)} with key {key}.");
         Type type = typeof(T);
         if (!_assets.ContainsKey(type)) _assets[type] = [];
@@ -17,7 +17,7 @@ public class AssetManager<K> : IDisposable where K : notnull {
         _assets[type][key] = asset;
     }
 
-    public T Get<T>(K key) where T : notnull {
+    public T Get<T>(AssetID key) where T : notnull {
         Type type = typeof(T);
         if (!_assets.ContainsKey(type)) throw new ArgumentException($"There are no assets of type {type}.");
         else if (!_assets[type].ContainsKey(key)) throw new ArgumentException($"There is no asset of type {type} with key {key}.");
@@ -25,8 +25,8 @@ public class AssetManager<K> : IDisposable where K : notnull {
     }
 
     public void Dispose() {
-        foreach (KeyValuePair<Type, Dictionary<K, object>> entry in _assets) {
-            foreach (KeyValuePair<K, object> asset in entry.Value) {
+        foreach (KeyValuePair<Type, Dictionary<AssetID, object>> entry in _assets) {
+            foreach (KeyValuePair<AssetID, object> asset in entry.Value) {
                 if (asset.Value is IDisposable disposable) {
                     Debug.WriteLine($"Disposing asset of type {entry.Key} with key {asset.Key}.");
                     disposable.Dispose();

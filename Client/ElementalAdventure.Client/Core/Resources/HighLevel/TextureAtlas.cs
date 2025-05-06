@@ -1,13 +1,14 @@
+using ElementalAdventure.Client.Core.Assets;
 using ElementalAdventure.Client.Core.Resources.OpenGL;
 
 using StbImageSharp;
 
 namespace ElementalAdventure.Client.Core.Resources.Composed;
 
-public class TextureAtlas<K> : IDisposable where K : notnull {
+public class TextureAtlas : IDisposable {
     private readonly Texture2D _atlas;
     private readonly int _cellWidth, _cellHeight, _cellPadding;
-    private readonly Dictionary<K, Entry> _entries;
+    private readonly Dictionary<AssetID, Entry> _entries;
 
     public int Id => _atlas.Id;
     public int AtlasWidth => _atlas.Width;
@@ -15,12 +16,12 @@ public class TextureAtlas<K> : IDisposable where K : notnull {
     public int CellWidth => _cellWidth;
     public int CellHeight => _cellHeight;
     public int CellPadding => _cellPadding;
-    public Dictionary<K, Entry> Entries => _entries;
+    public Dictionary<AssetID, Entry> Entries => _entries;
 
-    public TextureAtlas(Dictionary<K, EntryDef> entries, int padding) {
+    public TextureAtlas(Dictionary<AssetID, EntryDef> entries, int padding) {
         if (entries.Count == 0)
             throw new ArgumentException("TextureAtlas must contain at least one tile.");
-        foreach (KeyValuePair<K, EntryDef> entry in entries)
+        foreach (KeyValuePair<AssetID, EntryDef> entry in entries)
             if (entry.Value.Frames.Length == 0)
                 throw new ArgumentException("TextureAtlas entry must contain at least one frame.");
 
@@ -29,7 +30,7 @@ public class TextureAtlas<K> : IDisposable where K : notnull {
         _cellHeight = 0;
 
         int count = 0;
-        foreach (KeyValuePair<K, EntryDef> entry in entries) {
+        foreach (KeyValuePair<AssetID, EntryDef> entry in entries) {
             int frameWidth = -1, frameHeight = -1;
             for (int i = 0; i < entry.Value.Frames.Length; i++) {
                 ImageResult frame = ImageResult.FromMemory(entry.Value.Frames[i], ColorComponents.RedGreenBlueAlpha);
@@ -49,7 +50,7 @@ public class TextureAtlas<K> : IDisposable where K : notnull {
 
         byte[] data = new byte[atlasWidth * atlasHeight * 4];
         int index = 0;
-        foreach (KeyValuePair<K, EntryDef> entry in entries) {
+        foreach (KeyValuePair<AssetID, EntryDef> entry in entries) {
             int entryIndex = index, entryWidth = -1, entryHeight = -1;
             for (int i = 0; i < entry.Value.Frames.Length; i++) {
                 ImageResult frame = ImageResult.FromMemory(entry.Value.Frames[i], ColorComponents.RedGreenBlueAlpha);
@@ -96,7 +97,7 @@ public class TextureAtlas<K> : IDisposable where K : notnull {
         _atlas = new(data, atlasWidth, atlasHeight);
     }
 
-    public Entry GetEntry(K key) {
+    public Entry GetEntry(AssetID key) {
         return _entries[key];
     }
 
