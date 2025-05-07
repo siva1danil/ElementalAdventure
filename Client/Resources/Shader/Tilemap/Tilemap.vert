@@ -38,7 +38,7 @@ vec2 getUV(ivec2 textureSize, ivec2 cellSize, int padding, int index, ivec2 size
 }
 
 void main() {
-    int index = aInstanceIndex + int(uTimeMilliseconds.y) / aInstanceFrameTime % aInstanceFrameCount;
+    int index = aInstanceIndex + int(uTimeMilliseconds.y / uint(aInstanceFrameTime)) % aInstanceFrameCount;
     vec2 vertexUV = getVertexUV();
     vUV = getUV(uTextureSize, uCellSize, uPadding, index, aInstanceFrameSize, vertexUV);
     gl_Position = uProjection * vec4(aGlobalPosition + mix(aInstancePositionLast, aInstancePositionCurrent, uAlpha), 1.0f);
