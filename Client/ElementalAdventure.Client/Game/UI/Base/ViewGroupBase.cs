@@ -1,0 +1,63 @@
+using System.Collections.ObjectModel;
+
+using ElementalAdventure.Client.Core.Rendering;
+using ElementalAdventure.Client.Game.UI.Interface;
+
+using OpenTK.Mathematics;
+
+namespace ElementalAdventure.Client.Game.UI.ViewGroup;
+
+public abstract class ViewGroupBase : IViewGroup {
+    protected bool _layoutDirty = false;
+    protected Vector2 _size = Vector2.Zero;
+    protected Vector3 _position = Vector3.Zero;
+    protected IViewGroup? _parent = null;
+    protected readonly List<IView> _views = [];
+    protected readonly Dictionary<IView, IViewGroup.ILayoutParams> _layoutParams = [];
+
+    public bool LayoutDirty { get => _layoutDirty; set => _layoutDirty = value; }
+    public Vector2 Size { get => _size; set => _size = value; }
+    public Vector3 Position { get => _position; set => _position = value; }
+    public IViewGroup? Parent { get => _parent; set => _parent = value; }
+    public ReadOnlyCollection<IView> Children => _views.AsReadOnly();
+
+    public void InvalidateLayout() {
+        if (_parent != null)
+            _parent.InvalidateLayout();
+        else
+            _layoutDirty = true;
+    }
+
+    public void Add(IView view, IViewGroup.ILayoutParams layoutParams) {
+        if (view.Parent != null)
+            throw new ArgumentException($"View already has a parent: {view.Parent}.");
+        view.Parent = this;
+        _views.Add(view);
+        _layoutParams[view] = layoutParams;
+
+        InvalidateLayout();
+    }
+
+    public void Remove(IView view) {
+        view.Parent = null;
+
+        _views.Remove(view);
+        _layoutParams.Remove(view);
+
+        InvalidateLayout();
+    }
+
+    public void Clear() {
+        foreach (IView view in _views)
+            view.Parent = null;
+
+        _views.Clear();
+        _layoutParams.Clear();
+
+        InvalidateLayout();
+    }
+
+    public abstract void Measure();
+    public abstract void Layout(float depth = 0.0f, float step = 0.0f);
+    public abstract void Render(IRenderer renderer);
+}

@@ -22,6 +22,13 @@ public class UIManager {
     public void Render(IRenderer renderer) {
         if (_stack.Count == 0)
             return;
-        _stack.Peek().Render(renderer);
+
+        IViewGroup group = _stack.Peek();
+        if (group.LayoutDirty) {
+            group.Measure();
+            group.Layout();
+            group.LayoutDirty = false;
+        }
+        group.Render(renderer);
     }
 }

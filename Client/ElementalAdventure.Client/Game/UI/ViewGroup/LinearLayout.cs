@@ -1,48 +1,22 @@
 using System.Collections.ObjectModel;
 
 using ElementalAdventure.Client.Core.Rendering;
+using ElementalAdventure.Client.Game.UI.ViewGroup;
 
 using OpenTK.Mathematics;
 
 namespace ElementalAdventure.Client.Game.UI.Interface;
 
-public class LinearLayout : IViewGroup {
-    private readonly List<IView> _views;
-    private readonly Dictionary<IView, IViewGroup.ILayoutParams> _layoutParams;
-
-    private Vector2 _size;
-    private Vector3 _calculatedPosition;
+public class LinearLayout : ViewGroupBase {
     private OrientationType _orientation;
 
-    public ReadOnlyCollection<IView> Children => _views.AsReadOnly();
-    public Vector2 Size { get => _size; set => _size = value; }
-    public Vector3 CalculatedPosition { get => _calculatedPosition; set => _calculatedPosition = value; }
     public OrientationType Orientation { get => _orientation; set => _orientation = value; }
 
     public LinearLayout() {
         _orientation = OrientationType.Horizontal;
-        _views = [];
-        _layoutParams = [];
     }
 
-    public void Add(IView view, IViewGroup.ILayoutParams layoutParams) {
-        if (layoutParams is not LayoutParams)
-            throw new ArgumentException($"Expected LayoutParams of type {nameof(LayoutParams)}, but got {layoutParams.GetType().Name}.");
-        _views.Add(view);
-        _layoutParams[view] = layoutParams;
-    }
-
-    public void Remove(IView view) {
-        _views.Remove(view);
-        _layoutParams.Remove(view);
-    }
-
-    public void Clear() {
-        _views.Clear();
-        _layoutParams.Clear();
-    }
-
-    public void Measure() {
+    public override void Measure() {
         _size = Vector2.Zero;
         foreach (IView view in _views) {
             view.Measure();
@@ -51,10 +25,10 @@ public class LinearLayout : IViewGroup {
         }
     }
 
-    public void Layout(float depth = 0.0f, float step = 0.0f) {
-        Vector2 position = _calculatedPosition.Xy;
+    public override void Layout(float depth = 0.0f, float step = 0.0f) {
+        Vector2 position = _position.Xy;
         foreach (IView view in _views) {
-            view.CalculatedPosition = new Vector3(position.X, position.Y, depth);
+            view.Position = new Vector3(position.X, position.Y, depth);
             if (_orientation == OrientationType.Horizontal) position.X += view.Size.X;
             else position.Y += view.Size.Y;
 
@@ -63,7 +37,7 @@ public class LinearLayout : IViewGroup {
         }
     }
 
-    public void Render(IRenderer renderer) {
+    public override void Render(IRenderer renderer) {
         foreach (IView view in _views)
             view.Render(renderer);
     }
