@@ -34,7 +34,7 @@ public class GameScene : IScene, IUniformProvider {
         _context = context;
 
         _renderer = new(_context.AssetManager, this);
-        _ui = new();
+        _ui = new(new Vector2(0.0f, 1.0f));
         _uiCamera = new Camera(context.WindowSize / 2.0f, context.WindowSize, context.WindowSize);
         _worldCamera = new Camera(new Vector2(13.0f * 0.5f - 0.5f, 9.0f * 0.5f - 0.5f), new Vector2(14.0f, 10f), context.WindowSize);
 
@@ -44,8 +44,8 @@ public class GameScene : IScene, IUniformProvider {
         LinearLayout center = new() { Orientation = LinearLayout.OrientationType.Vertical };
         ColorView bottomLeftView1 = new() { Size = new Vector2(100f, 100f), Color = new Vector3(1.0f, 0.0f, 0.0f) };
         ColorView bottomLeftView2 = new() { Size = new Vector2(100f, 100f), Color = new Vector3(0.0f, 1.0f, 0.0f) };
-        ColorView bottomRightView1 = new() { Size = new Vector2(80f, 80f), Color = new Vector3(0.0f, 0.0f, 1.0f) };
-        ColorView bottomRightView2 = new() { Size = new Vector2(80f, 80f), Color = new Vector3(1.0f, 1.0f, 0.0f) };
+        ColorView bottomRightView1 = new() { Size = new Vector2(100f, 100f), Color = new Vector3(0.0f, 0.0f, 1.0f) };
+        ColorView bottomRightView2 = new() { Size = new Vector2(100f, 100f), Color = new Vector3(1.0f, 1.0f, 0.0f) };
         ColorView centerView1 = new() { Size = new Vector2(200f, 200f), Color = new Vector3(0.0f, 1.0f, 1.0f) };
         ColorView centerView2 = new() { Size = new Vector2(200f, 200f), Color = new Vector3(1.0f, 0.0f, 1.0f) };
         layout.Add(bottomLeft, new AbsoluteLayout.LayoutParams { Position = new Vector2(0.0f, 0.0f), Anchor = new Vector2(0.0f, 0.0f) });
