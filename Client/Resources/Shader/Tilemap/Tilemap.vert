@@ -20,7 +20,7 @@ layout (std140) uniform Uniforms {
 out vec2 vUV;
 
 vec2 getVertexUV() {
-    const vec2 lut[6] = vec2[6](vec2(0,1), vec2(1,1), vec2(0,0), vec2(1,1), vec2(0,0), vec2(1,0));
+    const vec2 lut[6] = vec2[6](vec2(0, 1), vec2(1, 1), vec2(0, 0), vec2(1, 1), vec2(0, 0), vec2(1, 0));
     return lut[gl_VertexID % 6];
 }
 

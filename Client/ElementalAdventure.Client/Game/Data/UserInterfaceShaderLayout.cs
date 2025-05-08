@@ -10,11 +10,12 @@ public static class UserInterfaceShaderLayout {
         [FieldOffset(0)] public Vector3 Position = position;
     }
 
-    [StructLayout(LayoutKind.Explicit, Size = 32)]
-    public struct InstanceData(Vector3 position, Vector2 scale, Vector3 color) {
+    [StructLayout(LayoutKind.Explicit, Size = 36)]
+    public struct InstanceData(Vector3 position, Vector2 scale, Vector3 color, int hasTexture) {
         [FieldOffset(0)] public Vector3 Position = position;
         [FieldOffset(12)] public Vector2 Scale = scale;
         [FieldOffset(20)] public Vector3 Color = color;
+        [FieldOffset(32)] public int HasTexture = hasTexture;
     }
 
     [StructLayout(LayoutKind.Explicit, Size = 64)]
