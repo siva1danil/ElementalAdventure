@@ -1,3 +1,5 @@
+using System.Collections.ObjectModel;
+
 using ElementalAdventure.Client.Core.Rendering;
 
 using OpenTK.Mathematics;
@@ -12,6 +14,7 @@ public class LinearLayout : IViewGroup {
     private Vector3 _calculatedPosition;
     private OrientationType _orientation;
 
+    public ReadOnlyCollection<IView> Children => _views.AsReadOnly();
     public Vector2 Size { get => _size; set => _size = value; }
     public Vector3 CalculatedPosition { get => _calculatedPosition; set => _calculatedPosition = value; }
     public OrientationType Orientation { get => _orientation; set => _orientation = value; }
@@ -48,15 +51,15 @@ public class LinearLayout : IViewGroup {
         }
     }
 
-    public void Layout() {
+    public void Layout(float depth = 0.0f, float step = 0.0f) {
         Vector2 position = _calculatedPosition.Xy;
         foreach (IView view in _views) {
-            view.CalculatedPosition = new Vector3(position.X, position.Y, 0.0f);
+            view.CalculatedPosition = new Vector3(position.X, position.Y, depth);
             if (_orientation == OrientationType.Horizontal) position.X += view.Size.X;
             else position.Y += view.Size.Y;
 
             if (view is IViewGroup group)
-                group.Layout();
+                group.Layout(depth + step, step);
         }
     }
 

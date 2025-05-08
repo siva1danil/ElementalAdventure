@@ -1,3 +1,5 @@
+using System.Collections.ObjectModel;
+
 using ElementalAdventure.Client.Core.Rendering;
 using ElementalAdventure.Client.Game.UI.Interface;
 
@@ -12,6 +14,7 @@ public class AbsoluteLayout : IViewGroup {
     private Vector2 _size;
     private Vector3 _calculatedPosition;
 
+    public ReadOnlyCollection<IView> Children => _views.AsReadOnly();
     public Vector2 Size { get => _size; set => _size = value; }
     public Vector3 CalculatedPosition { get => _calculatedPosition; set => _calculatedPosition = value; }
 
@@ -50,14 +53,14 @@ public class AbsoluteLayout : IViewGroup {
         _size = b - a;
     }
 
-    public void Layout() {
+    public void Layout(float depth = 0.0f, float step = 0.0f) {
         foreach (IView view in _views) {
             LayoutParams layoutParams = (LayoutParams)_layoutParams[view];
             Vector2 position = layoutParams.Position - layoutParams.Anchor * view.Size;
-            view.CalculatedPosition = new Vector3(position.X, position.Y, 0.0f);
+            view.CalculatedPosition = new Vector3(position.X, position.Y, depth);
 
             if (view is IViewGroup group)
-                group.Layout();
+                group.Layout(depth + step, step);
         }
     }
 

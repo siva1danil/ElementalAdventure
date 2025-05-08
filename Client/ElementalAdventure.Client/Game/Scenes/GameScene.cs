@@ -50,7 +50,7 @@ public class GameScene : IScene, IUniformProvider {
         ColorView centerView2 = new() { Size = new Vector2(200f, 200f), Color = new Vector3(1.0f, 0.0f, 1.0f) };
         layout.Add(bottomLeft, new AbsoluteLayout.LayoutParams { Position = new Vector2(0.0f, 0.0f), Anchor = new Vector2(0.0f, 0.0f) });
         layout.Add(bottomRight, new AbsoluteLayout.LayoutParams { Position = new Vector2(1280.0f, 0.0f), Anchor = new Vector2(1.0f, 0.0f) });
-        layout.Add(center, new AbsoluteLayout.LayoutParams { Position = new Vector2(1280.0f, 720f) * 0.5f, Anchor = new Vector2(0.5f, 0.5f) });
+        layout.Add(center, new AbsoluteLayout.LayoutParams { Position = new Vector2(1280.0f * 0.5f, 720f), Anchor = new Vector2(0.5f, 1.0f) });
         bottomLeft.Add(bottomLeftView1, new LinearLayout.LayoutParams { });
         bottomLeft.Add(bottomLeftView2, new LinearLayout.LayoutParams { });
         bottomRight.Add(bottomRightView1, new LinearLayout.LayoutParams { });
@@ -58,11 +58,11 @@ public class GameScene : IScene, IUniformProvider {
         center.Add(centerView1, new LinearLayout.LayoutParams { });
         center.Add(centerView2, new LinearLayout.LayoutParams { });
         layout.Measure();
-        layout.Layout();
+        layout.Layout(0.0f, 0.01f);
         _ui.Push(layout);
 
         _world = new GameWorld(1.0f / 20.0f, new Tilemap(), []);
-        _world.Tilemap.SetMap(new Vector2(0.0f, 1.0f), _context.AssetManager, new AssetID[,,] {
+        _world.Tilemap.SetMap(new Vector2(-1.0f, 0.0f), _context.AssetManager, new AssetID[,,] {
             {
             { new("floor_1_righthalf"), new("wall_top"), new("wall_top"), new("wall_top"), new("wall_top"), new("wall_top"), new("wall_top"), new("wall_top"), new("wall_top"), new("wall_top"), new("wall_top"), new("wall_top"), new("floor_1_lefthalf") },
             { new("floor_1_righthalf"), new("floor_1"),  new("floor_1"),  new("floor_1"),  new("floor_1"),  new("floor_1"),  new("floor_1"),  new("floor_1"),  new("floor_1"),  new("floor_1"),  new("floor_1"),  new("floor_1"),  new("floor_1_lefthalf") },
