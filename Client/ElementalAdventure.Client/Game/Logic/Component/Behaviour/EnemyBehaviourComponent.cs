@@ -23,7 +23,8 @@ public class EnemyBehaviourComponent : IBehavourComponent {
         _searchCounter = (_searchCounter + 1) % 20;
 
         // Follow target
-        entity.PositionDataComponent.Velocity = (_target.TryGetTarget(out Entity? target) && target != null) ? (target.PositionDataComponent.Position - entity.PositionDataComponent.Position).NormalizedOrZero() : Vector2.Zero;
+        Vector2 movement = (_target.TryGetTarget(out Entity? target) && target != null) ? (target.PositionDataComponent.Position - entity.PositionDataComponent.Position) : Vector2.Zero;
+        entity.PositionDataComponent.Velocity = movement.LengthSquared > 1.0f ? movement.NormalizedOrZero() : movement;
 
         // Tick movement
         entity.PositionDataComponent.Position += entity.PositionDataComponent.Velocity * entity.LivingDataComponent!.MovementSpeed;
