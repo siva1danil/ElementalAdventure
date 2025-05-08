@@ -9,6 +9,7 @@ using ElementalAdventure.Client.Game.Scenes;
 using OpenTK.Graphics.OpenGL4;
 using OpenTK.Windowing.Common;
 using OpenTK.Windowing.Desktop;
+using OpenTK.Windowing.GraphicsLibraryFramework;
 
 namespace ElementalAdventure.Client.Game;
 
@@ -37,6 +38,8 @@ public class ClientWindow : GameWindow {
     }
 
     private void LoadHandler() {
+        GL.LoadBindings(new GLFWBindingsContext());
+
         try {
             _context.AssetManager.Add(new AssetID("shader.tilemap"), new ShaderProgram(_context.AssetLoader.LoadText("Shader/Tilemap/Tilemap.vert"), _context.AssetLoader.LoadText("Shader/Tilemap/Tilemap.frag")));
             _context.AssetManager.Add(new AssetID("shader.userinterface"), new ShaderProgram(_context.AssetLoader.LoadText("Shader/UserInterface/UserInterface.vert"), _context.AssetLoader.LoadText("Shader/UserInterface/UserInterface.frag")));
@@ -188,11 +191,11 @@ public class ClientWindow : GameWindow {
             return;
         }
 
-        _scene = new GameScene(_context);
-
         GL.Enable(EnableCap.DepthTest);
         GL.Enable(EnableCap.Blend);
         GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
+
+        _scene = new GameScene(_context);
     }
 
     private void UnloadHandler() {
