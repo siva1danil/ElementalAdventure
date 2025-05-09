@@ -41,22 +41,16 @@ public class GameScene : IScene, IUniformProvider {
         AbsoluteLayout layout = new();
         LinearLayout bottomLeft = new();
         LinearLayout bottomRight = new();
-        LinearLayout center = new() { Orientation = LinearLayout.OrientationType.Vertical };
-        ColorView bottomLeftView1 = new() { Size = new Vector2(100f, 100f), Color = new Vector3(1.0f, 0.0f, 0.0f) };
-        ColorView bottomLeftView2 = new() { Size = new Vector2(100f, 100f), Color = new Vector3(0.0f, 1.0f, 0.0f) };
-        ColorView bottomRightView1 = new() { Size = new Vector2(100f, 100f), Color = new Vector3(0.0f, 0.0f, 1.0f) };
-        ColorView bottomRightView2 = new() { Size = new Vector2(100f, 100f), Color = new Vector3(1.0f, 1.0f, 0.0f) };
-        ColorView centerView1 = new() { Size = new Vector2(200f, 200f), Color = new Vector3(0.0f, 1.0f, 1.0f) };
-        ColorView centerView2 = new() { Size = new Vector2(200f, 200f), Color = new Vector3(1.0f, 0.0f, 1.0f) };
+        ImageView wasd = new ImageView() { Size = new Vector2(128f, 128f), Source = new ImageView.ImageSource(new("textureatlas.ui"), _context.AssetManager.Get<TextureAtlas>(new AssetID("textureatlas.ui")).GetEntry(new AssetID("button_wasd_normal"))) };
+        ImageView e = new ImageView() { Size = new Vector2(128f, 128f), Source = new ImageView.ImageSource(new("textureatlas.ui"), _context.AssetManager.Get<TextureAtlas>(new AssetID("textureatlas.ui")).GetEntry(new AssetID("button_e_normal"))) };
+        ImageView q = new ImageView() { Size = new Vector2(128f, 128f), Source = new ImageView.ImageSource(new("textureatlas.ui"), _context.AssetManager.Get<TextureAtlas>(new AssetID("textureatlas.ui")).GetEntry(new AssetID("button_q_normal"))) };
+        ColorView test = new ColorView() { Size = new Vector2(128f, 128f), Color = new Vector3(1.0f, 0.0f, 0.0f) };
         layout.Add(bottomLeft, new AbsoluteLayout.LayoutParams { Position = new Vector2(0.0f, 0.0f), Anchor = new Vector2(0.0f, 0.0f) });
         layout.Add(bottomRight, new AbsoluteLayout.LayoutParams { Position = new Vector2(1280.0f, 0.0f), Anchor = new Vector2(1.0f, 0.0f) });
-        layout.Add(center, new AbsoluteLayout.LayoutParams { Position = new Vector2(1280.0f * 0.5f, 720f), Anchor = new Vector2(0.5f, 1.0f) });
-        bottomLeft.Add(bottomLeftView1, new LinearLayout.LayoutParams { });
-        bottomLeft.Add(bottomLeftView2, new LinearLayout.LayoutParams { });
-        bottomRight.Add(bottomRightView1, new LinearLayout.LayoutParams { });
-        bottomRight.Add(bottomRightView2, new LinearLayout.LayoutParams { });
-        center.Add(centerView1, new LinearLayout.LayoutParams { });
-        center.Add(centerView2, new LinearLayout.LayoutParams { });
+        bottomLeft.Add(wasd, new LinearLayout.LayoutParams { });
+        bottomRight.Add(e, new LinearLayout.LayoutParams { });
+        bottomRight.Add(q, new LinearLayout.LayoutParams { });
+        bottomRight.Add(test, new LinearLayout.LayoutParams { });
         _ui.Push(layout);
 
         _world = new GameWorld(1.0f / 20.0f, new Tilemap(), []);
@@ -151,21 +145,33 @@ public class GameScene : IScene, IUniformProvider {
 
     public void GetUniformData(AssetID shaderProgram, AssetID textureAtlas, Span<byte> buffer) {
         if (shaderProgram == new AssetID("shader.userinterface")) {
-            UserInterfaceShaderLayout.UniformData data = new UserInterfaceShaderLayout.UniformData {
-                Projection = _uiCamera.GetViewMatrix()
-            };
-            MemoryMarshal.Cast<UserInterfaceShaderLayout.UniformData, byte>(MemoryMarshal.CreateSpan(ref data, 1)).CopyTo(buffer);
-            return;
+            if (textureAtlas != AssetID.None) {
+                TextureAtlas atlas = _context.AssetManager.Get<TextureAtlas>(textureAtlas);
+                UserInterfaceShaderLayout.UniformData data = new UserInterfaceShaderLayout.UniformData(
+                    _uiCamera.GetViewMatrix(),
+                    new Vector2i((int)(uint)(DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() >> 32), (int)(uint)(DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() & 0xFFFFFFFF)),
+                    new Vector2i(atlas.AtlasWidth, atlas.AtlasHeight),
+                    new Vector2i(atlas.CellWidth, atlas.CellHeight),
+                    atlas.CellPadding
+                );
+                MemoryMarshal.Cast<UserInterfaceShaderLayout.UniformData, byte>(MemoryMarshal.CreateSpan(ref data, 1)).CopyTo(buffer);
+            } else {
+                UserInterfaceShaderLayout.UniformData data = new UserInterfaceShaderLayout.UniformData(
+                    _uiCamera.GetViewMatrix(),
+                    new Vector2i((int)(uint)(DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() >> 32), (int)(uint)(DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() & 0xFFFFFFFF))
+                );
+                MemoryMarshal.Cast<UserInterfaceShaderLayout.UniformData, byte>(MemoryMarshal.CreateSpan(ref data, 1)).CopyTo(buffer);
+            }
         } else if (shaderProgram == new AssetID("shader.tilemap")) {
             TextureAtlas atlas = _context.AssetManager.Get<TextureAtlas>(textureAtlas);
-            TilemapShaderLayout.UniformData data = new TilemapShaderLayout.UniformData {
-                Projection = _worldCamera.GetViewMatrix(),
-                TimeMilliseconds = new Vector2i((int)(uint)(DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() >> 32), (int)(uint)(DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() & 0xFFFFFFFF)),
-                Alpha = (DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() - _world.TickTimestamp) / (float)_world.TickInterval / 1000.0f,
-                TextureSize = new Vector2i(atlas.AtlasWidth, atlas.AtlasHeight),
-                CellSize = new Vector2i(atlas.CellWidth, atlas.CellHeight),
-                Padding = atlas.CellPadding
-            };
+            TilemapShaderLayout.UniformData data = new TilemapShaderLayout.UniformData(
+                _worldCamera.GetViewMatrix(),
+                new Vector2i((int)(uint)(DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() >> 32), (int)(uint)(DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() & 0xFFFFFFFF)),
+                (DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() - _world.TickTimestamp) / (float)_world.TickInterval / 1000.0f,
+                new Vector2i(atlas.AtlasWidth, atlas.AtlasHeight),
+                new Vector2i(atlas.CellWidth, atlas.CellHeight),
+                atlas.CellPadding
+            );
             MemoryMarshal.Cast<TilemapShaderLayout.UniformData, byte>(MemoryMarshal.CreateSpan(ref data, 1)).CopyTo(buffer);
         }
     }

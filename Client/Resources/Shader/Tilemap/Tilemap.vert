@@ -3,7 +3,7 @@
 layout (location = 0) in vec3 aGlobalPosition;
 layout (location = 1) in vec3 aInstancePositionLast;
 layout (location = 2) in vec3 aInstancePositionCurrent;
-layout (location = 3) in int aInstanceIndex;
+layout (location = 3) in int aInstanceFrameIndex;
 layout (location = 4) in ivec2 aInstanceFrameSize;
 layout (location = 5) in int aInstanceFrameCount;
 layout (location = 6) in int aInstanceFrameTime;
@@ -13,8 +13,8 @@ layout (std140) uniform Uniforms {
     uvec2 uTimeMilliseconds;
     float uAlpha;
     ivec2 uTextureSize;
-    ivec2 uCellSize;
-    int uPadding;
+    ivec2 uTextureCell;
+    int uTexturePadding;
 };
 
 out vec2 vUV;
@@ -38,8 +38,7 @@ vec2 getUV(ivec2 textureSize, ivec2 cellSize, int padding, int index, ivec2 size
 }
 
 void main() {
-    int index = aInstanceIndex + int(uTimeMilliseconds.y / uint(aInstanceFrameTime)) % aInstanceFrameCount;
-    vec2 vertexUV = getVertexUV();
-    vUV = getUV(uTextureSize, uCellSize, uPadding, index, aInstanceFrameSize, vertexUV);
+    int index = aInstanceFrameIndex + int(uTimeMilliseconds.y / uint(aInstanceFrameTime)) % aInstanceFrameCount;
+    vUV = getUV(uTextureSize, uTextureCell, uTexturePadding, index, aInstanceFrameSize, getVertexUV());
     gl_Position = uProjection * vec4(aGlobalPosition + mix(aInstancePositionLast, aInstancePositionCurrent, uAlpha), 1.0f);
 }

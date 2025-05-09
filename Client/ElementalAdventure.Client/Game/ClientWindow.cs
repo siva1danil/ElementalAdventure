@@ -43,6 +43,15 @@ public class ClientWindow : GameWindow {
         try {
             _context.AssetManager.Add(new AssetID("shader.tilemap"), new ShaderProgram(_context.AssetLoader.LoadText("Shader/Tilemap/Tilemap.vert"), _context.AssetLoader.LoadText("Shader/Tilemap/Tilemap.frag")));
             _context.AssetManager.Add(new AssetID("shader.userinterface"), new ShaderProgram(_context.AssetLoader.LoadText("Shader/UserInterface/UserInterface.vert"), _context.AssetLoader.LoadText("Shader/UserInterface/UserInterface.frag")));
+            _context.AssetManager.Add(new AssetID("textureatlas.ui"), new TextureAtlas(new Dictionary<AssetID, TextureAtlas.EntryDef> {
+                { new AssetID("button_wasd_normal"), new([_context.AssetLoader.LoadBinary("TextureAtlas/UI/button_wasd_normal.png")], 100) },
+                { new AssetID("button_q_normal"), new([_context.AssetLoader.LoadBinary("TextureAtlas/UI/button_q_normal.png")], 100) },
+                { new AssetID("button_q_press"), new([_context.AssetLoader.LoadBinary("TextureAtlas/UI/button_q_press.png")], 100) },
+                { new AssetID("button_e_normal"), new([_context.AssetLoader.LoadBinary("TextureAtlas/UI/button_e_normal.png")], 100) },
+                { new AssetID("button_e_press"), new([_context.AssetLoader.LoadBinary("TextureAtlas/UI/button_e_press.png")], 100) },
+                { new AssetID("button_tab_normal"), new([_context.AssetLoader.LoadBinary("TextureAtlas/UI/button_tab_normal.png")], 100) },
+                { new AssetID("button_tab_press"), new([_context.AssetLoader.LoadBinary("TextureAtlas/UI/button_tab_press.png")], 100) }
+            }, 1));
             _context.AssetManager.Add(new AssetID("textureatlas.dungeon"), new TextureAtlas(new Dictionary<AssetID, TextureAtlas.EntryDef> {
                 { new AssetID("null"), new([_context.AssetLoader.LoadBinary("TextureAtlas/Dungeon/null.png")], 100) },
                 { new AssetID("floor_1"), new([_context.AssetLoader.LoadBinary("TextureAtlas/Dungeon/floor_1.png")], 100) },

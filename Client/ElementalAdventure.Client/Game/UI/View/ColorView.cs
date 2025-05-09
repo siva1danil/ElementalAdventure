@@ -23,8 +23,8 @@ public class ColorView : ViewBase {
     public override void Measure() { }
 
     public override void Render(IRenderer renderer) {
-        Span<byte> slot = renderer.AllocateInstance(this, 0, new AssetID("shader.userinterface"), new AssetID("textureatlas.dungeon"), MemoryMarshal.Cast<UserInterfaceShaderLayout.GlobalData, byte>(_globalData.AsSpan()), Marshal.SizeOf<UserInterfaceShaderLayout.InstanceData>());
-        UserInterfaceShaderLayout.InstanceData instance = new(_position, _size, _color, 1);
+        Span<byte> slot = renderer.AllocateInstance(this, 0, new AssetID("shader.userinterface"), AssetID.None, MemoryMarshal.Cast<UserInterfaceShaderLayout.GlobalData, byte>(_globalData.AsSpan()), Marshal.SizeOf<UserInterfaceShaderLayout.InstanceData>());
+        UserInterfaceShaderLayout.InstanceData instance = new(_position, _size, _color);
         MemoryMarshal.Write(slot, instance);
     }
 }
