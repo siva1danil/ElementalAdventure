@@ -13,17 +13,17 @@ public class AbsoluteLayout : ViewGroupBase {
         foreach (IView view in _views) {
             view.Measure();
             LayoutParams layoutParams = (LayoutParams)_layoutParams[view];
-            a = Vector2.ComponentMin(a, layoutParams.Position - layoutParams.Anchor * view.Size);
-            b = Vector2.ComponentMax(b, layoutParams.Position - layoutParams.Anchor * view.Size);
+            a = Vector2.ComponentMin(a, layoutParams.Position - layoutParams.Anchor * view.ComputedSize);
+            b = Vector2.ComponentMax(b, layoutParams.Position - layoutParams.Anchor * view.ComputedSize);
         }
-        _size = b - a;
+        _computedSize = b - a;
     }
 
     public override void Layout(float depth = 0.0f, float step = 0.0f) {
         foreach (IView view in _views) {
             LayoutParams layoutParams = (LayoutParams)_layoutParams[view];
-            Vector2 position = layoutParams.Position - layoutParams.Anchor * view.Size;
-            view.Position = new Vector3(position.X, position.Y, depth);
+            Vector2 position = layoutParams.Position - layoutParams.Anchor * view.ComputedSize;
+            view.ComputedPosition = new Vector3(position.X, position.Y, depth);
 
             if (view is IViewGroup group)
                 group.Layout(depth + step, step);

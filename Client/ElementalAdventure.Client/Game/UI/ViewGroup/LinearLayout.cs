@@ -15,20 +15,20 @@ public class LinearLayout : ViewGroupBase {
     }
 
     public override void Measure() {
-        _size = Vector2.Zero;
+        _computedSize = Vector2.Zero;
         foreach (IView view in _views) {
             view.Measure();
-            _size.X = _orientation == OrientationType.Horizontal ? _size.X + view.Size.X : Math.Max(_size.X, view.Size.X);
-            _size.Y = _orientation == OrientationType.Vertical ? _size.Y + view.Size.Y : Math.Max(_size.Y, view.Size.Y);
+            _computedSize.X = _orientation == OrientationType.Horizontal ? _computedSize.X + view.ComputedSize.X : Math.Max(_computedSize.X, view.ComputedSize.X);
+            _computedSize.Y = _orientation == OrientationType.Vertical ? _computedSize.Y + view.ComputedSize.Y : Math.Max(_computedSize.Y, view.ComputedSize.Y);
         }
     }
 
     public override void Layout(float depth = 0.0f, float step = 0.0f) {
-        Vector2 position = _position.Xy;
+        Vector2 position = _computedPosition.Xy;
         foreach (IView view in _views) {
-            view.Position = new Vector3(position.X, position.Y, depth);
-            if (_orientation == OrientationType.Horizontal) position.X += view.Size.X;
-            else position.Y += view.Size.Y;
+            view.ComputedPosition = new Vector3(position.X, position.Y, depth);
+            if (_orientation == OrientationType.Horizontal) position.X += view.ComputedSize.X;
+            else position.Y += view.ComputedSize.Y;
 
             if (view is IViewGroup group)
                 group.Layout(depth + step, step);
