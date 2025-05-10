@@ -24,11 +24,11 @@ public class StartupScene : IScene, IUniformProvider {
         _context = context;
 
         _renderer = new BatchedRenderer(context.AssetManager, this);
-        _ui = new UIManager(new(0.0f, 1.0f));
+        _ui = new UIManager(new(0.0f, 1.0f), _context.WindowSize);
         _uiCamera = new Camera(_context.WindowSize / 2.0f, _context.WindowSize, _context.WindowSize);
 
         AbsoluteLayout layout = new();
-        ImageView background = new() { Size = _context.WindowSize, Source = new ImageView.ImageSource(new AssetID("textureatlas.art"), _context.AssetManager.Get<TextureAtlas>(new AssetID("textureatlas.art")).GetEntry(new AssetID("background"))) };
+        ImageView background = new() { Size = new Vector2(1.0f, 1.0f), Source = new ImageView.ImageSource(new AssetID("textureatlas.art"), _context.AssetManager.Get<TextureAtlas>(new AssetID("textureatlas.art")).GetEntry(new AssetID("background"))) };
         layout.Add(background, new AbsoluteLayout.LayoutParams() { Position = new(0.0f, 0.0f), Anchor = new(0.0f, 0.0f) });
         _ui.Push(layout);
     }
@@ -41,7 +41,12 @@ public class StartupScene : IScene, IUniformProvider {
         _renderer.Render();
     }
 
-    public void Resize(ResizeEventArgs args) { }
+    public void Resize(ResizeEventArgs args) {
+        _uiCamera.Center = new Vector2(args.Size.X, args.Size.Y) / 2.0f;
+        _uiCamera.ScreenSize = new Vector2(args.Size.X, args.Size.Y);
+        _uiCamera.TargetWorldSize = new Vector2(args.Size.X, args.Size.Y);
+        _ui.Size = new Vector2(args.Size.X, args.Size.Y);
+    }
 
     public void KeyDown(KeyboardKeyEventArgs args) { }
 

@@ -14,10 +14,10 @@ public class LinearLayout : ViewGroupBase {
         _orientation = OrientationType.Horizontal;
     }
 
-    public override void Measure() {
+    public override void Measure(Vector2 available) {
         _computedSize = Vector2.Zero;
         foreach (IView view in _views) {
-            view.Measure();
+            view.Measure(new Vector2(_size.X == 0.0f ? available.X : _size.X, _size.Y == 0.0f ? available.Y : _size.Y));
             _computedSize.X = _orientation == OrientationType.Horizontal ? _computedSize.X + view.ComputedSize.X : Math.Max(_computedSize.X, view.ComputedSize.X);
             _computedSize.Y = _orientation == OrientationType.Vertical ? _computedSize.Y + view.ComputedSize.Y : Math.Max(_computedSize.Y, view.ComputedSize.Y);
         }

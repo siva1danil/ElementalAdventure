@@ -12,6 +12,6 @@ public interface IView {
     public Vector3 ComputedPosition { get; set; }
 
     public void InvalidateLayout();
-    public void Measure();
+    public void Measure(Vector2 available);
     public void Render(IRenderer renderer);
 }

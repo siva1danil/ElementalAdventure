@@ -7,10 +7,14 @@ namespace ElementalAdventure.Client.Core.UI;
 public class UIManager {
     private readonly Stack<IViewGroup> _stack;
     private readonly Vector2 _depthRange;
+    private Vector2 _size;
 
-    public UIManager(Vector2 depthRange) {
+    public Vector2 Size { get => _size; set { _size = value; foreach (IViewGroup group in _stack) group.InvalidateLayout(); } }
+
+    public UIManager(Vector2 depthRange, Vector2 size) {
         _stack = [];
         _depthRange = depthRange;
+        _size = size;
     }
 
     public void Push(IViewGroup viewGroup) {
@@ -28,7 +32,7 @@ public class UIManager {
 
         IViewGroup group = _stack.Peek();
         if (group.LayoutDirty) {
-            group.Measure();
+            group.Measure(_size);
             group.Layout(_depthRange.X, (_depthRange.Y - _depthRange.X) / ComputeDepth(group));
             group.LayoutDirty = false;
         }

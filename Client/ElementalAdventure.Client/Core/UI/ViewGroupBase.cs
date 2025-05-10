@@ -60,7 +60,7 @@ public abstract class ViewGroupBase : IViewGroup {
         InvalidateLayout();
     }
 
-    public abstract void Measure();
+    public abstract void Measure(Vector2 available);
     public abstract void Layout(float depth = 0.0f, float step = 0.0f);
     public abstract void Render(IRenderer renderer);
 }

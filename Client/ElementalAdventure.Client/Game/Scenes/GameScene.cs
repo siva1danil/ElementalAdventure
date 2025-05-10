@@ -33,7 +33,7 @@ public class GameScene : IScene, IUniformProvider {
         _context = context;
 
         _renderer = new(_context.AssetManager, this);
-        _ui = new(new Vector2(0.0f, 1.0f));
+        _ui = new(new Vector2(0.0f, 1.0f), _context.WindowSize);
         _uiCamera = new Camera(context.WindowSize / 2.0f, context.WindowSize, context.WindowSize);
         _worldCamera = new Camera(new Vector2(13.0f * 0.5f - 0.5f, 9.0f * 0.5f - 0.5f), new Vector2(14.0f, 10f), context.WindowSize);
 

@@ -21,6 +21,6 @@ public abstract class ViewBase : IView {
         _parent?.InvalidateLayout();
     }
 
-    public abstract void Measure();
+    public abstract void Measure(Vector2 available);
     public abstract void Render(IRenderer renderer);
 }

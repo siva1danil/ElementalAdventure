@@ -20,13 +20,14 @@ public class ColorView : ViewBase {
         _color = new(0.0f, 0.0f, 0.0f);
     }
 
-    public override void Measure() {
-        _computedSize = _size;
+    public override void Measure(Vector2 available) {
+        _computedSize.X = (_size.X >= 0.0f && _size.X <= 1.0f) ? available.X * _size.X : _size.X;
+        _computedSize.Y = (_size.Y >= 0.0f && _size.Y <= 1.0f) ? available.Y * _size.Y : _size.Y;
     }
 
     public override void Render(IRenderer renderer) {
         Span<byte> slot = renderer.AllocateInstance(this, 0, new AssetID("shader.userinterface"), AssetID.None, MemoryMarshal.Cast<UserInterfaceShaderLayout.GlobalData, byte>(_globalData.AsSpan()), Marshal.SizeOf<UserInterfaceShaderLayout.InstanceData>());
-        UserInterfaceShaderLayout.InstanceData instance = new(_computedPosition, _size, _color);
+        UserInterfaceShaderLayout.InstanceData instance = new(_computedPosition, _computedSize, _color);
         MemoryMarshal.Write(slot, instance);
     }
 }
