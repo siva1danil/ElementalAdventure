@@ -1,11 +1,9 @@
-using System.Collections.ObjectModel;
-
 using ElementalAdventure.Client.Core.Rendering;
-using ElementalAdventure.Client.Game.UI.Interface;
+using ElementalAdventure.Client.Core.UI;
 
 using OpenTK.Mathematics;
 
-namespace ElementalAdventure.Client.Game.UI.ViewGroup;
+namespace ElementalAdventure.Client.Game.UI.ViewGroups;
 
 public class AbsoluteLayout : ViewGroupBase {
     public AbsoluteLayout() { }

@@ -1,11 +1,8 @@
-using System.Diagnostics;
-
 using ElementalAdventure.Client.Core.Rendering;
-using ElementalAdventure.Client.Game.UI.Interface;
 
 using OpenTK.Mathematics;
 
-namespace ElementalAdventure.Client.Game.UI;
+namespace ElementalAdventure.Client.Core.UI;
 
 public class UIManager {
     private readonly Stack<IViewGroup> _stack;

@@ -3,12 +3,12 @@ using System.Runtime.InteropServices;
 using ElementalAdventure.Client.Core.Assets;
 using ElementalAdventure.Client.Core.Rendering;
 using ElementalAdventure.Client.Core.Resources.Composed;
+using ElementalAdventure.Client.Core.UI;
 using ElementalAdventure.Client.Game.Data;
-using ElementalAdventure.Client.Game.UI.ViewGroup;
 
 using OpenTK.Mathematics;
 
-namespace ElementalAdventure.Client.Game.UI.View;
+namespace ElementalAdventure.Client.Game.UI.Views;
 
 public class ImageView : ViewBase {
     private readonly UserInterfaceShaderLayout.GlobalData[] _globalData;

@@ -2,7 +2,7 @@ using ElementalAdventure.Client.Core.Rendering;
 
 using OpenTK.Mathematics;
 
-namespace ElementalAdventure.Client.Game.UI.Interface;
+namespace ElementalAdventure.Client.Core.UI;
 
 public interface IView {
     public Vector2 Size { get; set; }

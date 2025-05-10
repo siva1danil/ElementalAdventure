@@ -1,6 +1,6 @@
 using System.Collections.ObjectModel;
 
-namespace ElementalAdventure.Client.Game.UI.Interface;
+namespace ElementalAdventure.Client.Core.UI;
 
 public interface IViewGroup : IView {
     public bool LayoutDirty { get; set; }

@@ -1,9 +1,8 @@
-namespace ElementalAdventure.Client.Game.UI.ViewGroup;
-
 using ElementalAdventure.Client.Core.Rendering;
-using ElementalAdventure.Client.Game.UI.Interface;
 
 using OpenTK.Mathematics;
+
+namespace ElementalAdventure.Client.Core.UI;
 
 public abstract class ViewBase : IView {
     protected Vector2 _size = Vector2.Zero;

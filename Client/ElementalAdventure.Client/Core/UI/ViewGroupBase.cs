@@ -1,11 +1,10 @@
 using System.Collections.ObjectModel;
 
 using ElementalAdventure.Client.Core.Rendering;
-using ElementalAdventure.Client.Game.UI.Interface;
 
 using OpenTK.Mathematics;
 
-namespace ElementalAdventure.Client.Game.UI.ViewGroup;
+namespace ElementalAdventure.Client.Core.UI;
 
 public abstract class ViewGroupBase : IViewGroup {
     protected bool _layoutDirty = false;

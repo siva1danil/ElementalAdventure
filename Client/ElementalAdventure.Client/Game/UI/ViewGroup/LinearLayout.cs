@@ -1,11 +1,9 @@
-using System.Collections.ObjectModel;
-
 using ElementalAdventure.Client.Core.Rendering;
-using ElementalAdventure.Client.Game.UI.ViewGroup;
+using ElementalAdventure.Client.Core.UI;
 
 using OpenTK.Mathematics;
 
-namespace ElementalAdventure.Client.Game.UI.Interface;
+namespace ElementalAdventure.Client.Game.UI.ViewGroups;
 
 public class LinearLayout : ViewGroupBase {
     private OrientationType _orientation;
