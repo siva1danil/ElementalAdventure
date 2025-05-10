@@ -25,7 +25,7 @@ public class ClientWindow : GameWindow {
     private readonly Stopwatch _gpuTimer = new();
     /* temp */
 
-    public ClientWindow(string root) : base(GameWindowSettings.Default, new NativeWindowSettings { ClientSize = new(1280, 720) }) {
+    public ClientWindow(string root) : base(GameWindowSettings.Default, new NativeWindowSettings { Title = "Elemental Adventure", ClientSize = new(1280, 720) }) {
         Load += LoadHandler;
         Unload += UnloadHandler;
         UpdateFrame += UpdateFrameHandler;
@@ -47,6 +47,16 @@ public class ClientWindow : GameWindow {
                 { new AssetID("background"), new([_context.AssetLoader.LoadBinary("TextureAtlas/Art/background.png")], 100) }
             }, 1));
             _context.AssetManager.Add(new AssetID("textureatlas.ui"), new TextureAtlas(new Dictionary<AssetID, TextureAtlas.EntryDef> {
+                { new AssetID("loading"), new([
+                    _context.AssetLoader.LoadBinary("TextureAtlas/UI/loading.0.png"),
+                    _context.AssetLoader.LoadBinary("TextureAtlas/UI/loading.1.png"),
+                    _context.AssetLoader.LoadBinary("TextureAtlas/UI/loading.2.png"),
+                    _context.AssetLoader.LoadBinary("TextureAtlas/UI/loading.3.png"),
+                    _context.AssetLoader.LoadBinary("TextureAtlas/UI/loading.4.png"),
+                    _context.AssetLoader.LoadBinary("TextureAtlas/UI/loading.5.png"),
+                    _context.AssetLoader.LoadBinary("TextureAtlas/UI/loading.6.png"),
+                    _context.AssetLoader.LoadBinary("TextureAtlas/UI/loading.7.png")
+                ], 100) },
                 { new AssetID("button_wasd_normal"), new([_context.AssetLoader.LoadBinary("TextureAtlas/UI/button_wasd_normal.png")], 100) },
                 { new AssetID("button_q_normal"), new([_context.AssetLoader.LoadBinary("TextureAtlas/UI/button_q_normal.png")], 100) },
                 { new AssetID("button_q_press"), new([_context.AssetLoader.LoadBinary("TextureAtlas/UI/button_q_press.png")], 100) },
