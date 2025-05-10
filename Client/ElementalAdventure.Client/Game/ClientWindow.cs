@@ -43,6 +43,9 @@ public class ClientWindow : GameWindow {
         try {
             _context.AssetManager.Add(new AssetID("shader.tilemap"), new ShaderProgram(_context.AssetLoader.LoadText("Shader/Tilemap/Tilemap.vert"), _context.AssetLoader.LoadText("Shader/Tilemap/Tilemap.frag")));
             _context.AssetManager.Add(new AssetID("shader.userinterface"), new ShaderProgram(_context.AssetLoader.LoadText("Shader/UserInterface/UserInterface.vert"), _context.AssetLoader.LoadText("Shader/UserInterface/UserInterface.frag")));
+            _context.AssetManager.Add(new AssetID("textureatlas.art"), new TextureAtlas(new Dictionary<AssetID, TextureAtlas.EntryDef> {
+                { new AssetID("background"), new([_context.AssetLoader.LoadBinary("TextureAtlas/Art/background.png")], 100) }
+            }, 1));
             _context.AssetManager.Add(new AssetID("textureatlas.ui"), new TextureAtlas(new Dictionary<AssetID, TextureAtlas.EntryDef> {
                 { new AssetID("button_wasd_normal"), new([_context.AssetLoader.LoadBinary("TextureAtlas/UI/button_wasd_normal.png")], 100) },
                 { new AssetID("button_q_normal"), new([_context.AssetLoader.LoadBinary("TextureAtlas/UI/button_q_normal.png")], 100) },
@@ -205,7 +208,7 @@ public class ClientWindow : GameWindow {
         GL.Enable(EnableCap.Blend);
         GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
 
-        _scene = new GameScene(_context);
+        _scene = new StartupScene(_context);
     }
 
     private void UnloadHandler() {

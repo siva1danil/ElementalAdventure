@@ -143,35 +143,23 @@ public class GameScene : IScene, IUniformProvider {
     }
 
     public void GetUniformData(AssetID shaderProgram, AssetID textureAtlas, Span<byte> buffer) {
+        Vector2i time = new((int)(uint)(DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() >> 32), (int)(uint)(DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() & 0xFFFFFFFF));
         if (shaderProgram == new AssetID("shader.userinterface")) {
-            if (textureAtlas != AssetID.None) {
-                TextureAtlas atlas = _context.AssetManager.Get<TextureAtlas>(textureAtlas);
-                UserInterfaceShaderLayout.UniformData data = new UserInterfaceShaderLayout.UniformData(
-                    _uiCamera.GetViewMatrix(),
-                    new Vector2i((int)(uint)(DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() >> 32), (int)(uint)(DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() & 0xFFFFFFFF)),
-                    new Vector2i(atlas.AtlasWidth, atlas.AtlasHeight),
-                    new Vector2i(atlas.CellWidth, atlas.CellHeight),
-                    atlas.CellPadding
-                );
+            if (textureAtlas == AssetID.None) {
+                UserInterfaceShaderLayout.UniformData data = new(_uiCamera.GetViewMatrix(), time);
                 MemoryMarshal.Write(buffer, data);
             } else {
-                UserInterfaceShaderLayout.UniformData data = new UserInterfaceShaderLayout.UniformData(
-                    _uiCamera.GetViewMatrix(),
-                    new Vector2i((int)(uint)(DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() >> 32), (int)(uint)(DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() & 0xFFFFFFFF))
-                );
+                TextureAtlas atlas = _context.AssetManager.Get<TextureAtlas>(textureAtlas);
+                UserInterfaceShaderLayout.UniformData data = new(_uiCamera.GetViewMatrix(), time, new(atlas.AtlasWidth, atlas.AtlasHeight), new(atlas.CellWidth, atlas.CellHeight), atlas.CellPadding);
                 MemoryMarshal.Write(buffer, data);
             }
         } else if (shaderProgram == new AssetID("shader.tilemap")) {
+            float alpha = (DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() - _world.TickTimestamp) / (float)_world.TickInterval / 1000.0f;
             TextureAtlas atlas = _context.AssetManager.Get<TextureAtlas>(textureAtlas);
-            TilemapShaderLayout.UniformData data = new TilemapShaderLayout.UniformData(
-                _worldCamera.GetViewMatrix(),
-                new Vector2i((int)(uint)(DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() >> 32), (int)(uint)(DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() & 0xFFFFFFFF)),
-                (DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() - _world.TickTimestamp) / (float)_world.TickInterval / 1000.0f,
-                new Vector2i(atlas.AtlasWidth, atlas.AtlasHeight),
-                new Vector2i(atlas.CellWidth, atlas.CellHeight),
-                atlas.CellPadding
-            );
+            TilemapShaderLayout.UniformData data = new TilemapShaderLayout.UniformData(_worldCamera.GetViewMatrix(), time, alpha, new(atlas.AtlasWidth, atlas.AtlasHeight), new(atlas.CellWidth, atlas.CellHeight), atlas.CellPadding);
             MemoryMarshal.Write(buffer, data);
+        } else {
+            throw new NotImplementedException($"Shader program {shaderProgram} not supported in {nameof(GameScene)}.");
         }
     }
 
