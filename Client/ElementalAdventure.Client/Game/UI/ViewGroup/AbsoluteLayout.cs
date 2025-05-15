@@ -6,6 +6,10 @@ using OpenTK.Mathematics;
 namespace ElementalAdventure.Client.Game.UI.ViewGroups;
 
 public class AbsoluteLayout : ViewGroupBase {
+    private Vector2 _size;
+
+    public Vector2 Size { get => _size; set => _size = value; }
+
     public AbsoluteLayout() { }
 
     public override void Measure(Vector2 available) {

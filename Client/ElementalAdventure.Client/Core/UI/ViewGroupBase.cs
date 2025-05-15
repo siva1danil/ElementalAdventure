@@ -9,14 +9,12 @@ namespace ElementalAdventure.Client.Core.UI;
 public abstract class ViewGroupBase : IViewGroup {
     protected readonly List<IView> _views = [];
     protected readonly Dictionary<IView, IViewGroup.ILayoutParams> _layoutParams = [];
-    protected Vector2 _size = Vector2.Zero;
     protected IViewGroup? _parent = null;
 
     protected bool _layoutDirty = false;
     protected Vector2 _computedSize = Vector2.Zero;
     protected Vector3 _computedPosition = Vector3.Zero;
 
-    public Vector2 Size { get => _size; set => _size = value; }
     public IViewGroup? Parent { get => _parent; set => _parent = value; }
 
     public bool LayoutDirty { get => _layoutDirty; set => _layoutDirty = value; }

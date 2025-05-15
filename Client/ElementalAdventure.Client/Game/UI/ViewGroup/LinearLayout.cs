@@ -6,9 +6,11 @@ using OpenTK.Mathematics;
 namespace ElementalAdventure.Client.Game.UI.ViewGroups;
 
 public class LinearLayout : ViewGroupBase {
+    private Vector2 _size;
     private OrientationType _orientation;
     private GravityType _gravity;
 
+    public Vector2 Size { get => _size; set => _size = value; }
     public OrientationType Orientation { get => _orientation; set => _orientation = value; }
     public GravityType Gravity { get => _gravity; set => _gravity = value; }
 
