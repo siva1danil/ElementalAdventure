@@ -11,8 +11,10 @@ namespace ElementalAdventure.Client.Game.UI.Views;
 
 public class ColorView : ViewBase {
     private readonly UserInterfaceShaderLayout.GlobalData[] _globalData;
+    private Vector2 _size;
     private Vector3 _color;
 
+    public Vector2 Size { get => _size; set { _size = value; } }
     public Vector3 Color { get => _color; set { _color = value; } }
 
     public ColorView() {

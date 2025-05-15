@@ -5,6 +5,7 @@ using ElementalAdventure.Client.Core.Rendering;
 using ElementalAdventure.Client.Core.Resources.Composed;
 using ElementalAdventure.Client.Core.UI;
 using ElementalAdventure.Client.Game.Data;
+using ElementalAdventure.Client.Game.UI.View;
 using ElementalAdventure.Client.Game.UI.ViewGroups;
 using ElementalAdventure.Client.Game.UI.Views;
 
@@ -30,8 +31,10 @@ public class StartupScene : IScene, IUniformProvider {
         AbsoluteLayout layout = new();
         ImageView background = new(_context.AssetManager) { TextureAtlas = new AssetID("textureatlas.art"), TextureEntry = new AssetID("background"), Size = new Vector2(1.0f, 1.0f) };
         ImageView loading = new(_context.AssetManager) { TextureAtlas = new AssetID("textureatlas.ui"), TextureEntry = new AssetID("loading"), Size = new Vector2(48f, 48f) };
+        TextView text = new(_context.AssetManager) { Font = new AssetID("font.pixeloidsans"), Text = "Connecting to server...", Height = 64f };
         layout.Add(background, new AbsoluteLayout.LayoutParams() { Position = new(0.0f, 0.0f), Anchor = new(0.0f, 0.0f) });
         layout.Add(loading, new AbsoluteLayout.LayoutParams() { Position = new(0.5f, 0.9f), Anchor = new(0.5f, 1.0f) });
+        layout.Add(text, new AbsoluteLayout.LayoutParams() { Position = new(0.5f, 0.9f), Anchor = new(0.5f, 0.0f) });
         _ui.Push(layout);
     }
 
@@ -61,8 +64,12 @@ public class StartupScene : IScene, IUniformProvider {
                 UserInterfaceShaderLayout.UniformData data = new(_uiCamera.GetViewMatrix(), time);
                 MemoryMarshal.Write(buffer, data);
             } else {
-                TextureAtlas atlas = _context.AssetManager.Get<TextureAtlas>(textureAtlas);
-                UserInterfaceShaderLayout.UniformData data = new(_uiCamera.GetViewMatrix(), time, new(atlas.AtlasWidth, atlas.AtlasHeight), new(atlas.CellWidth, atlas.CellHeight), atlas.CellPadding);
+                UserInterfaceShaderLayout.UniformData data = new(_uiCamera.GetViewMatrix(), time, new(1, 1), new(1, 1), 0);
+                if (_context.AssetManager.TryGet(textureAtlas, out TextureAtlas? atlas)) {
+                    data.TextureSize = new Vector2i(atlas!.AtlasWidth, atlas!.AtlasHeight);
+                    data.TextureCell = new Vector2i(atlas!.CellWidth, atlas!.CellHeight);
+                    data.TexturePadding = atlas!.CellPadding;
+                }
                 MemoryMarshal.Write(buffer, data);
             }
         } else {

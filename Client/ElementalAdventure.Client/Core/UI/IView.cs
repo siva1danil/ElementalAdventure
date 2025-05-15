@@ -5,7 +5,6 @@ using OpenTK.Mathematics;
 namespace ElementalAdventure.Client.Core.UI;
 
 public interface IView {
-    public Vector2 Size { get; set; }
     public IViewGroup? Parent { get; set; }
 
     public Vector2 ComputedSize { get; set; }

@@ -24,6 +24,15 @@ public class AssetManager : IDisposable {
         return (T)_assets[type][key];
     }
 
+    public bool TryGet<T>(AssetID key, out T? asset) where T : notnull {
+        Type type = typeof(T);
+        asset = default;
+        if (!_assets.ContainsKey(type)) return false;
+        else if (!_assets[type].ContainsKey(key)) return false;
+        asset = (T)_assets[type][key];
+        return true;
+    }
+
     public void Dispose() {
         foreach (KeyValuePair<Type, Dictionary<AssetID, object>> entry in _assets) {
             foreach (KeyValuePair<AssetID, object> asset in entry.Value) {

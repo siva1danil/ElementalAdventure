@@ -175,7 +175,7 @@ public class ClientWindow : GameWindow {
                 ], 100) }
             }, 1));
 
-            _context.AssetManager.Add(new AssetID("font.pixeloidsans"), new Font(_context.AssetLoader.LoadBinary("Font/Pixeloid/PixeloidSans.ttf"), [new Font.Range(' ', '~')], 16, 1));
+            _context.AssetManager.Add(new AssetID("font.pixeloidsans"), new Font(_context.AssetLoader.LoadBinary("Font/Pixeloid/PixeloidSans.ttf"), [new Font.Range(' ', '~')], 48, 1, true));
 
             _context.AssetManager.Add(new AssetID("null"), new TileType(new AssetID("textureatlas.dungeon"), new AssetID("null"), 0, -0.5f));
             _context.AssetManager.Add(new AssetID("floor_1"), new TileType(new AssetID("textureatlas.dungeon"), new AssetID("floor_1"), 0, -0.5f));

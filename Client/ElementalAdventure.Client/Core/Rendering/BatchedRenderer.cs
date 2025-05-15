@@ -98,7 +98,10 @@ public class BatchedRenderer : IRenderer {
             GL.UseProgram(_assetManager.Get<ShaderProgram>(batch.Key.ShaderProgram).Id);
             // Use TextureAtlas
             GL.ActiveTexture(TextureUnit.Texture0);
-            GL.BindTexture(TextureTarget.Texture2D, batch.Key.TextureAtlas == AssetID.None ? 0 : _assetManager.Get<TextureAtlas>(batch.Key.TextureAtlas).Id);
+            if (batch.Key.TextureAtlas == AssetID.None) GL.BindTexture(TextureTarget.Texture2D, 0);
+            else if (_assetManager.TryGet(batch.Key.TextureAtlas, out TextureAtlas? atlas)) GL.BindTexture(TextureTarget.Texture2D, atlas!.Id);
+            else if (_assetManager.TryGet(batch.Key.TextureAtlas, out Font? font)) GL.BindTexture(TextureTarget.Texture2D, font!.Id);
+            else throw new ArgumentException($"BatchKey {batch.Key} has an invalid TextureAtlas.");
             // Use UniformBufferObject
             GL.BindBuffer(BufferTarget.UniformBuffer, batch.Value.UniformBuffer.Id);
             GL.BindBufferBase(BufferRangeTarget.UniformBuffer, 0, batch.Value.UniformBuffer.Id);
