@@ -28,8 +28,8 @@ public class StartupScene : IScene, IUniformProvider {
         _uiCamera = new Camera(_context.WindowSize / 2.0f, _context.WindowSize, _context.WindowSize);
 
         AbsoluteLayout layout = new();
-        ImageView background = new() { Size = new Vector2(1.0f, 1.0f), Source = new ImageView.ImageSource(new AssetID("textureatlas.art"), _context.AssetManager.Get<TextureAtlas>(new AssetID("textureatlas.art")).GetEntry(new AssetID("background"))) };
-        ImageView loading = new() { Size = new Vector2(48f, 48f), Source = new ImageView.ImageSource(new AssetID("textureatlas.ui"), _context.AssetManager.Get<TextureAtlas>(new AssetID("textureatlas.ui")).GetEntry(new AssetID("loading"))) };
+        ImageView background = new(_context.AssetManager) { TextureAtlas = new AssetID("textureatlas.art"), TextureEntry = new AssetID("background"), Size = new Vector2(1.0f, 1.0f) };
+        ImageView loading = new(_context.AssetManager) { TextureAtlas = new AssetID("textureatlas.ui"), TextureEntry = new AssetID("loading"), Size = new Vector2(48f, 48f) };
         layout.Add(background, new AbsoluteLayout.LayoutParams() { Position = new(0.0f, 0.0f), Anchor = new(0.0f, 0.0f) });
         layout.Add(loading, new AbsoluteLayout.LayoutParams() { Position = new(0.5f, 128f), Anchor = new(0.0f, 0.5f) });
         _ui.Push(layout);

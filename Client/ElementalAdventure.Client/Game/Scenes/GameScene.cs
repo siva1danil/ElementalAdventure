@@ -40,9 +40,9 @@ public class GameScene : IScene, IUniformProvider {
         AbsoluteLayout layout = new();
         LinearLayout bottomLeft = new();
         LinearLayout bottomRight = new();
-        ImageView wasd = new ImageView() { Size = new Vector2(1280f, 720f), Source = new ImageView.ImageSource(new("textureatlas.ui"), _context.AssetManager.Get<TextureAtlas>(new AssetID("textureatlas.ui")).GetEntry(new AssetID("button_wasd_normal"))) };
-        ImageView e = new ImageView() { Size = new Vector2(128f, 128f), Source = new ImageView.ImageSource(new("textureatlas.ui"), _context.AssetManager.Get<TextureAtlas>(new AssetID("textureatlas.ui")).GetEntry(new AssetID("button_e_normal"))) };
-        ImageView q = new ImageView() { Size = new Vector2(128f, 128f), Source = new ImageView.ImageSource(new("textureatlas.ui"), _context.AssetManager.Get<TextureAtlas>(new AssetID("textureatlas.ui")).GetEntry(new AssetID("button_q_normal"))) };
+        ImageView wasd = new ImageView(_context.AssetManager) { Size = new Vector2(1280f, 720f), TextureAtlas = new AssetID("textureatlas.ui"), TextureEntry = new AssetID("button_wasd_normal") };
+        ImageView e = new ImageView(_context.AssetManager) { Size = new Vector2(128f, 128f), TextureAtlas = new AssetID("textureatlas.ui"), TextureEntry = new AssetID("button_e_normal") };
+        ImageView q = new ImageView(_context.AssetManager) { Size = new Vector2(128f, 128f), TextureAtlas = new AssetID("textureatlas.ui"), TextureEntry = new AssetID("button_q_normal") };
         ColorView test = new ColorView() { Size = new Vector2(128f, 128f), Color = new Vector3(1.0f, 0.0f, 0.0f) };
         layout.Add(bottomLeft, new AbsoluteLayout.LayoutParams { Position = new Vector2(0.0f, 0.0f), Anchor = new Vector2(0.0f, 0.0f) });
         layout.Add(bottomRight, new AbsoluteLayout.LayoutParams { Position = new Vector2(1280.0f, 0.0f), Anchor = new Vector2(1.0f, 0.0f) });

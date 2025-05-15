@@ -12,13 +12,17 @@ namespace ElementalAdventure.Client.Game.UI.Views;
 
 public class ImageView : ViewBase {
     private readonly UserInterfaceShaderLayout.GlobalData[] _globalData;
-    private ImageSource _source;
+    private readonly AssetManager _assetManager;
+    private AssetID _textureAtlas, _textureEntry;
 
-    public ImageSource Source { get => _source; set { _source = value; } }
+    public AssetID TextureAtlas { get => _textureAtlas; set { _textureAtlas = value; } }
+    public AssetID TextureEntry { get => _textureEntry; set { _textureEntry = value; } }
 
-    public ImageView() {
+    public ImageView(AssetManager assetManager) {
+        _assetManager = assetManager;
         _globalData = [new(new(0.0f, 0.0f, 0.0f)), new(new(1.0f, 0.0f, 0.0f)), new(new(0.0f, 1.0f, 0.0f)), new(new(1.0f, 0.0f, 0.0f)), new(new(0.0f, 1.0f, 0.0f)), new(new(1.0f, 1.0f, 0.0f))];
-        _source = new ImageSource(AssetID.None, default);
+        _textureAtlas = AssetID.None;
+        _textureEntry = AssetID.None;
     }
 
     public override void Measure(Vector2 available) {
@@ -27,12 +31,14 @@ public class ImageView : ViewBase {
     }
 
     public override void Render(IRenderer renderer) {
-        if (_source.TextureAtlas == AssetID.None)
+        if (_textureAtlas == AssetID.None || _textureEntry == AssetID.None)
             return;
-        Span<byte> slot = renderer.AllocateInstance(this, 0, new AssetID("shader.userinterface"), _source.TextureAtlas, MemoryMarshal.Cast<UserInterfaceShaderLayout.GlobalData, byte>(_globalData.AsSpan()), Marshal.SizeOf<UserInterfaceShaderLayout.InstanceData>());
-        UserInterfaceShaderLayout.InstanceData instance = new(_computedPosition, _computedSize, Vector3.One, 1, _source.Texture.Index, new Vector2i(_source.Texture.Width, _source.Texture.Height), _source.Texture.FrameCount, _source.Texture.FrameTime);
+
+        TextureAtlas atlas = _assetManager.Get<TextureAtlas>(_textureAtlas);
+        TextureAtlas.Entry entry = atlas.GetEntry(_textureEntry);
+
+        Span<byte> slot = renderer.AllocateInstance(this, 0, new AssetID("shader.userinterface"), _textureAtlas, MemoryMarshal.Cast<UserInterfaceShaderLayout.GlobalData, byte>(_globalData.AsSpan()), Marshal.SizeOf<UserInterfaceShaderLayout.InstanceData>());
+        UserInterfaceShaderLayout.InstanceData instance = new(_computedPosition, _computedSize, Vector3.One, 1, entry.Index, new Vector2i(entry.Width, entry.Height), entry.FrameCount, entry.FrameTime);
         MemoryMarshal.Write(slot, instance);
     }
-
-    public readonly record struct ImageSource(AssetID TextureAtlas, TextureAtlas.Entry Texture);
 }
