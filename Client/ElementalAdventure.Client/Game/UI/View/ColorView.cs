@@ -16,7 +16,7 @@ public class ColorView : ViewBase {
     public Vector3 Color { get => _color; set { _color = value; } }
 
     public ColorView() {
-        _globalData = [new(new(0.0f, 0.0f, 0.0f)), new(new(1.0f, 0.0f, 0.0f)), new(new(0.0f, 1.0f, 0.0f)), new(new(1.0f, 0.0f, 0.0f)), new(new(0.0f, 1.0f, 0.0f)), new(new(1.0f, 1.0f, 0.0f))];
+        _globalData = [new(new(0.0f, 1.0f, 0.0f)), new(new(1.0f, 1.0f, 0.0f)), new(new(0.0f, 0.0f, 0.0f)), new(new(1.0f, 1.0f, 0.0f)), new(new(0.0f, 0.0f, 0.0f)), new(new(1.0f, 0.0f, 0.0f))];
         _color = new(0.0f, 0.0f, 0.0f);
     }
 
