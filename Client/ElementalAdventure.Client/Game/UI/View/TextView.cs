@@ -16,10 +16,12 @@ public class TextView : ViewBase {
     private AssetID _font;
     private string _text;
     private float _height;
+    private bool _ignoreDescent;
 
     public AssetID Font { get => _font; set { _font = value; } }
     public string Text { get => _text; set { _text = value; } }
     public float Height { get => _height; set { _height = value; } }
+    public bool IgnoreDescent { get => _ignoreDescent; set { _ignoreDescent = value; } }
 
     public TextView(AssetManager assetManager) {
         _assetManager = assetManager;
@@ -27,11 +29,12 @@ public class TextView : ViewBase {
         _font = AssetID.None;
         _text = string.Empty;
         _height = 1.0f;
+        _ignoreDescent = false;
     }
 
     public override void Measure(Vector2 available) {
         _computedSize.X = (_font == AssetID.None || string.IsNullOrEmpty(_text)) ? 0.0f : Measure(_text);
-        _computedSize.Y = _height;
+        _computedSize.Y = (_font == AssetID.None || string.IsNullOrEmpty(_text)) ? _height : (_assetManager.Get<Font>(_font).Ascent + (_ignoreDescent ? 0.0f : _assetManager.Get<Font>(_font).Descent)) * _height;
     }
 
     public override void Render(IRenderer renderer) {
