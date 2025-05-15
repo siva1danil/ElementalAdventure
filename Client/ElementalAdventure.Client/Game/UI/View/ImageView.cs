@@ -38,7 +38,7 @@ public class ImageView : ViewBase {
         TextureAtlas.Entry entry = atlas.GetEntry(_textureEntry);
 
         Span<byte> slot = renderer.AllocateInstance(this, 0, new AssetID("shader.userinterface"), _textureAtlas, MemoryMarshal.Cast<UserInterfaceShaderLayout.GlobalData, byte>(_globalData.AsSpan()), Marshal.SizeOf<UserInterfaceShaderLayout.InstanceData>());
-        UserInterfaceShaderLayout.InstanceData instance = new(_computedPosition, _computedSize, Vector3.One, 1, entry.Index, new Vector2i(entry.Width, entry.Height), entry.FrameCount, entry.FrameTime);
+        UserInterfaceShaderLayout.InstanceData instance = new(_computedPosition, _computedSize, Vector3.One, 1, entry.Index, new Vector2i(entry.Width, entry.Height), entry.FrameCount, entry.FrameTime, 0, Vector4.Zero);
         MemoryMarshal.Write(slot, instance);
     }
 }

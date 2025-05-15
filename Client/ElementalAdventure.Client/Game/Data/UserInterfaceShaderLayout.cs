@@ -10,9 +10,9 @@ public static class UserInterfaceShaderLayout {
         [FieldOffset(0)] public Vector3 Position = position;
     }
 
-    [StructLayout(LayoutKind.Explicit, Size = 56)]
-    public struct InstanceData(Vector3 position, Vector2 scale, Vector3 color, int hasTexture, int frameIndex, Vector2i frameSize, int frameCount, int frameTime) {
-        public InstanceData(Vector3 position, Vector2 scale, Vector3 color) : this(position, scale, color, 0, 0, Vector2i.Zero, 0, 1) { }
+    [StructLayout(LayoutKind.Explicit, Size = 76)]
+    public struct InstanceData(Vector3 position, Vector2 scale, Vector3 color, int hasTexture, int frameIndex, Vector2i frameSize, int frameCount, int frameTime, int hasRawUV, Vector4 RawUV) {
+        public InstanceData(Vector3 position, Vector2 scale, Vector3 color) : this(position, scale, color, 0, 0, Vector2i.Zero, 0, 1, 0, Vector4.Zero) { }
         [FieldOffset(0)] public Vector3 Position = position;
         [FieldOffset(12)] public Vector2 Scale = scale;
         [FieldOffset(20)] public Vector3 Color = color;
@@ -21,6 +21,8 @@ public static class UserInterfaceShaderLayout {
         [FieldOffset(40)] public Vector2i FrameSize = frameSize;
         [FieldOffset(48)] public int FrameCount = frameCount;
         [FieldOffset(52)] public int FrameTime = frameTime;
+        [FieldOffset(56)] public int HasRawUV = hasRawUV;
+        [FieldOffset(60)] public Vector4 RawUV = RawUV;
     }
 
     [StructLayout(LayoutKind.Explicit, Size = 96)]

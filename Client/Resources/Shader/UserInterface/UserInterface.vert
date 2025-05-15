@@ -9,6 +9,8 @@ layout (location = 5) in int aInstanceFrameIndex;
 layout (location = 6) in ivec2 aInstanceFrameSize;
 layout (location = 7) in int aInstanceFrameCount;
 layout (location = 8) in int aInstanceFrameTime;
+layout (location = 9) in int aInstanceHasRawUV;
+layout (location = 10) in vec4 aInstanceRawUV;
 
 layout (std140) uniform Uniforms {
     mat4 uProjection;
@@ -42,7 +44,7 @@ vec2 getUV(ivec2 textureSize, ivec2 cellSize, int padding, int index, ivec2 size
 
 void main() {
     int index = aInstanceFrameIndex + int(uTimeMilliseconds.y / uint(aInstanceFrameTime)) % aInstanceFrameCount;
-    vUV = getUV(uTextureSize, uTextureCell, uTexturePadding, index, aInstanceFrameSize, getVertexUV());
+    vUV = mix(getUV(uTextureSize, uTextureCell, uTexturePadding, index, aInstanceFrameSize, getVertexUV()), aInstanceRawUV.xy + (aInstanceRawUV.zw - aInstanceRawUV.xy) * getVertexUV(), float(aInstanceHasRawUV));
     vColor = aInstanceColor;
     vHasTexture = aInstanceHasTexture;
     gl_Position = uProjection * vec4(vec3(aGlobalPosition.xy * aInstanceScale, aGlobalPosition.z) + aInstancePosition, 1.0f);
