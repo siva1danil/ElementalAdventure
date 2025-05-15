@@ -16,7 +16,7 @@ public class Font : IDisposable {
     public float Ascent => _ascent;
     public float Descent => _descent;
 
-    public Font(byte[] data, Range[] ranges, int height, int padding, bool threshold = false) {
+    public Font(byte[] data, Range[] ranges, int height, int padding, bool threshold = false, bool interpolate = false) {
         if (ranges.Length == 0)
             throw new ArgumentException("TrueTypeFont must contain at least one range.");
 
@@ -64,7 +64,7 @@ public class Font : IDisposable {
             rgba[i * 4 + 3] = threshold ? (bitmap.Buffer[i] > 0 ? (byte)255 : (byte)0) : bitmap.Buffer[i];
         }
 
-        _atlas = new Texture2D(rgba, atlasWidth, atlasHeight);
+        _atlas = new Texture2D(rgba, atlasWidth, atlasHeight, interpolate);
         _ascent /= height;
         _descent /= height;
     }

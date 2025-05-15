@@ -30,11 +30,13 @@ public class StartupScene : IScene, IUniformProvider {
 
         AbsoluteLayout layout = new();
         ImageView background = new(_context.AssetManager) { TextureAtlas = new AssetID("textureatlas.art"), TextureEntry = new AssetID("background"), Size = new Vector2(1.0f, 1.0f) };
+        LinearLayout loadingLayout = new() { Orientation = LinearLayout.OrientationType.Horizontal, Gravity = LinearLayout.GravityType.Center };
         ImageView loading = new(_context.AssetManager) { TextureAtlas = new AssetID("textureatlas.ui"), TextureEntry = new AssetID("loading"), Size = new Vector2(48f, 48f) };
-        TextView text = new(_context.AssetManager) { Font = new AssetID("font.pixeloidsans"), Text = "Connecting to server...", Height = 64f };
+        TextView text = new(_context.AssetManager) { Font = new AssetID("font.arial"), Text = "Connecting to server...", Height = 32f };
         layout.Add(background, new AbsoluteLayout.LayoutParams() { Position = new(0.0f, 0.0f), Anchor = new(0.0f, 0.0f) });
-        layout.Add(loading, new AbsoluteLayout.LayoutParams() { Position = new(0.5f, 0.9f), Anchor = new(0.5f, 1.0f) });
-        layout.Add(text, new AbsoluteLayout.LayoutParams() { Position = new(0.5f, 0.9f), Anchor = new(0.5f, 0.0f) });
+        layout.Add(loadingLayout, new AbsoluteLayout.LayoutParams() { Position = new(0.5f, 0.9f), Anchor = new(0.5f, 1.0f) });
+        loadingLayout.Add(loading, new LinearLayout.LayoutParams { });
+        loadingLayout.Add(text, new LinearLayout.LayoutParams { });
         _ui.Push(layout);
     }
 
