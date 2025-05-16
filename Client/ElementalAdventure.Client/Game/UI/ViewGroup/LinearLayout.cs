@@ -22,25 +22,28 @@ public class LinearLayout : ViewGroupBase {
     public override void Measure(Vector2 available) {
         _computedSize = Vector2.Zero;
         foreach (IView view in _views) {
+            LayoutParams layoutParams = (LayoutParams)_layoutParams[view];
             view.Measure(new Vector2(_size.X == 0.0f ? available.X : _size.X, _size.Y == 0.0f ? available.Y : _size.Y));
-            _computedSize.X = _orientation == OrientationType.Horizontal ? _computedSize.X + view.ComputedSize.X : Math.Max(_computedSize.X, view.ComputedSize.X);
-            _computedSize.Y = _orientation == OrientationType.Vertical ? _computedSize.Y + view.ComputedSize.Y : Math.Max(_computedSize.Y, view.ComputedSize.Y);
+            _computedSize.X = _orientation == OrientationType.Horizontal ? _computedSize.X + view.ComputedSize.X + layoutParams.Margin.Y + layoutParams.Margin.W : Math.Max(_computedSize.X, view.ComputedSize.X + layoutParams.Margin.Y + layoutParams.Margin.W);
+            _computedSize.Y = _orientation == OrientationType.Vertical ? _computedSize.Y + view.ComputedSize.Y + layoutParams.Margin.X + layoutParams.Margin.Z : Math.Max(_computedSize.Y, view.ComputedSize.Y + layoutParams.Margin.X + layoutParams.Margin.Z);
         }
     }
 
     public override void Layout(float depth = 0.0f, float step = 0.0f) {
+        // TODO: fix gravity with margins on primary axis
         Vector2 position = _computedPosition.Xy;
         foreach (IView view in _views) {
+            LayoutParams layoutParams = (LayoutParams)_layoutParams[view];
             if (_gravity == GravityType.Center)
                 position = _orientation == OrientationType.Horizontal
-                    ? new Vector2(position.X, position.Y + (_computedSize.Y - view.ComputedSize.Y) / 2.0f)
-                    : new Vector2(position.X + (_computedSize.X - view.ComputedSize.X) / 2.0f, position.Y);
+                    ? new Vector2(position.X + layoutParams.Margin.W, position.Y + (_computedSize.Y - view.ComputedSize.Y) / 2.0f)
+                    : new Vector2(position.X + (_computedSize.X - view.ComputedSize.X) / 2.0f, position.Y + layoutParams.Margin.X);
             else if (_gravity == GravityType.End)
                 position = _orientation == OrientationType.Horizontal
-                    ? new Vector2(position.X, position.Y + _computedSize.Y - view.ComputedSize.Y)
-                    : new Vector2(position.X + _computedSize.X - view.ComputedSize.X, position.Y);
+                    ? new Vector2(position.X + layoutParams.Margin.W, position.Y + _computedSize.Y - view.ComputedSize.Y)
+                    : new Vector2(position.X + _computedSize.X - view.ComputedSize.X, position.Y + layoutParams.Margin.X);
             view.ComputedPosition = new Vector3(position.X, position.Y, depth);
-            position += _orientation == OrientationType.Horizontal ? new Vector2(view.ComputedSize.X, 0.0f) : new Vector2(0.0f, view.ComputedSize.Y);
+            position += _orientation == OrientationType.Horizontal ? new Vector2(view.ComputedSize.X + layoutParams.Margin.Y, 0.0f) : new Vector2(0.0f, view.ComputedSize.Y + layoutParams.Margin.Z);
 
             if (view is IViewGroup group)
                 group.Layout(depth + step, step);
@@ -54,5 +57,9 @@ public class LinearLayout : ViewGroupBase {
 
     public enum OrientationType { Horizontal, Vertical }
     public enum GravityType { Start, Center, End }
-    public class LayoutParams : IViewGroup.ILayoutParams { }
+    public class LayoutParams : IViewGroup.ILayoutParams {
+        private Vector4 _margin;
+
+        public Vector4 Margin { get => _margin; set => _margin = value; } // top, right, bottom, left
+    }
 }

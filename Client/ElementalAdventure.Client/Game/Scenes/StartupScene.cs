@@ -36,7 +36,7 @@ public class StartupScene : IScene, IUniformProvider {
         layout.Add(background, new AbsoluteLayout.LayoutParams() { Position = new(0.0f, 0.0f), Anchor = new(0.0f, 0.0f) });
         layout.Add(loadingLayout, new AbsoluteLayout.LayoutParams() { Position = new(0.5f, 0.9f), Anchor = new(0.5f, 1.0f) });
         loadingLayout.Add(loading, new LinearLayout.LayoutParams { });
-        loadingLayout.Add(text, new LinearLayout.LayoutParams { });
+        loadingLayout.Add(text, new LinearLayout.LayoutParams { Margin = new(0.0f, 0.0f, 0.0f, 24.0f) });
         _ui.Push(layout);
     }
 
