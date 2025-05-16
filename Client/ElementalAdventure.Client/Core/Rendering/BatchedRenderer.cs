@@ -2,8 +2,8 @@ using System.Diagnostics;
 using System.Runtime.CompilerServices;
 
 using ElementalAdventure.Client.Core.Assets;
-using ElementalAdventure.Client.Core.Resources.Composed;
 using ElementalAdventure.Client.Core.Resources.Data;
+using ElementalAdventure.Client.Core.Resources.HighLevel;
 using ElementalAdventure.Client.Core.Resources.OpenGL;
 
 using OpenTK.Graphics.OpenGL4;
@@ -100,7 +100,7 @@ public class BatchedRenderer : IRenderer {
             GL.ActiveTexture(TextureUnit.Texture0);
             if (batch.Key.TextureAtlas == AssetID.None) GL.BindTexture(TextureTarget.Texture2D, 0);
             else if (_assetManager.TryGet(batch.Key.TextureAtlas, out TextureAtlas? atlas)) GL.BindTexture(TextureTarget.Texture2D, atlas!.Id);
-            else if (_assetManager.TryGet(batch.Key.TextureAtlas, out Font? font)) GL.BindTexture(TextureTarget.Texture2D, font!.Id);
+            else if (_assetManager.TryGet(batch.Key.TextureAtlas, out MsdfFont? msdfFont)) GL.BindTexture(TextureTarget.Texture2D, msdfFont!.Id);
             else throw new ArgumentException($"BatchKey {batch.Key} has an invalid TextureAtlas.");
             // Use UniformBufferObject
             GL.BindBuffer(BufferTarget.UniformBuffer, batch.Value.UniformBuffer.Id);

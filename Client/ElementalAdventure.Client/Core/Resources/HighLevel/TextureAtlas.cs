@@ -3,7 +3,7 @@ using ElementalAdventure.Client.Core.Resources.OpenGL;
 
 using StbImageSharp;
 
-namespace ElementalAdventure.Client.Core.Resources.Composed;
+namespace ElementalAdventure.Client.Core.Resources.HighLevel;
 
 public class TextureAtlas : IDisposable {
     private readonly Texture2D _atlas;

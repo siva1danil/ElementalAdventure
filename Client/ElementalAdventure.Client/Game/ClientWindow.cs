@@ -1,7 +1,7 @@
 using System.Diagnostics;
 
 using ElementalAdventure.Client.Core.Assets;
-using ElementalAdventure.Client.Core.Resources.Composed;
+using ElementalAdventure.Client.Core.Resources.HighLevel;
 using ElementalAdventure.Client.Core.Resources.OpenGL;
 using ElementalAdventure.Client.Game.Data;
 using ElementalAdventure.Client.Game.Scenes;
@@ -25,7 +25,7 @@ public class ClientWindow : GameWindow {
     private readonly Stopwatch _gpuTimer = new();
     /* temp */
 
-    public ClientWindow(string root) : base(GameWindowSettings.Default, new NativeWindowSettings { Title = "Elemental Adventure", ClientSize = new(1280, 720) }) {
+    public ClientWindow(string root) : base(GameWindowSettings.Default, new NativeWindowSettings { Title = "Elemental Adventure", ClientSize = new(1280, 720), NumberOfSamples = 4 }) {
         Load += LoadHandler;
         Unload += UnloadHandler;
         UpdateFrame += UpdateFrameHandler;
@@ -43,6 +43,7 @@ public class ClientWindow : GameWindow {
         try {
             _context.AssetManager.Add(new AssetID("shader.tilemap"), new ShaderProgram(_context.AssetLoader.LoadText("Shader/Tilemap/Tilemap.vert"), _context.AssetLoader.LoadText("Shader/Tilemap/Tilemap.frag")));
             _context.AssetManager.Add(new AssetID("shader.userinterface"), new ShaderProgram(_context.AssetLoader.LoadText("Shader/UserInterface/UserInterface.vert"), _context.AssetLoader.LoadText("Shader/UserInterface/UserInterface.frag")));
+            _context.AssetManager.Add(new AssetID("shader.msdf"), new ShaderProgram(_context.AssetLoader.LoadText("Shader/Msdf/Msdf.vert"), _context.AssetLoader.LoadText("Shader/Msdf/Msdf.frag")));
             _context.AssetManager.Add(new AssetID("textureatlas.art"), new TextureAtlas(new Dictionary<AssetID, TextureAtlas.EntryDef> {
                 { new AssetID("background"), new([_context.AssetLoader.LoadBinary("TextureAtlas/Art/background.png")], 100) }
             }, 1));
@@ -175,8 +176,7 @@ public class ClientWindow : GameWindow {
                 ], 100) }
             }, 1));
 
-            _context.AssetManager.Add(new AssetID("font.arial"), new Font(_context.AssetLoader.LoadBinary("Font/Arial/Arial.ttf"), [new Font.Range(' ', '~')], 64, 1, false, true));
-            _context.AssetManager.Add(new AssetID("font.pixeloidsans"), new Font(_context.AssetLoader.LoadBinary("Font/Pixeloid/PixeloidSans.ttf"), [new Font.Range(' ', '~')], 48, 1, true, false));
+            _context.AssetManager.Add(new AssetID("font.arial"), new MsdfFont(_context.AssetLoader.LoadBinary("Font/Arial/Arial.png"), _context.AssetLoader.LoadBinary("Font/Arial/Arial.json")));
 
             _context.AssetManager.Add(new AssetID("null"), new TileType(new AssetID("textureatlas.dungeon"), new AssetID("null"), 0, -0.5f));
             _context.AssetManager.Add(new AssetID("floor_1"), new TileType(new AssetID("textureatlas.dungeon"), new AssetID("floor_1"), 0, -0.5f));
