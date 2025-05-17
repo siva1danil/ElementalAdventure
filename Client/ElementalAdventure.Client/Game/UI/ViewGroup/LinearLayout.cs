@@ -30,20 +30,23 @@ public class LinearLayout : ViewGroupBase {
     }
 
     public override void Layout(float depth = 0.0f, float step = 0.0f) {
-        // TODO: fix gravity with margins on primary axis
         Vector2 position = _computedPosition.Xy;
         foreach (IView view in _views) {
             LayoutParams layoutParams = (LayoutParams)_layoutParams[view];
-            if (_gravity == GravityType.Center)
-                position = _orientation == OrientationType.Horizontal
-                    ? new Vector2(position.X + layoutParams.Margin.W, position.Y + (_computedSize.Y - view.ComputedSize.Y) / 2.0f)
-                    : new Vector2(position.X + (_computedSize.X - view.ComputedSize.X) / 2.0f, position.Y + layoutParams.Margin.X);
-            else if (_gravity == GravityType.End)
-                position = _orientation == OrientationType.Horizontal
-                    ? new Vector2(position.X + layoutParams.Margin.W, position.Y + _computedSize.Y - view.ComputedSize.Y)
-                    : new Vector2(position.X + _computedSize.X - view.ComputedSize.X, position.Y + layoutParams.Margin.X);
-            view.ComputedPosition = new Vector3(position.X, position.Y, depth);
-            position += _orientation == OrientationType.Horizontal ? new Vector2(view.ComputedSize.X + layoutParams.Margin.Y, 0.0f) : new Vector2(0.0f, view.ComputedSize.Y + layoutParams.Margin.Z);
+            Vector2 localPosition = _gravity switch {
+                GravityType.Start => _orientation == OrientationType.Horizontal
+                    ? new Vector2(position.X + layoutParams.Margin.W, position.Y + layoutParams.Margin.X)
+                    : new Vector2(position.X + layoutParams.Margin.W, position.Y + layoutParams.Margin.X),
+                GravityType.Center => _orientation == OrientationType.Horizontal
+                    ? new Vector2(position.X + layoutParams.Margin.W, position.Y + (_computedSize.Y - view.ComputedSize.Y - layoutParams.Margin.X - layoutParams.Margin.Z) / 2.0f + layoutParams.Margin.X)
+                    : new Vector2(position.X + (_computedSize.X - view.ComputedSize.X - layoutParams.Margin.Y - layoutParams.Margin.W) / 2.0f + layoutParams.Margin.W, position.Y + layoutParams.Margin.X),
+                GravityType.End => _orientation == OrientationType.Horizontal
+                    ? new Vector2(position.X + layoutParams.Margin.W, position.Y + _computedSize.Y - view.ComputedSize.Y - layoutParams.Margin.Z)
+                    : new Vector2(position.X + _computedSize.X - view.ComputedSize.X - layoutParams.Margin.Y, position.Y + layoutParams.Margin.X),
+                _ => throw new ArgumentOutOfRangeException(nameof(Gravity), _gravity, "Invalid gravity type")
+            };
+            view.ComputedPosition = new Vector3(localPosition.X, localPosition.Y, depth);
+            position += _orientation == OrientationType.Horizontal ? new Vector2(layoutParams.Margin.W + view.ComputedSize.X + layoutParams.Margin.Y, 0.0f) : new Vector2(0.0f, layoutParams.Margin.X + view.ComputedSize.Y + layoutParams.Margin.Z);
 
             if (view is IViewGroup group)
                 group.Layout(depth + step, step);
