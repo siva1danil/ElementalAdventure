@@ -5,6 +5,8 @@ using ElementalAdventure.Client.Core.Resources.HighLevel;
 using ElementalAdventure.Client.Core.Resources.OpenGL;
 using ElementalAdventure.Client.Game.Components.Data;
 using ElementalAdventure.Client.Game.Scenes;
+using ElementalAdventure.Common.Networking;
+using ElementalAdventure.Common.Packets;
 
 using OpenTK.Graphics.OpenGL4;
 using OpenTK.Windowing.Common;
@@ -25,7 +27,7 @@ public class ClientWindow : GameWindow {
     private readonly Stopwatch _gpuTimer = new();
     /* temp */
 
-    public ClientWindow(string root) : base(GameWindowSettings.Default, new NativeWindowSettings { Title = "Elemental Adventure", ClientSize = new(1280, 720), NumberOfSamples = 4 }) {
+    public ClientWindow(System.Net.IPEndPoint server, string root) : base(GameWindowSettings.Default, new NativeWindowSettings { Title = "Elemental Adventure", ClientSize = new(1280, 720), NumberOfSamples = 4 }) {
         Load += LoadHandler;
         Unload += UnloadHandler;
         UpdateFrame += UpdateFrameHandler;
@@ -34,7 +36,14 @@ public class ClientWindow : GameWindow {
         KeyDown += KeyDownHandler;
         KeyUp += KeyUpHandler;
 
-        _context = new ClientContext(new AssetLoader(Path.Combine(root, "Resources")), new AssetManager(), ClientSize);
+        PacketRegistry registry = new();
+        _context = new ClientContext(
+            new AssetLoader(Path.Combine(root, "Resources")),
+            new AssetManager(),
+            registry,
+            new PacketClient(registry, server),
+            ClientSize
+        );
     }
 
     private void LoadHandler() {

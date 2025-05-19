@@ -55,5 +55,6 @@ public class PacketClient {
                 client.Dispose();
             }
         }
+        Awaiter = null;
     }
 }
