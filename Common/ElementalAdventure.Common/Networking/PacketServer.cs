@@ -34,6 +34,7 @@ public class PacketServer {
     private async Task AcceptLoop(CancellationToken cancellationToken) {
         while (!cancellationToken.IsCancellationRequested) {
             TcpClient client = await _listener.AcceptTcpClientAsync(cancellationToken);
+
             PacketConnection connection = new PacketConnection(_registry, client);
             connection.OnConnected += conn => OnClientConnected?.Invoke(conn);
             connection.OnDisconnected += (conn, ex) => {

@@ -43,24 +43,6 @@ public class GameServer {
         if (_server.Awaiter != null) await _server.Awaiter;
     }
 
-    public static async Task Test() {
-        CancellationTokenSource cts = new();
-
-        PacketRegistry registry = new PacketRegistry();
-        PacketClient client = new PacketClient(registry, new IPEndPoint(IPAddress.Loopback, 12345));
-        client.OnConnected += () => {
-            Logger.Info($"Client connected");
-            HandshakeRequestPacket packet = new HandshakeRequestPacket();
-            client.Connection?.Send(packet);
-        };
-        client.OnDisconnected += (ex) => Logger.Info($"Client disconnected");
-        client.OnPacketReceived += (packet) => Logger.Info($"Packet received: {packet.GetType().Name}");
-        client.Start(cts.Token);
-        Logger.Info($"Client started");
-        if (client.Awaiter != null)
-            await client.Awaiter;
-    }
-
     public static async Task Main() {
         try {
             Logger.Info($"Elemental Adventure server '{BuildInfo.AssemblyTitle}' version '{BuildInfo.AssemblyVersion}'");

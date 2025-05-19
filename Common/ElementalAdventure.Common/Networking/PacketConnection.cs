@@ -25,7 +25,7 @@ public class PacketConnection {
         using BinaryReader reader = new(stream);
         Exception? reason = null;
 
-        Logger.Debug($"Listening for packets from {_client.Client.RemoteEndPoint}");
+        Logger.Debug($"Establishing connection to {_client.Client.RemoteEndPoint}");
         OnConnected?.Invoke(this);
         while (_client.Connected && !cancellationToken.IsCancellationRequested) {
             try {
@@ -45,12 +45,12 @@ public class PacketConnection {
             } catch (OperationCanceledException) {
                 break;
             } catch (Exception ex) {
-                Logger.Error($"Connection error: {ex.Message}");
+                Logger.Error($"Error in connection {_client.Client.RemoteEndPoint}: {ex.Message}");
                 reason = ex;
                 break;
             }
         }
-        Logger.Debug($"Disconnected from {_client.Client.RemoteEndPoint}.");
+        Logger.Debug($"Closed connection to {_client.Client.RemoteEndPoint}.");
 
         _client.Close();
         OnDisconnected?.Invoke(this, reason);
@@ -68,7 +68,6 @@ public class PacketConnection {
 
         _client.GetStream().Write([(byte)(len >> 8), (byte)(len & 0xFF), (byte)(type >> 8), (byte)(type & 0xFF)], 0, sizeof(ushort) * 2);
         _client.GetStream().Write(stream.ToArray(), 0, (int)stream.Length);
-        _client.GetStream().Write(System.Text.Encoding.UTF8.GetBytes("END"));
         _client.GetStream().Flush();
     }
 }

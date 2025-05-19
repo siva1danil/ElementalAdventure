@@ -45,7 +45,11 @@ public class PacketClient {
             } catch (OperationCanceledException) {
                 break;
             } catch (Exception) {
-                await Task.Delay(1000, cancellationToken);
+                try {
+                    await Task.Delay(1000, cancellationToken);
+                } catch (OperationCanceledException) {
+                    break;
+                }
             } finally {
                 client.Close();
                 client.Dispose();
