@@ -1,6 +1,6 @@
 using OpenTK.Mathematics;
 
-namespace ElementalAdventure.Client.Game;
+namespace ElementalAdventure.Client.Game.Components.Utils;
 
 public class Camera {
     private Vector2 _center;

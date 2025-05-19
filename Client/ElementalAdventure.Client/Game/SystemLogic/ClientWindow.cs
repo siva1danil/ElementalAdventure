@@ -11,7 +11,7 @@ using OpenTK.Windowing.Common;
 using OpenTK.Windowing.Desktop;
 using OpenTK.Windowing.GraphicsLibraryFramework;
 
-namespace ElementalAdventure.Client.Game;
+namespace ElementalAdventure.Client.Game.SystemLogic;
 
 public class ClientWindow : GameWindow {
     private readonly ClientContext _context;
@@ -276,6 +276,4 @@ public class ClientWindow : GameWindow {
             _scene?.KeyUp(e);
         }
     }
-
-    public static void Main() => new ClientWindow(AppDomain.CurrentDomain.BaseDirectory).Run();
 }

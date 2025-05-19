@@ -3,7 +3,7 @@ using ElementalAdventure.Client.Core.Assets;
 using OpenTK.Mathematics;
 using OpenTK.Windowing.GraphicsLibraryFramework;
 
-namespace ElementalAdventure.Client.Game;
+namespace ElementalAdventure.Client.Game.SystemLogic;
 
 public class ClientContext {
     public AssetLoader AssetLoader;
