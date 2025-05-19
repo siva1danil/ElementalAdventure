@@ -1,4 +1,5 @@
 using ElementalAdventure.Client.Core.Assets;
+using ElementalAdventure.Client.Game.SystemLogic.Command;
 using ElementalAdventure.Common.Networking;
 using ElementalAdventure.Common.Packets;
 
@@ -12,6 +13,7 @@ public class ClientContext {
     public AssetManager AssetManager;
     public PacketRegistry PacketRegistry;
     public PacketClient PacketClient;
+    public Queue<IClientCommand> CommandQueue;
 
     public Vector2 WindowSize;
     public HashSet<Keys> PressedKeys;
@@ -21,6 +23,7 @@ public class ClientContext {
         AssetManager = assetManager;
         PacketRegistry = packetRegistry;
         PacketClient = client;
+        CommandQueue = [];
 
         WindowSize = windowSize;
         PressedKeys = [];

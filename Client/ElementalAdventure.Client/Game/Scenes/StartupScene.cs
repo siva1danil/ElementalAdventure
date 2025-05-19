@@ -9,6 +9,8 @@ using ElementalAdventure.Client.Game.Components.UI.ViewGroups;
 using ElementalAdventure.Client.Game.Components.UI.Views;
 using ElementalAdventure.Client.Game.Components.Utils;
 using ElementalAdventure.Client.Game.SystemLogic;
+using ElementalAdventure.Common.Logging;
+using ElementalAdventure.Common.Packets;
 
 using OpenTK.Mathematics;
 using OpenTK.Windowing.Common;
@@ -41,7 +43,10 @@ public class StartupScene : IScene, IUniformProvider {
         _ui.Push(layout);
     }
 
-    public void Update(FrameEventArgs args) { }
+    public void Update(FrameEventArgs args) {
+        if (_context.PacketClient.Awaiter == null)
+            _context.PacketClient.Start();
+    }
 
     public void Render(FrameEventArgs args) {
         _ui.Render(_renderer);

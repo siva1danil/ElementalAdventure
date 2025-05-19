@@ -40,8 +40,6 @@ public class PacketConnection {
                 using BinaryReader packetReader = new(ms);
                 IPacket packet = _registry.DeserializePacket((PacketType)((type[0] << 8) | type[1]), packetReader);
                 OnPacketReceived?.Invoke(this, packet);
-            } catch (EndOfStreamException) {
-                break;
             } catch (OperationCanceledException) {
                 break;
             } catch (Exception ex) {
@@ -56,18 +54,30 @@ public class PacketConnection {
         OnDisconnected?.Invoke(this, reason);
     }
 
-    public void Send(IPacket packet) {
-        using MemoryStream stream = new();
-        using BinaryWriter writer = new(stream);
+    public async Task SendAsync(IPacket packet, CancellationToken cancellationToken = default) {
+        try {
+            using MemoryStream stream = new();
+            using BinaryWriter writer = new(stream);
 
-        packet.Serialize(writer);
-        writer.Flush();
+            packet.Serialize(writer);
+            writer.Flush();
 
-        ushort len = (ushort)(stream.Length + sizeof(ushort) * 2);
-        ushort type = (ushort)packet.Type;
+            ushort len = (ushort)(stream.Length + sizeof(ushort) * 2);
+            ushort type = (ushort)packet.Type;
 
-        _client.GetStream().Write([(byte)(len >> 8), (byte)(len & 0xFF), (byte)(type >> 8), (byte)(type & 0xFF)], 0, sizeof(ushort) * 2);
-        _client.GetStream().Write(stream.ToArray(), 0, (int)stream.Length);
-        _client.GetStream().Flush();
+            byte[] header = [(byte)(len >> 8), (byte)(len & 0xFF), (byte)(type >> 8), (byte)(type & 0xFF)];
+            NetworkStream netStream = _client.GetStream();
+
+            await netStream.WriteAsync(header, 0, header.Length, cancellationToken).ConfigureAwait(false);
+            await netStream.WriteAsync(stream.GetBuffer(), 0, (int)stream.Length, cancellationToken).ConfigureAwait(false);
+            await netStream.FlushAsync(cancellationToken).ConfigureAwait(false);
+
+            Logger.Debug($"Packet sent: {packet.GetType().Name} ({packet.Type})");
+        } catch (Exception ex) {
+            Logger.Error($"Error sending packet: {ex.Message}");
+            try {
+                _client.Close();
+            } catch { }
+        }
     }
 }

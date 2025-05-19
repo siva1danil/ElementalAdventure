@@ -5,6 +5,7 @@ using ElementalAdventure.Client.Core.Resources.HighLevel;
 using ElementalAdventure.Client.Core.Resources.OpenGL;
 using ElementalAdventure.Client.Game.Components.Data;
 using ElementalAdventure.Client.Game.Scenes;
+using ElementalAdventure.Client.Game.SystemLogic.Command;
 using ElementalAdventure.Common.Networking;
 using ElementalAdventure.Common.Packets;
 
@@ -37,6 +38,7 @@ public class ClientWindow : GameWindow {
         KeyUp += KeyUpHandler;
 
         PacketRegistry registry = new();
+
         _context = new ClientContext(
             new AssetLoader(Path.Combine(root, "Resources")),
             new AssetManager(),
@@ -44,6 +46,12 @@ public class ClientWindow : GameWindow {
             new PacketClient(registry, server),
             ClientSize
         );
+
+        _context.PacketClient.OnConnected += () => _context.PacketClient.Connection?.SendAsync(new HandshakeRequestPacket() { ClientVersion = 0 });
+        _context.PacketClient.OnDisconnected += (ex) => _context.CommandQueue.Enqueue(new SetSceneCommand(new StartupScene(_context)));
+        _context.PacketClient.OnPacketReceived += (packet) => _context.PacketRegistry.TryHandlePacket(_context.PacketClient.Connection!, packet);
+
+        registry.RegisterPacket(PacketType.HandshakeResponse, HandshakeResponsePacket.Deserialize, (conn, packet) => _context.CommandQueue.Enqueue(new SetSceneCommand(new GameScene(_context!))));
     }
 
     private void LoadHandler() {
@@ -232,12 +240,22 @@ public class ClientWindow : GameWindow {
         _scene = new StartupScene(_context);
     }
 
+    public void SetScene(IScene scene) {
+        _scene?.Dispose();
+        _scene = scene;
+    }
+
     private void UnloadHandler() {
         _scene?.Dispose();
         _context.AssetManager.Dispose();
+        _context.PacketClient.Stop();
     }
 
     private void UpdateFrameHandler(FrameEventArgs args) {
+        while (_context.CommandQueue.Count > 0) {
+            IClientCommand command = _context.CommandQueue.Dequeue();
+            command.Execute(this, _scene, _context);
+        }
         _scene?.Update(args);
     }
 

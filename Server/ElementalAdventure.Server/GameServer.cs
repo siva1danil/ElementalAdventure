@@ -23,11 +23,11 @@ public class GameServer {
         _registry = new PacketRegistry();
         _server = new PacketServer(_registry, endpoint);
 
-        _registry.RegisterPacket(PacketType.HandshakeRequest, HandshakeRequestPacket.Deserialize, (conn, packet) => Logger.Info("Handshake request received"));
+        _registry.RegisterPacket(PacketType.HandshakeRequest, HandshakeRequestPacket.Deserialize, (conn, packet) => conn?.SendAsync(new HandshakeResponsePacket() { ResultCode = 0, ResultMessage = "OK" }));
 
         _server.OnClientConnected += conn => Logger.Info($"Client connected");
         _server.OnClientDisconnected += (conn, ex) => Logger.Info($"Client disconnected");
-        _server.OnPacketReceived += (conn, packet) => Logger.Info($"Packet received: {packet.GetType().Name}");
+        _server.OnPacketReceived += (conn, packet) => _registry.TryHandlePacket(conn, packet);
     }
 
     public async Task Run() {
