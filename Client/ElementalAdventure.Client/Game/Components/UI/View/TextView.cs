@@ -17,9 +17,9 @@ public class TextView : ViewBase {
     private string _text;
     private float _height;
 
-    public AssetID Font { get => _font; set { _font = value; } }
-    public string Text { get => _text; set { _text = value; } }
-    public float Height { get => _height; set { _height = value; } }
+    public AssetID Font { get => _font; set { _font = value; InvalidateLayout(); } }
+    public string Text { get => _text; set { _text = value; InvalidateLayout(); } }
+    public float Height { get => _height; set { _height = value; InvalidateLayout(); } }
 
     public TextView(AssetManager assetManager) {
         _assetManager = assetManager;

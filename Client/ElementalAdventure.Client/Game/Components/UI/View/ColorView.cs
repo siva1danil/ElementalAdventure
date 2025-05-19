@@ -14,7 +14,7 @@ public class ColorView : ViewBase {
     private Vector2 _size;
     private Vector3 _color;
 
-    public Vector2 Size { get => _size; set { _size = value; } }
+    public Vector2 Size { get => _size; set { _size = value; InvalidateLayout(); } }
     public Vector3 Color { get => _color; set { _color = value; } }
 
     public ColorView() {

@@ -16,7 +16,7 @@ public class ImageView : ViewBase {
     private Vector2 _size;
     private AssetID _textureAtlas, _textureEntry;
 
-    public Vector2 Size { get => _size; set { _size = value; } }
+    public Vector2 Size { get => _size; set { _size = value; InvalidateLayout(); } }
     public AssetID TextureAtlas { get => _textureAtlas; set { _textureAtlas = value; } }
     public AssetID TextureEntry { get => _textureEntry; set { _textureEntry = value; } }
 
