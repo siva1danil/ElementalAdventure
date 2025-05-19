@@ -3,7 +3,7 @@ using System.Diagnostics;
 using ElementalAdventure.Client.Core.Assets;
 using ElementalAdventure.Client.Core.Resources.HighLevel;
 using ElementalAdventure.Client.Core.Resources.OpenGL;
-using ElementalAdventure.Client.Game.Data;
+using ElementalAdventure.Client.Game.Components.Data;
 using ElementalAdventure.Client.Game.Scenes;
 
 using OpenTK.Graphics.OpenGL4;
