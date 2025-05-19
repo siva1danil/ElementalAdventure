@@ -11,6 +11,8 @@ public class PacketConnection {
     private readonly PacketRegistry _registry;
     private readonly TcpClient _client;
 
+    public Dictionary<string, object> SessionStorage { get; }
+
     public event Action<PacketConnection>? OnConnected;
     public event Action<PacketConnection, Exception?>? OnDisconnected;
     public event Action<PacketConnection, IPacket>? OnPacketReceived;
@@ -18,6 +20,7 @@ public class PacketConnection {
     public PacketConnection(PacketRegistry registry, TcpClient client) {
         _registry = registry;
         _client = client;
+        SessionStorage = [];
     }
 
     public async Task RunAsync(CancellationToken cancellationToken) {
@@ -41,6 +44,8 @@ public class PacketConnection {
                 IPacket packet = _registry.DeserializePacket((PacketType)((type[0] << 8) | type[1]), packetReader);
                 OnPacketReceived?.Invoke(this, packet);
             } catch (OperationCanceledException) {
+                break;
+            } catch (EndOfStreamException) {
                 break;
             } catch (Exception ex) {
                 Logger.Error($"Error in connection {_client.Client.RemoteEndPoint}: {ex.Message}");

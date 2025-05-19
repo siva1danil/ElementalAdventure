@@ -9,7 +9,7 @@ namespace ElementalAdventure.Common.Networking;
 public class PacketClient {
     private readonly PacketRegistry _registry;
     private readonly IPEndPoint _endpoint;
-    private readonly CancellationTokenSource _cancellationTokenSource;
+    private CancellationTokenSource _cancellationTokenSource;
 
     public event Action? OnConnected;
     public event Action<Exception?>? OnDisconnected;
@@ -26,23 +26,27 @@ public class PacketClient {
     }
 
     public void Start() {
-        if (Awaiter == null)
-            Awaiter = ConnectLoop();
-        else
+        if (Awaiter == null) {
+            _cancellationTokenSource = new CancellationTokenSource();
+            Awaiter = ConnectLoop(_cancellationTokenSource.Token);
+        } else {
             Logger.Warn("Start called while already running.");
+        }
     }
 
-    public void Stop() {
-        _cancellationTokenSource.Cancel();
-        Awaiter?.Wait();
+    public async Task Stop() {
+        if (!_cancellationTokenSource.IsCancellationRequested)
+            _cancellationTokenSource.Cancel();
+        if (Awaiter != null)
+            await Awaiter;
     }
 
-    private async Task ConnectLoop() {
-        while (!_cancellationTokenSource.Token.IsCancellationRequested) {
+    private async Task ConnectLoop(CancellationToken cancellationToken) {
+        while (!cancellationToken.IsCancellationRequested) {
             Logger.Debug($"Attempting to connect to {_endpoint.Address}:{_endpoint.Port}...");
             TcpClient client = new();
             try {
-                await client.ConnectAsync(_endpoint.Address, _endpoint.Port, _cancellationTokenSource.Token);
+                await client.ConnectAsync(_endpoint.Address, _endpoint.Port, cancellationToken);
                 Connection = new PacketConnection(_registry, client);
                 Connection.OnConnected += conn => OnConnected?.Invoke();
                 Connection.OnDisconnected += (conn, ex) => {
@@ -50,12 +54,12 @@ public class PacketClient {
                     OnDisconnected?.Invoke(ex);
                 };
                 Connection.OnPacketReceived += (conn, packet) => OnPacketReceived?.Invoke(packet);
-                await Connection.RunAsync(_cancellationTokenSource.Token);
+                await Connection.RunAsync(cancellationToken);
             } catch (OperationCanceledException) {
                 break;
             } catch (Exception) {
                 try {
-                    await Task.Delay(1000, _cancellationTokenSource.Token);
+                    await Task.Delay(1000, cancellationToken);
                 } catch (OperationCanceledException) {
                     break;
                 }
@@ -65,5 +69,6 @@ public class PacketClient {
                 Connection = null;
             }
         }
+        Awaiter = null;
     }
 }

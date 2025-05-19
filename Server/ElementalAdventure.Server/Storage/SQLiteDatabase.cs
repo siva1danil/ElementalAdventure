@@ -23,9 +23,12 @@ public class SQLiteDatabase : IDatabase {
         commandPlayerProfiles.ExecuteNonQuery();
         using SQLiteCommand commandClientTokens = new SQLiteCommand("""
             CREATE TABLE IF NOT EXISTS ClientTokens (
-                token TEXT PRIMARY KEY,
+                provider TEXT,
+                token TEXT,
                 uid INTEGER,
 
+                PRIMARY KEY(provider, token),
+                CHECK (provider IN ('guest')),
                 CHECK (LENGTH(token) = 36),
                 FOREIGN KEY(uid) REFERENCES PlayerProfiles(uid) ON DELETE CASCADE);
             """, _connection);
@@ -48,18 +51,20 @@ public class SQLiteDatabase : IDatabase {
         return reader.Read() ? new PlayerProfile(reader.GetInt64(0)) : null;
     }
 
-    public ClientToken CreateClientToken(long uid) {
-        using SQLiteCommand command = new SQLiteCommand("INSERT INTO ClientTokens (token, uid) VALUES (@token, @uid)", _connection);
-        command.Parameters.AddWithValue("@token", Guid.NewGuid().ToString());
+    public ClientToken CreateClientToken(string provider, string token, long uid) {
+        using SQLiteCommand command = new SQLiteCommand("INSERT INTO ClientTokens (provider, token, uid) VALUES (@provider, @token, @uid)", _connection);
+        command.Parameters.AddWithValue("@provider", provider);
+        command.Parameters.AddWithValue("@token", token);
         command.Parameters.AddWithValue("@uid", uid);
         command.ExecuteNonQuery();
-        return new ClientToken(command.Parameters["@token"].Value.ToString()!, uid);
+        return new ClientToken(command.Parameters["@provider"].Value.ToString()!, command.Parameters["@token"].Value.ToString()!, uid);
     }
 
-    public ClientToken? GetClientToken(string token) {
-        using SQLiteCommand command = new SQLiteCommand("SELECT token, uid FROM ClientTokens WHERE token = @token", _connection);
+    public ClientToken? GetClientToken(string provider, string token) {
+        using SQLiteCommand command = new SQLiteCommand("SELECT provider, token, uid FROM ClientTokens WHERE provider = @provider AND token = @token", _connection);
+        command.Parameters.AddWithValue("@provider", provider);
         command.Parameters.AddWithValue("@token", token);
         using SQLiteDataReader reader = command.ExecuteReader();
-        return reader.Read() ? new ClientToken(reader.GetString(0), reader.GetInt64(1)) : null;
+        return reader.Read() ? new ClientToken(reader.GetString(0), reader.GetString(1), reader.GetInt64(2)) : null;
     }
 }

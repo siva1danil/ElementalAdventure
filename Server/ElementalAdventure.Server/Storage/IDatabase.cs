@@ -8,6 +8,6 @@ public interface IDatabase {
 
     public PlayerProfile CreatePlayerProfile();
     public PlayerProfile? GetPlayerProfile(long uid);
-    public ClientToken CreateClientToken(long uid);
-    public ClientToken? GetClientToken(string token);
+    public ClientToken CreateClientToken(string provider, string token, long uid);
+    public ClientToken? GetClientToken(string provider, string token);
 }

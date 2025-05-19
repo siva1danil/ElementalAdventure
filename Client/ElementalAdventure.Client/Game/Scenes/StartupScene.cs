@@ -32,11 +32,11 @@ public class StartupScene : IScene, IUniformProvider {
         _uiCamera = new Camera(_context.WindowSize / 2.0f, _context.WindowSize, _context.WindowSize, true);
 
         AbsoluteLayout layout = new();
-        ImageView background = new(_context.AssetManager) { TextureAtlas = new AssetID("textureatlas.art"), TextureEntry = new AssetID("background"), Size = new Vector2(1.0f, 1.0f) };
+        ImageView background = new(_context.AssetManager) { Size = new Vector2(1.0f, 1.0f), AspectRatio = ImageView.AspectRatioType.AdjustWidth, ImageTextureAtlas = new AssetID("textureatlas.art"), ImageTextureEntry = new AssetID("background") };
         LinearLayout loadingLayout = new() { Orientation = LinearLayout.OrientationType.Horizontal, Gravity = LinearLayout.GravityType.Center };
-        ImageView loading = new(_context.AssetManager) { TextureAtlas = new AssetID("textureatlas.ui"), TextureEntry = new AssetID("loading"), Size = new Vector2(48f, 48f) };
+        ImageView loading = new(_context.AssetManager) { Size = new Vector2(48f, 48f), AspectRatio = ImageView.AspectRatioType.None, ImageTextureAtlas = new AssetID("textureatlas.ui"), ImageTextureEntry = new AssetID("loading") };
         TextView text = new(_context.AssetManager) { Font = new AssetID("font.arial"), Text = "Connecting to server...", Height = 24f };
-        layout.Add(background, new AbsoluteLayout.LayoutParams() { Position = new(0.0f, 0.0f), Anchor = new(0.0f, 0.0f) });
+        layout.Add(background, new AbsoluteLayout.LayoutParams() { Position = new(0.5f, 0.5f), Anchor = new(0.5f, 0.5f) });
         layout.Add(loadingLayout, new AbsoluteLayout.LayoutParams() { Position = new(0.5f, 0.9f), Anchor = new(0.5f, 1.0f) });
         loadingLayout.Add(loading, new LinearLayout.LayoutParams { });
         loadingLayout.Add(text, new LinearLayout.LayoutParams { Margin = new(0.0f, 0.0f, 0.0f, 24.0f) });

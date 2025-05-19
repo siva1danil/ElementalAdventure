@@ -36,22 +36,20 @@ public class GameScene : IScene, IUniformProvider {
 
         _renderer = new(_context.AssetManager, this);
         _ui = new(new Vector2(0.0f, 1.0f), _context.WindowSize);
-        _uiCamera = new Camera(context.WindowSize / 2.0f, context.WindowSize, context.WindowSize);
+        _uiCamera = new Camera(context.WindowSize / 2.0f, context.WindowSize, context.WindowSize, true);
         _worldCamera = new Camera(new Vector2(13.0f * 0.5f - 0.5f, 9.0f * 0.5f - 0.5f), new Vector2(14.0f, 10f), context.WindowSize);
 
         AbsoluteLayout layout = new();
         LinearLayout bottomLeft = new();
         LinearLayout bottomRight = new();
-        ImageView wasd = new ImageView(_context.AssetManager) { Size = new Vector2(1280f, 720f), TextureAtlas = new AssetID("textureatlas.ui"), TextureEntry = new AssetID("button_wasd_normal") };
-        ImageView e = new ImageView(_context.AssetManager) { Size = new Vector2(128f, 128f), TextureAtlas = new AssetID("textureatlas.ui"), TextureEntry = new AssetID("button_e_normal") };
-        ImageView q = new ImageView(_context.AssetManager) { Size = new Vector2(128f, 128f), TextureAtlas = new AssetID("textureatlas.ui"), TextureEntry = new AssetID("button_q_normal") };
-        ColorView test = new ColorView() { Size = new Vector2(128f, 128f), Color = new Vector3(1.0f, 0.0f, 0.0f) };
-        layout.Add(bottomLeft, new AbsoluteLayout.LayoutParams { Position = new Vector2(0.0f, 0.0f), Anchor = new Vector2(0.0f, 0.0f) });
-        layout.Add(bottomRight, new AbsoluteLayout.LayoutParams { Position = new Vector2(1280.0f, 0.0f), Anchor = new Vector2(1.0f, 0.0f) });
-        bottomLeft.Add(wasd, new LinearLayout.LayoutParams { });
-        bottomRight.Add(e, new LinearLayout.LayoutParams { });
-        bottomRight.Add(q, new LinearLayout.LayoutParams { });
-        bottomRight.Add(test, new LinearLayout.LayoutParams { });
+        ImageView wasd = new ImageView(_context.AssetManager) { Size = new Vector2(0f, 64f), AspectRatio = ImageView.AspectRatioType.AdjustWidth, ImageTextureAtlas = new AssetID("textureatlas.ui"), ImageTextureEntry = new AssetID("button_wasd_normal") };
+        ImageView e = new ImageView(_context.AssetManager) { Size = new Vector2(0f, 32f), AspectRatio = ImageView.AspectRatioType.AdjustWidth, ImageTextureAtlas = new AssetID("textureatlas.ui"), ImageTextureEntry = new AssetID("button_e_normal") };
+        ImageView q = new ImageView(_context.AssetManager) { Size = new Vector2(0f, 32f), AspectRatio = ImageView.AspectRatioType.AdjustWidth, ImageTextureAtlas = new AssetID("textureatlas.ui"), ImageTextureEntry = new AssetID("button_q_normal") };
+        layout.Add(bottomLeft, new AbsoluteLayout.LayoutParams { Position = new Vector2(0.0f, 1.0f), Anchor = new Vector2(0.0f, 1.0f) });
+        layout.Add(bottomRight, new AbsoluteLayout.LayoutParams { Position = new Vector2(1.0f, 1.0f), Anchor = new Vector2(1.0f, 1.0f) });
+        bottomLeft.Add(wasd, new LinearLayout.LayoutParams { Margin = new Vector4(16.0f, 16.0f, 16.0f, 16.0f) });
+        bottomRight.Add(e, new LinearLayout.LayoutParams { Margin = new Vector4(16.0f, 16.0f, 16.0f, 16.0f) });
+        bottomRight.Add(q, new LinearLayout.LayoutParams { Margin = new Vector4(16.0f, 16.0f, 16.0f, 0.0f) });
         _ui.Push(layout);
 
         _world = new GameWorld(1.0f / 20.0f, new Tilemap(), []);
@@ -133,6 +131,7 @@ public class GameScene : IScene, IUniformProvider {
         _uiCamera.Center = new Vector2(args.Size.X, args.Size.Y) / 2.0f;
         _uiCamera.ScreenSize = new Vector2(args.Size.X, args.Size.Y);
         _uiCamera.TargetWorldSize = new Vector2(args.Size.X, args.Size.Y);
+        _ui.Size = new Vector2(args.Size.X, args.Size.Y);
         _worldCamera.ScreenSize = new Vector2(args.Size.X, args.Size.Y);
     }
 

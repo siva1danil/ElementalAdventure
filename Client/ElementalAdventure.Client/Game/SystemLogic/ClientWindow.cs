@@ -8,6 +8,7 @@ using ElementalAdventure.Client.Game.Scenes;
 using ElementalAdventure.Client.Game.SystemLogic.Command;
 using ElementalAdventure.Common.Networking;
 using ElementalAdventure.Common.Packets;
+using ElementalAdventure.Common.Packets.Impl;
 
 using OpenTK.Graphics.OpenGL4;
 using OpenTK.Windowing.Common;
@@ -51,7 +52,14 @@ public class ClientWindow : GameWindow {
         _context.PacketClient.OnDisconnected += (ex) => _context.CommandQueue.Enqueue(new SetSceneCommand(new StartupScene(_context)));
         _context.PacketClient.OnPacketReceived += (packet) => _context.PacketRegistry.TryHandlePacket(_context.PacketClient.Connection!, packet);
 
-        registry.RegisterPacket(PacketType.HandshakeResponse, HandshakeResponsePacket.Deserialize, (conn, packet) => _context.CommandQueue.Enqueue(new SetSceneCommand(new GameScene(_context!))));
+        registry.RegisterPacket(PacketType.HandshakeResponse, HandshakeResponsePacket.Deserialize, (conn, packet) => {
+            if (packet.ResultCode == 0)
+                _context.PacketClient.Connection?.SendAsync(new LoginRequestPacket() { Provider = "guest", Token = "00000000-0000-0000-0000-000000000000" });
+        });
+        registry.RegisterPacket(PacketType.LoginResponse, LoginResponsePacket.Deserialize, (conn, packet) => {
+            if (packet.ResultCode == 0)
+                _context.CommandQueue.Enqueue(new SetSceneCommand(new GameScene(_context!)));
+        });
     }
 
     private void LoadHandler() {
@@ -248,7 +256,7 @@ public class ClientWindow : GameWindow {
     private void UnloadHandler() {
         _scene?.Dispose();
         _context.AssetManager.Dispose();
-        _context.PacketClient.Stop();
+        _context.PacketClient.Stop().GetAwaiter().GetResult();
     }
 
     private void UpdateFrameHandler(FrameEventArgs args) {

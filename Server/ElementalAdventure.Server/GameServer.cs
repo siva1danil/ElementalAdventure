@@ -7,6 +7,8 @@ using ElementalAdventure.Common;
 using ElementalAdventure.Common.Logging;
 using ElementalAdventure.Common.Networking;
 using ElementalAdventure.Common.Packets;
+using ElementalAdventure.Common.Packets.Impl;
+using ElementalAdventure.Server.Models;
 using ElementalAdventure.Server.Storage;
 
 namespace ElementalAdventure.Server;
@@ -24,6 +26,20 @@ public class GameServer {
         _server = new PacketServer(_registry, endpoint);
 
         _registry.RegisterPacket(PacketType.HandshakeRequest, HandshakeRequestPacket.Deserialize, (conn, packet) => conn?.SendAsync(new HandshakeResponsePacket() { ResultCode = 0, ResultMessage = "OK" }));
+        _registry.RegisterPacket(PacketType.LoginRequest, LoginRequestPacket.Deserialize, (conn, packet) => {
+            try {
+                if (conn == null) return;
+                ClientToken? token = _database.GetClientToken(packet.Provider, packet.Token);
+                if (token == null) {
+                    PlayerProfile profile = _database.CreatePlayerProfile();
+                    token = _database.CreateClientToken(packet.Provider, packet.Token, profile.Uid);
+                }
+                conn.SessionStorage["uid"] = token.Value.Uid;
+                _ = conn.SendAsync(new LoginResponsePacket() { ResultCode = 0, ResultMessage = "OK", Uid = token.Value.Uid });
+            } catch (Exception ex) {
+                _ = conn.SendAsync(new LoginResponsePacket() { ResultCode = 1, ResultMessage = $"Error processing login request: {ex.Message}", Uid = 0 });
+            }
+        });
 
         _server.OnClientConnected += conn => Logger.Info($"Client connected");
         _server.OnClientDisconnected += (conn, ex) => Logger.Info($"Client disconnected");
