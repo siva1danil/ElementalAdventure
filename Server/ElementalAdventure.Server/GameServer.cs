@@ -11,6 +11,7 @@ using ElementalAdventure.Common.Packets.Impl;
 using ElementalAdventure.Server.Models;
 using ElementalAdventure.Server.PacketHandlers;
 using ElementalAdventure.Server.Storage;
+using ElementalAdventure.Server.World;
 
 namespace ElementalAdventure.Server;
 
@@ -48,14 +49,57 @@ public class GameServer {
     }
 
     public static async Task Main() {
-        try {
-            Logger.Info($"Elemental Adventure server '{BuildInfo.AssemblyTitle}' version '{BuildInfo.AssemblyVersion}'");
-            GameServer server = new GameServer(new IPEndPoint(IPAddress.Any, 12345), new SQLiteDatabase("Data Source=D:\\db.sqlite3;"));
-            await server.Run();
-        } catch (Exception ex) {
-            Logger.Error($"An error occurred: {ex.Message}");
-        } finally {
-            Logger.Info("Server shutting down...");
+        // try {
+        //     Logger.Info($"Elemental Adventure server '{BuildInfo.AssemblyTitle}' version '{BuildInfo.AssemblyVersion}'");
+        //     GameServer server = new GameServer(new IPEndPoint(IPAddress.Any, 12345), new SQLiteDatabase("Data Source=D:\\db.sqlite3;"));
+        //     await server.Run();
+        // } catch (Exception ex) {
+        //     Logger.Error($"An error occurred: {ex.Message}");
+        // } finally {
+        //     Logger.Info("Server shutting down...");
+        // }
+
+        Generator.LayoutRoom[,] layout = Generator.GenerateLayout(new Random().Next(), 0, new Dictionary<RoomType, int> { { RoomType.Entrance, 1 }, { RoomType.Exit, 1 }, { RoomType.Normal, 8 } });
+
+        for (int y = 0; y < layout.GetLength(0); y++) {
+            Console.Write($"{y,3}: ");
+            for (int x = 0; x < layout.GetLength(1); x++) {
+                var room = layout[y, x];
+                Console.Write(room == Generator.LayoutRoom.Empty ? "   " : (room.DoorUp ? " | " : "   "));
+            }
+            Console.WriteLine();
+
+            Console.Write($"{y,3}: ");
+            for (int x = 0; x < layout.GetLength(1); x++) {
+                var room = layout[y, x];
+                if (room == Generator.LayoutRoom.Empty) {
+                    Console.Write("   ");
+                } else {
+                    char c = room.Type switch { RoomType.Entrance => 'E', RoomType.Exit => 'X', RoomType.Normal => 'N', _ => '?' };
+                    char left = room.DoorLeft ? '-' : ' ';
+                    char right = room.DoorRight ? '-' : ' ';
+                    Console.Write($"{left}{c}{right}");
+                }
+            }
+            Console.WriteLine();
+
+            Console.Write($"{y,3}: ");
+            for (int x = 0; x < layout.GetLength(1); x++) {
+                var room = layout[y, x];
+                Console.Write(room == Generator.LayoutRoom.Empty ? "   " : (room.DoorDown ? " | " : "   "));
+            }
+            Console.WriteLine();
+        }
+
+        WorldType type = new(8, 6, [new AssetID("floor")], [AssetID.None], [AssetID.None], [AssetID.None], [AssetID.None]);
+        Generator.TileMask[,] tilemap = Generator.GenerateTilemap(layout, type);
+        for (int y = 0; y < tilemap.GetLength(0); y++) {
+            Console.Write($"{y,3}: ");
+            for (int x = 0; x < tilemap.GetLength(1); x++) {
+                if (tilemap[y, x] == Generator.TileMask.None) Console.Write(" ");
+                else Console.Write((byte)tilemap[y, x]);
+            }
+            Console.WriteLine();
         }
     }
 }
