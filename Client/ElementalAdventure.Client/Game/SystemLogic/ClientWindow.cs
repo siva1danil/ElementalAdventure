@@ -53,7 +53,7 @@ public class ClientWindow : GameWindow {
         _context.PacketClient.OnDisconnected += (ex) => _context.CommandQueue.Enqueue(new SetSceneCommand(new StartupScene(_context)));
         _context.PacketClient.OnPacketReceived += (packet) => _context.PacketRegistry.TryHandlePacket(_context.PacketClient.Connection!, packet);
 
-        registry.RegisterPacket(PacketType.HandshakeResponse, HandshakeResponsePacket.Deserialize, new HandshakeResponsePacketHandler(_context, "guest", "a00000000-0000-0000-0000-000000000000"));
+        registry.RegisterPacket(PacketType.HandshakeResponse, HandshakeResponsePacket.Deserialize, new HandshakeResponsePacketHandler(_context, "guest", "00000000-0000-0000-0000-000000000000"));
         registry.RegisterPacket(PacketType.LoginResponse, LoginResponsePacket.Deserialize, new LoginResponsePacketHandler(_context));
     }
 
