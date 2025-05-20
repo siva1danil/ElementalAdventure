@@ -6,9 +6,9 @@ public class PacketRegistry {
 
     public PacketRegistry() { }
 
-    public void RegisterPacket<T>(PacketType type, Func<BinaryReader, T> deserializer, Action<PacketConnection, T> handler) where T : IPacket {
+    public void RegisterPacket<T>(PacketType type, Func<BinaryReader, T> deserializer, IPacketHandler handler) where T : IPacket {
         _packetDeserializers[type] = deserializer;
-        _packetHandlers[type] = new PacketHandler<T>(handler);
+        _packetHandlers[type] = handler;
     }
 
     public IPacket DeserializePacket(PacketType type, BinaryReader reader) {
@@ -27,17 +27,4 @@ public class PacketRegistry {
     public interface IPacketHandler {
         void Handle(PacketConnection connection, IPacket packet);
     }
-
-    class PacketHandler<T> : IPacketHandler where T : IPacket {
-        private readonly Action<PacketConnection, T> _handler;
-
-        public PacketHandler(Action<PacketConnection, T> handler) {
-            _handler = handler;
-        }
-
-        public void Handle(PacketConnection connection, IPacket packet) {
-            _handler(connection, (T)packet);
-        }
-    }
-
 }

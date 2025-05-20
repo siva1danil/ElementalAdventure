@@ -4,6 +4,7 @@ using ElementalAdventure.Client.Core.Assets;
 using ElementalAdventure.Client.Core.Resources.HighLevel;
 using ElementalAdventure.Client.Core.Resources.OpenGL;
 using ElementalAdventure.Client.Game.Components.Data;
+using ElementalAdventure.Client.Game.PacketHandlers;
 using ElementalAdventure.Client.Game.Scenes;
 using ElementalAdventure.Client.Game.SystemLogic.Command;
 using ElementalAdventure.Common.Networking;
@@ -52,14 +53,8 @@ public class ClientWindow : GameWindow {
         _context.PacketClient.OnDisconnected += (ex) => _context.CommandQueue.Enqueue(new SetSceneCommand(new StartupScene(_context)));
         _context.PacketClient.OnPacketReceived += (packet) => _context.PacketRegistry.TryHandlePacket(_context.PacketClient.Connection!, packet);
 
-        registry.RegisterPacket(PacketType.HandshakeResponse, HandshakeResponsePacket.Deserialize, (conn, packet) => {
-            if (packet.ResultCode == 0)
-                _context.PacketClient.Connection?.SendAsync(new LoginRequestPacket() { Provider = "guest", Token = "00000000-0000-0000-0000-000000000000" });
-        });
-        registry.RegisterPacket(PacketType.LoginResponse, LoginResponsePacket.Deserialize, (conn, packet) => {
-            if (packet.ResultCode == 0)
-                _context.CommandQueue.Enqueue(new SetSceneCommand(new GameScene(_context!)));
-        });
+        registry.RegisterPacket(PacketType.HandshakeResponse, HandshakeResponsePacket.Deserialize, new HandshakeResponsePacketHandler(_context, "guest", "a00000000-0000-0000-0000-000000000000"));
+        registry.RegisterPacket(PacketType.LoginResponse, LoginResponsePacket.Deserialize, new LoginResponsePacketHandler(_context));
     }
 
     private void LoadHandler() {
