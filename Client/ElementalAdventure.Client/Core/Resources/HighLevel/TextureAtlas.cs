@@ -1,5 +1,5 @@
-using ElementalAdventure.Client.Core.Assets;
 using ElementalAdventure.Client.Core.Resources.OpenGL;
+using ElementalAdventure.Common.Assets;
 
 using StbImageSharp;
 

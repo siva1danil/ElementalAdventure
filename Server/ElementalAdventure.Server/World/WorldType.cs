@@ -1,3 +1,5 @@
+using ElementalAdventure.Common.Assets;
+
 namespace ElementalAdventure.Server.World;
 
 public class WorldType {

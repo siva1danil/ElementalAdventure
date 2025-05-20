@@ -1,6 +1,6 @@
 using System.Diagnostics;
 
-namespace ElementalAdventure.Server.World;
+namespace ElementalAdventure.Common.Assets;
 
 public readonly struct AssetID(int value) : IEquatable<AssetID> {
     public static readonly Dictionary<int, string> DebugMappings = [];

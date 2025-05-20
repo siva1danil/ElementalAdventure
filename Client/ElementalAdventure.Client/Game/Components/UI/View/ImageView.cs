@@ -1,10 +1,10 @@
 using System.Runtime.InteropServices;
 
-using ElementalAdventure.Client.Core.Assets;
 using ElementalAdventure.Client.Core.Rendering;
 using ElementalAdventure.Client.Core.Resources.HighLevel;
 using ElementalAdventure.Client.Core.UI;
 using ElementalAdventure.Client.Game.Components.Data;
+using ElementalAdventure.Common.Assets;
 
 using OpenTK.Mathematics;
 

@@ -1,4 +1,4 @@
-namespace ElementalAdventure.Client.Core.Assets;
+namespace ElementalAdventure.Common.Assets;
 
 public class AssetLoader {
     private readonly string _path;

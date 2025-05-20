@@ -1,6 +1,5 @@
 using System.Runtime.InteropServices;
 
-using ElementalAdventure.Client.Core.Assets;
 using ElementalAdventure.Client.Core.Rendering;
 using ElementalAdventure.Client.Core.Resources.HighLevel;
 using ElementalAdventure.Client.Core.UI;
@@ -9,8 +8,7 @@ using ElementalAdventure.Client.Game.Components.UI.ViewGroups;
 using ElementalAdventure.Client.Game.Components.UI.Views;
 using ElementalAdventure.Client.Game.Components.Utils;
 using ElementalAdventure.Client.Game.SystemLogic;
-using ElementalAdventure.Common.Logging;
-using ElementalAdventure.Common.Packets;
+using ElementalAdventure.Common.Assets;
 
 using OpenTK.Mathematics;
 using OpenTK.Windowing.Common;

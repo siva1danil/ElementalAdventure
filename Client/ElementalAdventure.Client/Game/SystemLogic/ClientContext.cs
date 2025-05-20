@@ -1,5 +1,5 @@
-using ElementalAdventure.Client.Core.Assets;
 using ElementalAdventure.Client.Game.SystemLogic.Command;
+using ElementalAdventure.Common.Assets;
 using ElementalAdventure.Common.Networking;
 using ElementalAdventure.Common.Packets;
 

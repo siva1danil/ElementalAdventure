@@ -1,10 +1,10 @@
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
 
-using ElementalAdventure.Client.Core.Assets;
 using ElementalAdventure.Client.Core.Resources.Data;
 using ElementalAdventure.Client.Core.Resources.HighLevel;
 using ElementalAdventure.Client.Core.Resources.OpenGL;
+using ElementalAdventure.Common.Assets;
 
 using OpenTK.Graphics.OpenGL4;
 

@@ -1,6 +1,6 @@
 using System.Diagnostics;
 
-namespace ElementalAdventure.Client.Core.Assets;
+namespace ElementalAdventure.Common.Assets;
 
 public class AssetManager : IDisposable {
     private readonly Dictionary<Type, Dictionary<AssetID, object>> _assets;

@@ -1,12 +1,12 @@
 using System.Diagnostics;
 
-using ElementalAdventure.Client.Core.Assets;
 using ElementalAdventure.Client.Core.Resources.HighLevel;
 using ElementalAdventure.Client.Core.Resources.OpenGL;
 using ElementalAdventure.Client.Game.Components.Data;
 using ElementalAdventure.Client.Game.PacketHandlers;
 using ElementalAdventure.Client.Game.Scenes;
 using ElementalAdventure.Client.Game.SystemLogic.Command;
+using ElementalAdventure.Common.Assets;
 using ElementalAdventure.Common.Networking;
 using ElementalAdventure.Common.Packets;
 using ElementalAdventure.Common.Packets.Impl;

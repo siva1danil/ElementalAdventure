@@ -4,6 +4,7 @@ using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 
 using ElementalAdventure.Common;
+using ElementalAdventure.Common.Assets;
 using ElementalAdventure.Common.Logging;
 using ElementalAdventure.Common.Networking;
 using ElementalAdventure.Common.Packets;

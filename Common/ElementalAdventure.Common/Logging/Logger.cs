@@ -4,6 +4,10 @@ using System.Runtime.CompilerServices;
 namespace ElementalAdventure.Common.Logging;
 
 public class Logger {
+    static Logger() {
+        Console.OutputEncoding = System.Text.Encoding.UTF8;
+    }
+
     [Conditional("TRACE")]
     public static void Trace(string message, [CallerMemberName] string member = "", [CallerFilePath] string file = "", [CallerLineNumber] int line = 0) {
         Write(LogLevel.Trace, message, member, file, line);

@@ -1,4 +1,4 @@
-using ElementalAdventure.Client.Core.Assets;
+using ElementalAdventure.Common.Assets;
 
 namespace ElementalAdventure.Client.Game.Components.Data;
 

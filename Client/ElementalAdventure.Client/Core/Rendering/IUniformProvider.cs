@@ -1,4 +1,5 @@
-using ElementalAdventure.Client.Core.Assets;
+
+using ElementalAdventure.Common.Assets;
 
 namespace ElementalAdventure.Client.Core.Rendering;
 
