@@ -26,7 +26,7 @@ public class LoadWorldRequestPacketHandler : PacketRegistry.IPacketHandler {
             return;
         }
 
-        IsometricWorldType type = new(7, 5, new AssetID("floor_1_full"));
+        IsometricWorldType type = new(7, 5, new AssetID("floor_1_full"), new AssetID("wall_bottom"), new AssetID("wall_top"), new AssetID("wall_top_connected"), new AssetID("wall_bottom_connected"), new AssetID("wall_left"), new AssetID("wall_right"), new AssetID("wall_righttop"), new AssetID("wall_rightbottom"), new AssetID("wall_lefttop"), new AssetID("wall_leftbottom"), new AssetID("wall_side_connected"), new AssetID("wall_cross_lb_rb"), new AssetID("wall_cross_lt_lb"), new AssetID("wall_cross_lt_rt"), new AssetID("wall_cross_rt_rb"), new AssetID("wall_cross_lt_lb_rb"), new AssetID("wall_cross_lt_rt_rb"), new AssetID("wall_cross_lb_rt_rb"), new AssetID("wall_cross_lt_lb_rt"), new AssetID("wall_cross_lt_rt_lb_rb"), new AssetID("wall_doorway_horizontal_top"), new AssetID("wall_doorway_horizontal_bottom"), new AssetID("wall_doorway_vertical_top"), new AssetID("wall_doorway_vertical_bottom"), new AssetID("door_horizontal_closed_top"), new AssetID("door_horizontal_closed_bottom"), new AssetID("door_vertical_closed_top"), new AssetID("door_vertical_closed_bottom"));
         Generator.LayoutRoom[,] layout = Generator.GenerateLayout(new Random().Next(), 0, new Dictionary<RoomType, int> { { RoomType.Entrance, 1 }, { RoomType.Exit, 1 }, { RoomType.Normal, 8 } });
         Generator.TileMask[,] tilemask = Generator.GenerateTilemask(layout, type);
         AssetID[,,] tilemap = Generator.GenerateTilemap(tilemask, type);
