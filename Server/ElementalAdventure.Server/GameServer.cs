@@ -92,15 +92,28 @@ public class GameServer {
             Console.WriteLine();
         }
 
-        WorldType type = new(8, 6, [new AssetID("floor")], [AssetID.None], [AssetID.None], [AssetID.None], [AssetID.None]);
-        Generator.TileMask[,] tilemap = Generator.GenerateTilemap(layout, type);
-        for (int y = 0; y < tilemap.GetLength(0); y++) {
+        IsometricWorldType type = new(7, 5, new AssetID("floor_1"));
+        Generator.TileMask[,] tilemask = Generator.GenerateTilemask(layout, type);
+        for (int y = 0; y < tilemask.GetLength(0); y++) {
             Console.Write($"{y,3}: ");
-            for (int x = 0; x < tilemap.GetLength(1); x++) {
-                if (tilemap[y, x] == Generator.TileMask.None) Console.Write(" ");
-                else Console.Write((byte)tilemap[y, x]);
+            for (int x = 0; x < tilemask.GetLength(1); x++) {
+                if (tilemask[y, x] == Generator.TileMask.None) Console.Write(" ");
+                else Console.Write((byte)tilemask[y, x]);
             }
             Console.WriteLine();
+        }
+
+        AssetID[,,] tilemap = Generator.GenerateTilemap(tilemask, type);
+        for (int l = 0; l < tilemap.GetLength(0); l++) {
+            Console.WriteLine($"Layer {l}");
+            for (int y = 0; y < tilemap.GetLength(1); y++) {
+                Console.Write($"{y,3}: ");
+                for (int x = 0; x < tilemap.GetLength(2); x++) {
+                    if (tilemap[l, y, x] == AssetID.None) Console.Write(" ");
+                    else Console.Write(tilemap[l, y, x].ToString()[0]);
+                }
+                Console.WriteLine();
+            }
         }
     }
 }

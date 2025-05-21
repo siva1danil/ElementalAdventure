@@ -1,5 +1,7 @@
 using System.Runtime.InteropServices;
 
+using ElementalAdventure.Common.Assets;
+
 namespace ElementalAdventure.Server.World;
 
 public class Generator {
@@ -45,24 +47,24 @@ public class Generator {
         return grid;
     }
 
-    public static TileMask[,] GenerateTilemap(LayoutRoom[,] layout, WorldType type) {
-        int width = 1 + (type.RoomWidth + 1) * layout.GetLength(1);
-        int height = 1 + (type.RoomHeight + 1) * layout.GetLength(0);
-        TileMask[,] tilemap = new TileMask[height, width];
+    public static TileMask[,] GenerateTilemask(LayoutRoom[,] layout, IWorldType type) {
+        int width = 1 + (type.RoomWidth + 1) * layout.GetLength(1) + 2;
+        int height = 1 + (type.RoomHeight + 1) * layout.GetLength(0) + 2;
+        TileMask[,] tilemask = new TileMask[height, width];
 
         // Zero-fill
         for (int y = 0; y < layout.GetLength(0); y++)
             for (int x = 0; x < layout.GetLength(1); x++)
-                tilemap[y, x] = TileMask.None;
+                tilemask[y, x] = TileMask.None;
 
         // Fill floor
         for (int y = 0; y < layout.GetLength(0); y++) {
             for (int x = 0; x < layout.GetLength(1); x++) {
                 if (layout[y, x] == LayoutRoom.Empty) continue;
-                int originX = x * (type.RoomWidth + 1) + 1, originY = y * (type.RoomHeight + 1) + 1;
+                int originX = x * (type.RoomWidth + 1) + 1 + 1, originY = y * (type.RoomHeight + 1) + 1 + 1;
                 for (int i = 0; i < type.RoomHeight; i++)
                     for (int j = 0; j < type.RoomWidth; j++)
-                        tilemap[originY + i, originX + j] = TileMask.Floor;
+                        tilemask[originY + i, originX + j] = TileMask.Floor;
             }
         }
 
@@ -70,14 +72,14 @@ public class Generator {
         for (int y = 0; y < layout.GetLength(0); y++) {
             for (int x = 0; x < layout.GetLength(1); x++) {
                 if (layout[y, x] == LayoutRoom.Empty) continue;
-                int originX = x * (type.RoomWidth + 1) + 1, originY = y * (type.RoomHeight + 1) + 1;
+                int originX = x * (type.RoomWidth + 1) + 1 + 1, originY = y * (type.RoomHeight + 1) + 1 + 1;
                 for (int wx = originX - 1; wx <= originX + type.RoomWidth; wx++) {
-                    tilemap[originY - 1, wx] = TileMask.Wall;
-                    tilemap[originY + type.RoomHeight, wx] = TileMask.Wall;
+                    tilemask[originY - 1, wx] = TileMask.Wall;
+                    tilemask[originY + type.RoomHeight, wx] = TileMask.Wall;
                 }
                 for (int wy = originY - 1; wy <= originY + type.RoomHeight; wy++) {
-                    tilemap[wy, originX - 1] = TileMask.Wall;
-                    tilemap[wy, originX + type.RoomWidth] = TileMask.Wall;
+                    tilemask[wy, originX - 1] = TileMask.Wall;
+                    tilemask[wy, originX + type.RoomWidth] = TileMask.Wall;
                 }
             }
         }
@@ -86,45 +88,39 @@ public class Generator {
         for (int y = 0; y < layout.GetLength(0); y++) {
             for (int x = 0; x < layout.GetLength(1); x++) {
                 if (layout[y, x] == LayoutRoom.Empty) continue;
-                int originX = x * (type.RoomWidth + 1) + 1, originY = y * (type.RoomHeight + 1) + 1;
+                int originX = x * (type.RoomWidth + 1) + 1 + 1, originY = y * (type.RoomHeight + 1) + 1 + 1;
+                if (layout[y, x].DoorUp)
+                    tilemask[originY - 1, originX + type.RoomWidth / 2] = TileMask.Door;
+                if (layout[y, x].DoorDown)
+                    tilemask[originY + type.RoomHeight, originX + type.RoomWidth / 2] = TileMask.Door;
+                if (layout[y, x].DoorRight)
+                    tilemask[originY + type.RoomHeight / 2, originX + type.RoomWidth] = TileMask.Door;
+                if (layout[y, x].DoorLeft)
+                    tilemask[originY + type.RoomHeight / 2, originX - 1] = TileMask.Door;
                 if (type.RoomWidth % 2 == 0) {
-                    if (layout[y, x].DoorUp) {
-                        tilemap[originY - 1, originX + (type.RoomWidth / 2) - 1] = TileMask.DoorHorizontalLeft;
-                        tilemap[originY - 1, originX + (type.RoomWidth / 2)] = TileMask.DoorHorizontalRight;
-                    }
-                    if (layout[y, x].DoorDown) {
-                        tilemap[originY + type.RoomHeight, originX + (type.RoomWidth / 2) - 1] = TileMask.DoorHorizontalLeft;
-                        tilemap[originY + type.RoomHeight, originX + (type.RoomWidth / 2)] = TileMask.DoorHorizontalRight;
-                    }
-                } else {
                     if (layout[y, x].DoorUp)
-                        tilemap[originY - 1, originX + type.RoomWidth / 2] = TileMask.DoorHorizontal;
+                        tilemask[originY - 1, originX + (type.RoomWidth / 2) - 1] = TileMask.Door;
                     if (layout[y, x].DoorDown)
-                        tilemap[originY + type.RoomHeight, originX + type.RoomWidth / 2] = TileMask.DoorHorizontal;
-                }
-                if (type.RoomHeight % 2 == 0) {
-                    if (layout[y, x].DoorRight) {
-                        tilemap[originY + (type.RoomHeight / 2) - 1, originX + type.RoomWidth] = TileMask.DoorVerticalTop;
-                        tilemap[originY + (type.RoomHeight / 2), originX + type.RoomWidth] = TileMask.DoorVerticalBottom;
-                    }
-                    if (layout[y, x].DoorLeft) {
-                        tilemap[originY + (type.RoomHeight / 2) - 1, originX - 1] = TileMask.DoorVerticalTop;
-                        tilemap[originY + (type.RoomHeight / 2), originX - 1] = TileMask.DoorVerticalBottom;
-                    }
-                } else {
+                        tilemask[originY + type.RoomHeight, originX + (type.RoomWidth / 2) - 1] = TileMask.Door;
                     if (layout[y, x].DoorRight)
-                        tilemap[originY + type.RoomHeight / 2, originX + type.RoomWidth] = TileMask.DoorVertical;
+                        tilemask[originY + (type.RoomHeight / 2) - 1, originX + type.RoomWidth] = TileMask.Door;
                     if (layout[y, x].DoorLeft)
-                        tilemap[originY + type.RoomHeight / 2, originX - 1] = TileMask.DoorVertical;
+                        tilemask[originY + (type.RoomHeight / 2) - 1, originX - 1] = TileMask.Door;
                 }
             }
         }
 
+        return tilemask;
+    }
+
+    public static AssetID[,,] GenerateTilemap(TileMask[,] tilemask, IWorldType type) {
+        AssetID[,,] tilemap = new AssetID[type.LayerCount, tilemask.GetLength(0), tilemask.GetLength(1)];
+        type.MapMaskToLayers(tilemap, tilemask);
         return tilemap;
     }
 
 
-    public enum TileMask : byte { None = 0, Floor = 1, Wall = 2, DoorHorizontal = 3, DoorVertical = 4, DoorHorizontalLeft = 5, DoorHorizontalRight = 6, DoorVerticalTop = 7, DoorVerticalBottom = 8 }
+    public enum TileMask : byte { None = 0, Floor = 1, Wall = 2, Door = 3 }
     public readonly record struct LayoutRoom(RoomType Type, bool DoorUp, bool DoorRight, bool DoorDown, bool DoorLeft) {
         public static LayoutRoom Empty => new(RoomType.None, false, false, false, false);
     }
