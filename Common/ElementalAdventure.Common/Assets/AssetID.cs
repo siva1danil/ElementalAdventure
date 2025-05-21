@@ -7,6 +7,7 @@ public readonly struct AssetID(int value) : IEquatable<AssetID> {
     public static readonly AssetID None = new(0);
 
     public readonly int Value { get; } = value;
+    public readonly string DebugName => DebugMappings.GetValueOrDefault(Value, Value.ToString());
 
     public AssetID(string value) : this(FNV1a(value)) {
         AddDebugMapping(DebugMappings, Value, value);

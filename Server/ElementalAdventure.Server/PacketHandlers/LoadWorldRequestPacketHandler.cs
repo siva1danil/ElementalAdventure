@@ -26,7 +26,7 @@ public class LoadWorldRequestPacketHandler : PacketRegistry.IPacketHandler {
             return;
         }
 
-        IsometricWorldType type = new(7, 5, new AssetID("floor_1"));
+        IsometricWorldType type = new(7, 5, new AssetID("floor_1_full"));
         Generator.LayoutRoom[,] layout = Generator.GenerateLayout(new Random().Next(), 0, new Dictionary<RoomType, int> { { RoomType.Entrance, 1 }, { RoomType.Exit, 1 }, { RoomType.Normal, 8 } });
         Generator.TileMask[,] tilemask = Generator.GenerateTilemask(layout, type);
         AssetID[,,] tilemap = Generator.GenerateTilemap(tilemask, type);
