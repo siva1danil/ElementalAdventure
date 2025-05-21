@@ -1,0 +1,33 @@
+namespace ElementalAdventure.Common.Packets.Impl;
+
+public class LoadWorldResponsePacket : IPacket {
+    public PacketType Type => PacketType.LoadWorldResponse;
+
+    public int[,,] Tilemap { get; set; } = new int[0, 0, 0];
+    public int Midground { get; set; } = 0;
+
+    public void Serialize(BinaryWriter writer) {
+        writer.Write((ushort)Tilemap.GetLength(0));
+        writer.Write((ushort)Tilemap.GetLength(1));
+        writer.Write((ushort)Tilemap.GetLength(2));
+        for (int z = 0; z < Tilemap.GetLength(0); z++)
+            for (int y = 0; y < Tilemap.GetLength(1); y++)
+                for (int x = 0; x < Tilemap.GetLength(2); x++)
+                    writer.Write(Tilemap[z, y, x]);
+        writer.Write((ushort)Midground);
+    }
+
+    public static LoadWorldResponsePacket Deserialize(BinaryReader reader) {
+        LoadWorldResponsePacket packet = new();
+        int zLength = reader.ReadUInt16();
+        int yLength = reader.ReadUInt16();
+        int xLength = reader.ReadUInt16();
+        packet.Tilemap = new int[zLength, yLength, xLength];
+        for (int z = 0; z < zLength; z++)
+            for (int y = 0; y < yLength; y++)
+                for (int x = 0; x < xLength; x++)
+                    packet.Tilemap[z, y, x] = reader.ReadInt32();
+        packet.Midground = reader.ReadUInt16();
+        return packet;
+    }
+}

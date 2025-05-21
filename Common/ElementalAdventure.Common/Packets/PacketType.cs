@@ -5,4 +5,6 @@ public enum PacketType : ushort {
     HandshakeResponse = 0x0002,
     LoginRequest = 0x0003,
     LoginResponse = 0x0004,
+    LoadWorldRequest = 0x0005,
+    LoadWorldResponse = 0x0006
 }

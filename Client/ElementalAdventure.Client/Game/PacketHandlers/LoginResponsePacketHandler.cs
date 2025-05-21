@@ -24,7 +24,9 @@ public class LoginResponsePacketHandler : PacketRegistry.IPacketHandler {
             _context.CommandQueue.Enqueue(new CrashCommand("Login failed: " + packet.ResultMessage));
         else if (_context.PacketClient.Connection == null)
             _context.CommandQueue.Enqueue(new CrashCommand("Login failed: Connection is null"));
-        else
+        else {
             _context.CommandQueue.Enqueue(new SetSceneCommand(new GameScene(_context)));
+            _ = connection.SendAsync(new LoadWorldRequestPacket());
+        }
     }
 }

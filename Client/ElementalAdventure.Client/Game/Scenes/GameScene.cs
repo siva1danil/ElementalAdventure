@@ -53,59 +53,9 @@ public class GameScene : IScene, IUniformProvider {
         _ui.Push(layout);
 
         _world = new GameWorld(1.0f / 20.0f, new Tilemap(), []);
-        _world.Tilemap.SetMap(new Vector2(-1.0f, 0.0f), _context.AssetManager, new AssetID[,,] {
-            {
-                { new("floor_1_righthalf"), new("wall_top"), new("wall_top"), new("wall_top"), new("wall_top"), new("wall_top"), new("wall_top"), new("wall_top"), new("wall_top"), new("wall_top"), new("wall_top"), new("wall_top"), new("floor_1_lefthalf") },
-                { new("floor_1_righthalf"), new("floor_1"),  new("floor_1"),  new("floor_1"),  new("floor_1"),  new("floor_1"),  new("floor_1"),  new("floor_1"),  new("floor_1"),  new("floor_1"),  new("floor_1"),  new("floor_1"),  new("floor_1_lefthalf") },
-                { new("floor_1_righthalf"), new("floor_1"),  new("floor_1"),  new("floor_1"),  new("floor_1"),  new("floor_1"),  new("floor_1"),  new("floor_1"),  new("floor_1"),  new("floor_1"),  new("floor_1"),  new("floor_1"),  new("floor_1_lefthalf") },
-                { new("floor_1_righthalf"), new("floor_1"),  new("floor_1"),  new("floor_1"),  new("floor_1"),  new("floor_1"),  new("floor_1"),  new("floor_1"),  new("floor_1"),  new("floor_1"),  new("floor_1"),  new("floor_1"),  new("floor_1_lefthalf") },
-                { new("floor_1_righthalf"), new("floor_1"),  new("floor_1"),  new("floor_1"),  new("floor_1"),  new("floor_1"),  new("floor_1"),  new("floor_1"),  new("floor_1"),  new("floor_1"),  new("floor_1"),  new("floor_1"),  new("floor_1_lefthalf") },
-                { new("floor_1_righthalf"), new("floor_1"),  new("floor_1"),  new("floor_1"),  new("floor_1"),  new("floor_1"),  new("floor_1"),  new("floor_1"),  new("floor_1"),  new("floor_1"),  new("floor_1"),  new("floor_1"),  new("floor_1_lefthalf") },
-                { new("floor_1_righthalf"), new("floor_1"),  new("floor_1"),  new("floor_1"),  new("floor_1"),  new("floor_1"),  new("floor_1"),  new("floor_1"),  new("floor_1"),  new("floor_1"),  new("floor_1"),  new("floor_1"),  new("floor_1_lefthalf") },
-                { new("floor_1_righthalf"), new("floor_1"),  new("floor_1"),  new("floor_1"),  new("floor_1"),  new("floor_1"),  new("floor_1"),  new("floor_1"),  new("floor_1"),  new("floor_1"),  new("floor_1"),  new("floor_1"),  new("floor_1_lefthalf") },
-                { new("floor_1_righthalf"), new("floor_1"),  new("floor_1"),  new("floor_1"),  new("floor_1"),  new("floor_1"),  new("floor_1"),  new("floor_1"),  new("floor_1"),  new("floor_1"),  new("floor_1"),  new("floor_1"),  new("floor_1_lefthalf") }
-            },
-            {
-                { AssetID.None, AssetID.None, AssetID.None, AssetID.None,             AssetID.None, AssetID.None, AssetID.None, AssetID.None, AssetID.None, AssetID.None,             AssetID.None, AssetID.None, AssetID.None },
-                { AssetID.None, AssetID.None, AssetID.None, AssetID.None,             AssetID.None, AssetID.None, AssetID.None, AssetID.None, AssetID.None, AssetID.None,             AssetID.None, AssetID.None, AssetID.None },
-                { AssetID.None, AssetID.None, AssetID.None, AssetID.None,             AssetID.None, AssetID.None, AssetID.None, AssetID.None, AssetID.None, AssetID.None,             AssetID.None, AssetID.None, AssetID.None },
-                { AssetID.None, AssetID.None, AssetID.None, new("fountain_1_bottom"), AssetID.None, AssetID.None, AssetID.None, AssetID.None, AssetID.None, new("fountain_2_bottom"), AssetID.None, AssetID.None, AssetID.None },
-                { AssetID.None, AssetID.None, AssetID.None, AssetID.None,             AssetID.None, AssetID.None, AssetID.None, AssetID.None, AssetID.None, AssetID.None,             AssetID.None, AssetID.None, AssetID.None },
-                { AssetID.None, AssetID.None, AssetID.None, AssetID.None,             AssetID.None, AssetID.None, AssetID.None, AssetID.None, AssetID.None, AssetID.None,             AssetID.None, AssetID.None, AssetID.None },
-                { AssetID.None, AssetID.None, AssetID.None, AssetID.None,             AssetID.None, AssetID.None, AssetID.None, AssetID.None, AssetID.None, AssetID.None,             AssetID.None, AssetID.None, AssetID.None },
-                { AssetID.None, AssetID.None, AssetID.None, AssetID.None,             AssetID.None, AssetID.None, AssetID.None, AssetID.None, AssetID.None, AssetID.None,             AssetID.None, AssetID.None, AssetID.None },
-                { AssetID.None, AssetID.None, AssetID.None, AssetID.None,             AssetID.None, AssetID.None, AssetID.None, AssetID.None, AssetID.None, AssetID.None,             AssetID.None, AssetID.None, AssetID.None }
-            },
-            {
-                { AssetID.None, AssetID.None, AssetID.None, AssetID.None,          AssetID.None, AssetID.None, AssetID.None, AssetID.None, AssetID.None, AssetID.None,          AssetID.None, AssetID.None, AssetID.None },
-                { AssetID.None, AssetID.None, AssetID.None, AssetID.None,          AssetID.None, AssetID.None, AssetID.None, AssetID.None, AssetID.None, AssetID.None,          AssetID.None, AssetID.None, AssetID.None },
-                { AssetID.None, AssetID.None, AssetID.None, new("fountain_1_top"), AssetID.None, AssetID.None, AssetID.None, AssetID.None, AssetID.None, new("fountain_2_top"), AssetID.None, AssetID.None, AssetID.None },
-                { AssetID.None, AssetID.None, AssetID.None, AssetID.None,          AssetID.None, AssetID.None, AssetID.None, AssetID.None, AssetID.None, AssetID.None,          AssetID.None, AssetID.None, AssetID.None },
-                { AssetID.None, AssetID.None, AssetID.None, AssetID.None,          AssetID.None, AssetID.None, AssetID.None, AssetID.None, AssetID.None, AssetID.None,          AssetID.None, AssetID.None, AssetID.None },
-                { AssetID.None, AssetID.None, AssetID.None, AssetID.None,          AssetID.None, AssetID.None, AssetID.None, AssetID.None, AssetID.None, AssetID.None,          AssetID.None, AssetID.None, AssetID.None },
-                { AssetID.None, AssetID.None, AssetID.None, AssetID.None,          AssetID.None, AssetID.None, AssetID.None, AssetID.None, AssetID.None, AssetID.None,          AssetID.None, AssetID.None, AssetID.None },
-                { AssetID.None, AssetID.None, AssetID.None, AssetID.None,          AssetID.None, AssetID.None, AssetID.None, AssetID.None, AssetID.None, AssetID.None,          AssetID.None, AssetID.None, AssetID.None },
-                { AssetID.None, AssetID.None, AssetID.None, AssetID.None,          AssetID.None, AssetID.None, AssetID.None, AssetID.None, AssetID.None, AssetID.None,          AssetID.None, AssetID.None, AssetID.None }
-            },
-            {
-                { new("wall_topleft_outer"),    AssetID.None,       AssetID.None,       AssetID.None,       AssetID.None,       AssetID.None,       AssetID.None,       AssetID.None,       AssetID.None,       AssetID.None,       AssetID.None,       AssetID.None,       new("wall_topright_outer")    },
-                { new("wall_left"),             AssetID.None,       AssetID.None,       AssetID.None,       AssetID.None,       AssetID.None,       AssetID.None,       AssetID.None,       AssetID.None,       AssetID.None,       AssetID.None,       AssetID.None,       new("wall_right")             },
-                { new("wall_left"),             AssetID.None,       AssetID.None,       AssetID.None,       AssetID.None,       AssetID.None,       AssetID.None,       AssetID.None,       AssetID.None,       AssetID.None,       AssetID.None,       AssetID.None,       new("wall_right")             },
-                { new("wall_left"),             AssetID.None,       AssetID.None,       AssetID.None,       AssetID.None,       AssetID.None,       AssetID.None,       AssetID.None,       AssetID.None,       AssetID.None,       AssetID.None,       AssetID.None,       new("wall_right")             },
-                { new("wall_left"),             AssetID.None,       AssetID.None,       AssetID.None,       AssetID.None,       AssetID.None,       AssetID.None,       AssetID.None,       AssetID.None,       AssetID.None,       AssetID.None,       AssetID.None,       new("wall_right")             },
-                { new("wall_left"),             AssetID.None,       AssetID.None,       AssetID.None,       AssetID.None,       AssetID.None,       AssetID.None,       AssetID.None,       AssetID.None,       AssetID.None,       AssetID.None,       AssetID.None,       new("wall_right")             },
-                { new("wall_left"),             AssetID.None,       AssetID.None,       AssetID.None,       AssetID.None,       AssetID.None,       AssetID.None,       AssetID.None,       AssetID.None,       AssetID.None,       AssetID.None,       AssetID.None,       new("wall_right")             },
-                { new("wall_left"),             AssetID.None,       AssetID.None,       AssetID.None,       AssetID.None,       AssetID.None,       AssetID.None,       AssetID.None,       AssetID.None,       AssetID.None,       AssetID.None,       AssetID.None,       new("wall_right")             },
-                { new("wall_bottomleft_outer"), new("wall_bottom"), new("wall_bottom"), new("wall_bottom"), new("wall_bottom"), new("wall_bottom"), new("wall_bottom"), new("wall_bottom"), new("wall_bottom"), new("wall_bottom"), new("wall_bottom"), new("wall_bottom"), new("wall_bottomright_outer") }
-            }
-        }, 1);
         _world.Entities.Add(new Entity(_context.AssetManager, new LivingDataComponent(true, false, _context.AssetManager.Get<PlayerType>(new AssetID("mage")).Speed), [new PlayerBehaviourComponent(_context.AssetManager.Get<PlayerType>(new AssetID("mage")))]));
         _world.Entities.Add(new Entity(_context.AssetManager, new LivingDataComponent(false, false, _context.AssetManager.Get<EnemyType>(new AssetID("slime")).Speed), [new EnemyBehaviourComponent(_context.AssetManager.Get<EnemyType>(new AssetID("slime")))]));
         _world.Entities[1].PositionDataComponent.Position = new Vector2(5.0f, 0.0f);
-        _world.Entities.Add(new Entity(_context.AssetManager, new LivingDataComponent(false, false, _context.AssetManager.Get<EnemyType>(new AssetID("slime")).Speed), [new EnemyBehaviourComponent(_context.AssetManager.Get<EnemyType>(new AssetID("slime")))]));
-        _world.Entities[2].PositionDataComponent.Position = new Vector2(15.0f, 4.0f);
-        _world.Entities.Add(new Entity(_context.AssetManager, new LivingDataComponent(false, false, _context.AssetManager.Get<EnemyType>(new AssetID("slime")).Speed), [new EnemyBehaviourComponent(_context.AssetManager.Get<EnemyType>(new AssetID("slime")))]));
-        _world.Entities[3].PositionDataComponent.Position = new Vector2(5.0f, 4.0f);
 
         _tickAccumulator = 0.0;
     }
@@ -141,6 +91,12 @@ public class GameScene : IScene, IUniformProvider {
 
     public void KeyUp(KeyboardKeyEventArgs args) {
         _world.AddCommand(new SetMovementCommand(_context.PressedKeys.Contains(Keys.W), _context.PressedKeys.Contains(Keys.A), _context.PressedKeys.Contains(Keys.S), _context.PressedKeys.Contains(Keys.D)));
+    }
+
+    public void SetTilemap(AssetID[,,] tilemap, int midground) {
+        _world.Tilemap.SetMap(new Vector2(-1.0f, 0.0f), _context.AssetManager, tilemap, midground);
+        _worldCamera.Center = new Vector2(tilemap.GetLength(2) * 0.5f - 0.5f, tilemap.GetLength(1) * 0.5f - 0.5f);
+        _worldCamera.TargetWorldSize = new Vector2(tilemap.GetLength(2), tilemap.GetLength(1));
     }
 
     public void GetUniformData(AssetID shaderProgram, AssetID textureAtlas, Span<byte> buffer) {

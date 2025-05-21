@@ -3,11 +3,12 @@ using ElementalAdventure.Common.Assets;
 namespace ElementalAdventure.Server.World;
 
 public class IsometricWorldType : IWorldType {
-    private const int LayerFloor = 0, LayerDoors = 1, LayerWall = 2;
+    private const int LayerFloor = 0, LayerMidground = 1, LayerDoors = 2, LayerWall = 3;
 
     public int RoomWidth { get; private init; }
     public int RoomHeight { get; private init; }
     public int LayerCount => 3;
+    public int MidgroundLayer => 1;
 
     public AssetID Floor { get; private init; }
 

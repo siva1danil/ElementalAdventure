@@ -1,0 +1,33 @@
+using ElementalAdventure.Client.Game.Scenes;
+using ElementalAdventure.Client.Game.SystemLogic;
+using ElementalAdventure.Client.Game.SystemLogic.Command;
+using ElementalAdventure.Common;
+using ElementalAdventure.Common.Assets;
+using ElementalAdventure.Common.Packets;
+using ElementalAdventure.Common.Packets.Impl;
+
+namespace ElementalAdventure.Client.Game.PacketHandlers;
+
+public class LoadWorldResponsePacketHandler : PacketRegistry.IPacketHandler {
+    private readonly ClientWindow _window;
+    private readonly ClientContext _context;
+
+    public LoadWorldResponsePacketHandler(ClientWindow window, ClientContext context) {
+        _window = window;
+        _context = context;
+    }
+
+    public void Handle(PacketConnection connection, IPacket ipacket) {
+        if (ipacket is not LoadWorldResponsePacket packet) {
+            _context.CommandQueue.Enqueue(new CrashCommand("Expected LoadWorldResponsePacket, got " + ipacket.GetType().Name));
+            return;
+        }
+
+        AssetID[,,] tilemap = new AssetID[packet.Tilemap.GetLength(0), packet.Tilemap.GetLength(1), packet.Tilemap.GetLength(2)];
+        for (int z = 0; z < packet.Tilemap.GetLength(0); z++)
+            for (int y = 0; y < packet.Tilemap.GetLength(1); y++)
+                for (int x = 0; x < packet.Tilemap.GetLength(2); x++)
+                    tilemap[z, y, x] = new AssetID(packet.Tilemap[z, y, x]);
+        _context.CommandQueue.Enqueue(new SetTilemapCommand(tilemap, packet.Midground));
+    }
+}

@@ -7,6 +7,7 @@ using ElementalAdventure.Client.Game.PacketHandlers;
 using ElementalAdventure.Client.Game.Scenes;
 using ElementalAdventure.Client.Game.SystemLogic.Command;
 using ElementalAdventure.Common.Assets;
+using ElementalAdventure.Common.Logging;
 using ElementalAdventure.Common.Networking;
 using ElementalAdventure.Common.Packets;
 using ElementalAdventure.Common.Packets.Impl;
@@ -29,6 +30,8 @@ public class ClientWindow : GameWindow {
     private double _gpuReportTimer = 0.0;
     private readonly Stopwatch _gpuTimer = new();
     /* temp */
+
+    public IScene? Scene => _scene;
 
     public ClientWindow(System.Net.IPEndPoint server, string root) : base(GameWindowSettings.Default, new NativeWindowSettings { Title = "Elemental Adventure", ClientSize = new(1280, 720), NumberOfSamples = 4 }) {
         Load += LoadHandler;
@@ -55,6 +58,7 @@ public class ClientWindow : GameWindow {
 
         registry.RegisterPacket(PacketType.HandshakeResponse, HandshakeResponsePacket.Deserialize, new HandshakeResponsePacketHandler(_context, "guest", "00000000-0000-0000-0000-000000000000"));
         registry.RegisterPacket(PacketType.LoginResponse, LoginResponsePacket.Deserialize, new LoginResponsePacketHandler(_context));
+        registry.RegisterPacket(PacketType.LoadWorldResponse, LoadWorldResponsePacket.Deserialize, new LoadWorldResponsePacketHandler(this, _context));
     }
 
     private void LoadHandler() {
@@ -257,6 +261,7 @@ public class ClientWindow : GameWindow {
     private void UpdateFrameHandler(FrameEventArgs args) {
         while (_context.CommandQueue.Count > 0) {
             IClientCommand command = _context.CommandQueue.Dequeue();
+            Logger.Debug($"Executing command: {command.GetType().Name}");
             command.Execute(this, _scene, _context);
         }
         _scene?.Update(args);

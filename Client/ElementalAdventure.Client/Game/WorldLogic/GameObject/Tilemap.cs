@@ -25,7 +25,8 @@ public class Tilemap {
 
     public Tilemap() {
         _map = [];
-        _depth = [];
+        _depth = [new(0.0f, 0.0f)];
+        _midground = 0;
         _dimensions = new(0, 0, 0);
 
         _globalData = [new(new(-0.5f, -0.5f, 0.0f)), new(new(0.5f, -0.5f, 0.0f)), new(new(-0.5f, 0.5f, 0.0f)), new(new(0.5f, -0.5f, 0.0f)), new(new(-0.5f, 0.5f, 0.0f)), new(new(0.5f, 0.5f, 0.0f))];
