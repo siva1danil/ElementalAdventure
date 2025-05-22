@@ -5,6 +5,7 @@ public class LoadWorldResponsePacket : IPacket {
 
     public int[,,] Tilemap { get; set; } = new int[0, 0, 0];
     public (float, float, float, float)[] Walls { get; set; } = [];
+    public (float, float) PlayerPosition { get; set; } = (0.0f, 0.0f);
     public int Midground { get; set; } = 0;
 
     public void Serialize(BinaryWriter writer) {
@@ -22,6 +23,8 @@ public class LoadWorldResponsePacket : IPacket {
             writer.Write(Walls[i].Item3);
             writer.Write(Walls[i].Item4);
         }
+        writer.Write(PlayerPosition.Item1);
+        writer.Write(PlayerPosition.Item2);
         writer.Write((ushort)Midground);
     }
 
@@ -44,6 +47,7 @@ public class LoadWorldResponsePacket : IPacket {
             float item4 = reader.ReadSingle();
             packet.Walls[i] = (item1, item2, item3, item4);
         }
+        packet.PlayerPosition = (reader.ReadSingle(), reader.ReadSingle());
         packet.Midground = reader.ReadUInt16();
         return packet;
     }

@@ -101,6 +101,13 @@ public class GameScene : IScene, IUniformProvider {
         _worldCamera.TargetWorldSize = new Vector2(tilemap.GetLength(2), tilemap.GetLength(1));
     }
 
+    public void SetPlayerPosition(Vector2 position) {
+        foreach (Entity entity in _world.Entities) {
+            if (entity.Has<PlayerBehaviourComponent>())
+                entity.PositionDataComponent.Position = position;
+        }
+    }
+
     public void GetUniformData(AssetID shaderProgram, AssetID textureAtlas, Span<byte> buffer) {
         Vector2i time = new((int)(uint)(DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() >> 32), (int)(uint)(DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() & 0xFFFFFFFF));
         if (shaderProgram == new AssetID("shader.userinterface")) {

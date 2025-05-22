@@ -38,6 +38,13 @@ public class Entity {
         _globalData = [new(new(-0.5f, -0.5f, 0.0f)), new(new(0.5f, -0.5f, 0.0f)), new(new(-0.5f, 0.5f, 0.0f)), new(new(0.5f, -0.5f, 0.0f)), new(new(-0.5f, 0.5f, 0.0f)), new(new(0.5f, 0.5f, 0.0f))];
     }
 
+    public bool Has<T>() {
+        for (int i = 0; i < _behaviourComponents.Length; i++)
+            if (_behaviourComponents[i] is T)
+                return true;
+        return false;
+    }
+
     public void Update(GameWorld world) {
         foreach (IBehavourComponent behaviourComponent in _behaviourComponents)
             behaviourComponent?.Update(world, this);

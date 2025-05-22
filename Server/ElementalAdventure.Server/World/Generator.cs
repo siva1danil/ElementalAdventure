@@ -113,6 +113,18 @@ public class Generator {
         return tilemask;
     }
 
+    public static (int, int) GetStartingPosition(LayoutRoom[,] layout, TileMask[,] tilemask, IWorldType type) {
+        for (int y = 0; y < layout.GetLength(0); y++) {
+            for (int x = 0; x < layout.GetLength(1); x++) {
+                if (layout[y, x].Type == RoomType.Entrance) {
+                    int originX = x * (type.RoomWidth + 1) + 1 + 1, originY = y * (type.RoomHeight + 1) + 1 + 1;
+                    return (originX + type.RoomWidth / 2, tilemask.GetLength(0) - (originY + type.RoomHeight / 2));
+                }
+            }
+        }
+        return (-1, -1);
+    }
+
     public static AssetID[,,] GenerateTilemap(TileMask[,] tilemask, IWorldType type) {
         AssetID[,,] tilemap = new AssetID[type.LayerCount, tilemask.GetLength(0), tilemask.GetLength(1)];
         type.MapMaskToLayers(tilemap, tilemask);
