@@ -17,6 +17,7 @@ public class Entity {
     private readonly PositionDataComponent _positionDataComponent;
     private readonly TextureDataComponent _textureDataComponent;
     private readonly LivingDataComponent? _livingDataComponent;
+    private readonly HitboxDataComponent? _hitboxDataComponent;
     private readonly IBehavourComponent[] _behaviourComponents;
 
     private readonly TilemapShaderLayout.GlobalData[] _globalData;
@@ -24,12 +25,14 @@ public class Entity {
     public PositionDataComponent PositionDataComponent => _positionDataComponent;
     public TextureDataComponent TextureDataComponent => _textureDataComponent;
     public LivingDataComponent? LivingDataComponent => _livingDataComponent;
+    public HitboxDataComponent? HitboxDataComponent => _hitboxDataComponent;
 
-    public Entity(AssetManager assetManager, LivingDataComponent? livingDataComponent, IBehavourComponent[] behaviourComponents) {
+    public Entity(AssetManager assetManager, LivingDataComponent? livingDataComponent, HitboxDataComponent? hitboxDataComponent, IBehavourComponent[] behaviourComponents) {
         _assetManager = assetManager;
         _positionDataComponent = new PositionDataComponent(new Vector2(0.0f, 0.0f));
         _textureDataComponent = new TextureDataComponent(false, AssetID.None, AssetID.None);
         _livingDataComponent = livingDataComponent;
+        _hitboxDataComponent = hitboxDataComponent;
         _behaviourComponents = behaviourComponents;
 
         _globalData = [new(new(-0.5f, -0.5f, 0.0f)), new(new(0.5f, -0.5f, 0.0f)), new(new(-0.5f, 0.5f, 0.0f)), new(new(0.5f, -0.5f, 0.0f)), new(new(-0.5f, 0.5f, 0.0f)), new(new(0.5f, 0.5f, 0.0f))];

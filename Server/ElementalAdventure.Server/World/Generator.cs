@@ -127,14 +127,13 @@ public class Generator {
                 bool startVerticalWall = tilemask[y, x] == TileMask.Wall && (y == 0 || tilemask[y - 1, x] != TileMask.Wall) && (y == tilemask.GetLength(0) - 1 || tilemask[y + 1, x] == TileMask.Wall);
                 if (startHorizontalWall) {
                     int startX = x, endX = x;
-                    while (endX < tilemask.GetLength(1) && tilemask[y, endX] == TileMask.Wall)
-                        endX++;
-                    walls.Add(new WallBox(x, y, endX - startX, 1));
-                } else if (startVerticalWall) {
+                    while (endX + 1 < tilemask.GetLength(1) && tilemask[y, endX + 1] == TileMask.Wall) { endX++; }
+                    walls.Add(new WallBox(x, y, endX - startX + 1, 1));
+                }
+                if (startVerticalWall) {
                     int startY = y, endY = y;
-                    while (endY < tilemask.GetLength(0) && tilemask[endY, x] == TileMask.Wall)
-                        endY++;
-                    walls.Add(new WallBox(x, y, 1, endY - startY));
+                    while (endY + 1 < tilemask.GetLength(0) && tilemask[endY + 1, x] == TileMask.Wall) { endY++; }
+                    walls.Add(new WallBox(x, y, 1, endY - startY + 1));
                 }
             }
         }

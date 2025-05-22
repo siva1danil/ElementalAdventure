@@ -18,7 +18,17 @@ public class PlayerBehaviourComponent : IBehavourComponent {
         entity.PositionDataComponent.Velocity = world.Input;
 
         // Tick movement
-        entity.PositionDataComponent.Position += entity.PositionDataComponent.Velocity * entity.LivingDataComponent!.MovementSpeed;
+        Vector2 position = entity.PositionDataComponent.Position + entity.PositionDataComponent.Velocity * entity.LivingDataComponent!.MovementSpeed;
+        if (entity.HitboxDataComponent != null) {
+            Box2 hitbox = new Box2(entity.HitboxDataComponent.Box.Min + position, entity.HitboxDataComponent.Box.Max + position);
+            foreach (Box2 wall in world.Tilemap.Walls) {
+                if (wall.Intersects(hitbox)) {
+                    position -= entity.PositionDataComponent.Velocity * entity.LivingDataComponent!.MovementSpeed;
+                    break;
+                }
+            }
+        }
+        entity.PositionDataComponent.Position = position;
 
         // Update Z
         entity.PositionDataComponent.Z = world.Tilemap.GetNormalizedDepth(world.Tilemap.Midground, entity.PositionDataComponent.Position.Y, _playerType.DepthLayerOffset, _playerType.DepthHeightOffset);

@@ -70,8 +70,8 @@ public class Tilemap {
     public void SetWalls(Box2[] walls) {
         _walls = [];
         for (int i = 0; i < walls.Length; i++) {
-            float wy1 = _dimensions.Y - walls[i].Min.Y - 1, wy2 = _dimensions.Y - walls[i].Max.Y - 1;
-            _walls.Add(new Box2(new Vector2(walls[i].Min.X, wy2), new Vector2(walls[i].Max.X, wy1)));
+            float wy1 = _dimensions.Y - walls[i].Max.Y, wy2 = _dimensions.Y - walls[i].Min.Y;
+            _walls.Add(new Box2(new Vector2(walls[i].Min.X - 0.5f, wy1 - 0.5f), new Vector2(walls[i].Max.X - 0.5f, wy2 - 0.5f)));
         }
     }
 

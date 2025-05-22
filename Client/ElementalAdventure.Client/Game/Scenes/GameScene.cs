@@ -37,7 +37,7 @@ public class GameScene : IScene, IUniformProvider {
         _renderer = new(_context.AssetManager, this);
         _ui = new(new Vector2(0.0f, 1.0f), _context.WindowSize);
         _uiCamera = new Camera(context.WindowSize / 2.0f, context.WindowSize, context.WindowSize, true);
-        _worldCamera = new Camera(new Vector2(13.0f * 0.5f - 0.5f, 9.0f * 0.5f - 0.5f), new Vector2(14.0f, 10f), context.WindowSize);
+        _worldCamera = new Camera(new Vector2(5.0f, 5.0f), new Vector2(8.0f, 8.0f), context.WindowSize);
 
         AbsoluteLayout layout = new();
         LinearLayout bottomLeft = new();
@@ -53,8 +53,9 @@ public class GameScene : IScene, IUniformProvider {
         _ui.Push(layout);
 
         _world = new GameWorld(1.0f / 20.0f, new Tilemap(), []);
-        _world.Entities.Add(new Entity(_context.AssetManager, new LivingDataComponent(true, false, _context.AssetManager.Get<PlayerType>(new AssetID("mage")).Speed), [new PlayerBehaviourComponent(_context.AssetManager.Get<PlayerType>(new AssetID("mage")))]));
-        _world.Entities.Add(new Entity(_context.AssetManager, new LivingDataComponent(false, false, _context.AssetManager.Get<EnemyType>(new AssetID("slime")).Speed), [new EnemyBehaviourComponent(_context.AssetManager.Get<EnemyType>(new AssetID("slime")))]));
+        _world.Entities.Add(new Entity(_context.AssetManager, new LivingDataComponent(true, false, _context.AssetManager.Get<PlayerType>(new AssetID("mage")).Speed), new HitboxDataComponent(new Box2(-0.01f, -0.5f + 2.0f / 32.0f - 0.01f, 0.01f, -0.5f + 2.0f / 32.0f + 0.01f)), [new PlayerBehaviourComponent(_context.AssetManager.Get<PlayerType>(new AssetID("mage")))]));
+        _world.Entities.Add(new Entity(_context.AssetManager, new LivingDataComponent(false, false, _context.AssetManager.Get<EnemyType>(new AssetID("slime")).Speed), new HitboxDataComponent(new Box2(-0.01f, -0.5f + 2.0f / 32.0f - 0.01f, 0.01f, -0.5f + 2.0f / 32.0f + 0.01f)), [new EnemyBehaviourComponent(_context.AssetManager.Get<EnemyType>(new AssetID("slime")))]));
+        _world.Entities[0].PositionDataComponent.Position = new Vector2(0.0f, 0.0f);
         _world.Entities[1].PositionDataComponent.Position = new Vector2(5.0f, 0.0f);
 
         _tickAccumulator = 0.0;
