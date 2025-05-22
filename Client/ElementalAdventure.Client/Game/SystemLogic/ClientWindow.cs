@@ -253,7 +253,7 @@ public class ClientWindow : GameWindow {
             _context.AssetManager.Add(new AssetID("wall_cross_lt_rt_lb_rb"), new TileType(new AssetID("textureatlas.dungeon"), new AssetID("wall_cross_lt_rt_lb_rb"), 0, -0.5f));
             _context.AssetManager.Add(new AssetID("wall_doorway_horizontal_top"), new TileType(new AssetID("textureatlas.dungeon"), new AssetID("wall_doorway_horizontal_top"), 0, -0.5f));
             _context.AssetManager.Add(new AssetID("wall_doorway_horizontal_bottom"), new TileType(new AssetID("textureatlas.dungeon"), new AssetID("wall_doorway_horizontal_bottom"), 0, -0.5f));
-            _context.AssetManager.Add(new AssetID("wall_doorway_vertical_top"), new TileType(new AssetID("textureatlas.dungeon"), new AssetID("wall_doorway_vertical_top"), 0, -0.5f));
+            _context.AssetManager.Add(new AssetID("wall_doorway_vertical_top"), new TileType(new AssetID("textureatlas.dungeon"), new AssetID("wall_doorway_vertical_top"), 0, -0.5f + 5.0f / 32.0f));
             _context.AssetManager.Add(new AssetID("wall_doorway_vertical_bottom"), new TileType(new AssetID("textureatlas.dungeon"), new AssetID("wall_doorway_vertical_bottom"), 0, -0.5f));
             _context.AssetManager.Add(new AssetID("door_horizontal_closed_top"), new TileType(new AssetID("textureatlas.dungeon"), new AssetID("door_horizontal_closed_top"), 0, -0.5f));
             _context.AssetManager.Add(new AssetID("door_horizontal_closed_bottom"), new TileType(new AssetID("textureatlas.dungeon"), new AssetID("door_horizontal_closed_bottom"), 0, -0.5f));

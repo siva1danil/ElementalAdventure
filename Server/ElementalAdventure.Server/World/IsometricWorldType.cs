@@ -194,21 +194,16 @@ public class IsometricWorldType : IWorldType {
 
                 // TileMask.Door => WallDoorwayHorizontalTop, WallDoorwayHorizontalBottom, WallDoorwayVerticalTop, WallDoorwayVerticalBottom
                 if (mask[y, x] == Generator.TileMask.Door && mask[y - 1, x] == Generator.TileMask.Floor && mask[y + 1, x] == Generator.TileMask.Floor) {
-                    layer[LayerWall, y - 1, x] = AssetID.None;
-                    layer[LayerWallTop, y - 1, x] = WallDoorwayHorizontalTop;
-                    layer[LayerWall, y, x] = WallDoorwayHorizontalBottom;
                     layer[LayerFloor, y, x] = Floor;
-                    layer[LayerDoors, y - 1, x] = DoorHorizontalClosedTop;
-                    layer[LayerDoors, y, x] = DoorHorizontalClosedBottom;
+                    layer[LayerWall, y - 1, x] = WallDoorwayHorizontalTop;
+                    layer[LayerWallTop, y, x] = WallDoorwayHorizontalBottom;
                 }
                 if (mask[y, x] == Generator.TileMask.Door && mask[y, x - 1] == Generator.TileMask.Floor && mask[y, x + 1] == Generator.TileMask.Floor) {
-                    layer[LayerWall, y - 1, x] = AssetID.None;
-                    layer[LayerWallTop, y - 1, x] = WallDoorwayVerticalTop;
-                    layer[LayerWall, y, x] = WallDoorwayVerticalBottom;
                     layer[LayerFloor, y - 1, x] = Floor;
                     layer[LayerFloor, y, x] = Floor;
-                    layer[LayerDoors, y - 1, x] = DoorVerticalClosedTop;
-                    layer[LayerDoors, y, x] = DoorVerticalClosedBottom;
+                    layer[LayerWall, y - 1, x] = AssetID.None;
+                    layer[LayerWall, y, x] = WallDoorwayVerticalBottom;
+                    layer[LayerWallTop, y - 1, x] = WallDoorwayVerticalTop;
                 }
             }
         }
