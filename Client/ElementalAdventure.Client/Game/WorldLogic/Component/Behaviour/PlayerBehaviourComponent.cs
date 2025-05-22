@@ -1,6 +1,8 @@
 using ElementalAdventure.Client.Game.Components.Data;
 using ElementalAdventure.Client.Game.WorldLogic.GameObject;
 
+using OpenTK.Mathematics;
+
 namespace ElementalAdventure.Client.Game.WorldLogic.Component.Behaviour;
 
 public class PlayerBehaviourComponent : IBehavourComponent {

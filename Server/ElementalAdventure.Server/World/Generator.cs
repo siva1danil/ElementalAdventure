@@ -119,9 +119,31 @@ public class Generator {
         return tilemap;
     }
 
+    public static WallBox[] GenerateWalls(TileMask[,] tilemask, IWorldType type) {
+        List<WallBox> walls = [];
+        for (int y = 0; y < tilemask.GetLength(0); y++) {
+            for (int x = 0; x < tilemask.GetLength(1); x++) {
+                bool startHorizontalWall = tilemask[y, x] == TileMask.Wall && (x == 0 || tilemask[y, x - 1] != TileMask.Wall) && (x == tilemask.GetLength(1) - 1 || tilemask[y, x + 1] == TileMask.Wall);
+                bool startVerticalWall = tilemask[y, x] == TileMask.Wall && (y == 0 || tilemask[y - 1, x] != TileMask.Wall) && (y == tilemask.GetLength(0) - 1 || tilemask[y + 1, x] == TileMask.Wall);
+                if (startHorizontalWall) {
+                    int startX = x, endX = x;
+                    while (endX < tilemask.GetLength(1) && tilemask[y, endX] == TileMask.Wall)
+                        endX++;
+                    walls.Add(new WallBox(x, y, endX - startX, 1));
+                } else if (startVerticalWall) {
+                    int startY = y, endY = y;
+                    while (endY < tilemask.GetLength(0) && tilemask[endY, x] == TileMask.Wall)
+                        endY++;
+                    walls.Add(new WallBox(x, y, 1, endY - startY));
+                }
+            }
+        }
+        return [.. walls];
+    }
 
     public enum TileMask : byte { None = 0, Floor = 1, Wall = 2, Door = 3 }
     public readonly record struct LayoutRoom(RoomType Type, bool DoorUp, bool DoorRight, bool DoorDown, bool DoorLeft) {
         public static LayoutRoom Empty => new(RoomType.None, false, false, false, false);
     }
+    public readonly record struct WallBox(float X, float Y, float Width, float Height) { }
 }

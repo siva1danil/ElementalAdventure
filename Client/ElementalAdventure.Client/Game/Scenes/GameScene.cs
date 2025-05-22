@@ -93,8 +93,9 @@ public class GameScene : IScene, IUniformProvider {
         _world.AddCommand(new SetMovementCommand(_context.PressedKeys.Contains(Keys.W), _context.PressedKeys.Contains(Keys.A), _context.PressedKeys.Contains(Keys.S), _context.PressedKeys.Contains(Keys.D)));
     }
 
-    public void SetTilemap(AssetID[,,] tilemap, int midground) {
+    public void SetTilemap(AssetID[,,] tilemap, Box2[] walls, int midground) {
         _world.Tilemap.SetMap(new Vector2(-1.0f, 0.0f), _context.AssetManager, tilemap, midground);
+        _world.Tilemap.SetWalls(walls);
         _worldCamera.Center = new Vector2(tilemap.GetLength(2) * 0.5f - 0.5f, tilemap.GetLength(1) * 0.5f - 0.5f);
         _worldCamera.TargetWorldSize = new Vector2(tilemap.GetLength(2), tilemap.GetLength(1));
     }

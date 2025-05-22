@@ -1,5 +1,7 @@
 using System.Diagnostics;
 
+using ElementalAdventure.Common.Logging;
+
 namespace ElementalAdventure.Common.Assets;
 
 public class AssetManager : IDisposable {
@@ -10,7 +12,7 @@ public class AssetManager : IDisposable {
     }
 
     public void Add<T>(AssetID key, T asset) where T : notnull {
-        Debug.WriteLine($"Adding asset of type {typeof(T)} with key {key}.");
+        Logger.Debug($"Adding asset of type {typeof(T)} with key {key}.");
         Type type = typeof(T);
         if (!_assets.ContainsKey(type)) _assets[type] = [];
         else if (_assets[type].ContainsKey(key)) throw new ArgumentException($"Asset of type {type} with key {key} already exists.");
@@ -37,7 +39,7 @@ public class AssetManager : IDisposable {
         foreach (KeyValuePair<Type, Dictionary<AssetID, object>> entry in _assets) {
             foreach (KeyValuePair<AssetID, object> asset in entry.Value) {
                 if (asset.Value is IDisposable disposable) {
-                    Debug.WriteLine($"Disposing asset of type {entry.Key} with key {asset.Key}.");
+                    Logger.Debug($"Disposing asset of type {entry.Key} with key {asset.Key}.");
                     disposable.Dispose();
                 }
             }

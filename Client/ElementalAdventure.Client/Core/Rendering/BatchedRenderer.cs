@@ -5,6 +5,7 @@ using ElementalAdventure.Client.Core.Resources.Data;
 using ElementalAdventure.Client.Core.Resources.HighLevel;
 using ElementalAdventure.Client.Core.Resources.OpenGL;
 using ElementalAdventure.Common.Assets;
+using ElementalAdventure.Common.Logging;
 
 using OpenTK.Graphics.OpenGL4;
 
@@ -115,7 +116,7 @@ public class BatchedRenderer : IRenderer {
 
     public void Dispose() {
         foreach (KeyValuePair<BatchKey, BatchData> batch in _batches) {
-            Debug.WriteLine($"Disposing batch BatchKey{{{batch.Key.ShaderProgram},{batch.Key.TextureAtlas},{batch.Key.VertexDataHash}}} of {batch.Value.VertexData.Length}+{batch.Value.InstanceData.Length} bytes");
+            Logger.Debug($"Disposing batch BatchKey{{{batch.Key.ShaderProgram},{batch.Key.TextureAtlas},{batch.Key.VertexDataHash}}} of {batch.Value.VertexData.Length}+{batch.Value.InstanceData.Length} bytes");
             batch.Value.VertexArrayInstanced.Dispose();
             batch.Value.UniformBuffer.Dispose();
         }

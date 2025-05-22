@@ -6,6 +6,8 @@ using ElementalAdventure.Common.Assets;
 using ElementalAdventure.Common.Packets;
 using ElementalAdventure.Common.Packets.Impl;
 
+using OpenTK.Mathematics;
+
 namespace ElementalAdventure.Client.Game.PacketHandlers;
 
 public class LoadWorldResponsePacketHandler : PacketRegistry.IPacketHandler {
@@ -28,6 +30,9 @@ public class LoadWorldResponsePacketHandler : PacketRegistry.IPacketHandler {
             for (int y = 0; y < packet.Tilemap.GetLength(1); y++)
                 for (int x = 0; x < packet.Tilemap.GetLength(2); x++)
                     tilemap[z, y, x] = new AssetID(packet.Tilemap[z, y, x]);
-        _context.CommandQueue.Enqueue(new SetTilemapCommand(tilemap, packet.Midground));
+        Box2[] walls = new Box2[packet.Walls.Length];
+        for (int i = 0; i < packet.Walls.Length; i++)
+            walls[i] = new Box2(new Vector2(packet.Walls[i].Item1, packet.Walls[i].Item2), new Vector2(packet.Walls[i].Item1 + packet.Walls[i].Item3, packet.Walls[i].Item2 + packet.Walls[i].Item4));
+        _context.CommandQueue.Enqueue(new SetTilemapCommand(tilemap, walls, packet.Midground));
     }
 }

@@ -30,11 +30,15 @@ public class LoadWorldRequestPacketHandler : PacketRegistry.IPacketHandler {
         Generator.LayoutRoom[,] layout = Generator.GenerateLayout(new Random().Next(), 0, new Dictionary<RoomType, int> { { RoomType.Entrance, 1 }, { RoomType.Exit, 1 }, { RoomType.Normal, 8 } });
         Generator.TileMask[,] tilemask = Generator.GenerateTilemask(layout, type);
         AssetID[,,] tilemap = Generator.GenerateTilemap(tilemask, type);
+        Generator.WallBox[] walls = Generator.GenerateWalls(tilemask, type);
         int[,,] data = new int[tilemap.GetLength(0), tilemap.GetLength(1), tilemap.GetLength(2)];
         for (int z = 0; z < tilemap.GetLength(0); z++)
             for (int y = 0; y < tilemap.GetLength(1); y++)
                 for (int x = 0; x < tilemap.GetLength(2); x++)
                     data[z, y, x] = tilemap[z, y, x].Value;
-        _ = connection.SendAsync(new LoadWorldResponsePacket() { Tilemap = data, Midground = type.MidgroundLayer });
+        (float, float, float, float)[] wallsData = new (float, float, float, float)[walls.Length];
+        for (int i = 0; i < walls.Length; i++)
+            wallsData[i] = (walls[i].X, walls[i].Y, walls[i].Width, walls[i].Height);
+        _ = connection.SendAsync(new LoadWorldResponsePacket() { Tilemap = data, Midground = type.MidgroundLayer, Walls = wallsData });
     }
 }

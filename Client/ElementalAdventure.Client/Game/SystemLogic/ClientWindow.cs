@@ -269,7 +269,7 @@ public class ClientWindow : GameWindow {
             _context.AssetManager.Add(new AssetID("mage"), new PlayerType(new AssetID("textureatlas.player"), new AssetID("mage_idle_left"), new AssetID("mage_idle_right"), new AssetID("mage_walk_left"), new AssetID("mage_walk_right"), 0, -0.5f + 2.0f / 32.0f, 0.25f));
             _context.AssetManager.Add(new AssetID("slime"), new EnemyType(new AssetID("textureatlas.enemy"), new AssetID("slime_walk_left"), new AssetID("slime_walk_right"), new AssetID("slime_walk_left"), new AssetID("slime_walk_right"), 0, -0.5f + 2.0f / 32.0f, 0.125f));
         } catch (Exception e) {
-            Console.WriteLine(e.Message);
+            Logger.Error(e.Message);
             Close();
             return;
         }
@@ -317,7 +317,7 @@ public class ClientWindow : GameWindow {
         _gpuReportTimer += args.Time;
         if (_gpuReportTimer >= 1.0) {
             _gpuFrameTimeMs = _gpuFrameTimeAccum / _gpuFrameCount;
-            Console.WriteLine($"[GPU] Avg Frame Time: {_gpuFrameTimeMs * 1000:F3} µs over {_gpuFrameCount} frames");
+            Logger.Debug($"[GPU] Avg Frame Time: {_gpuFrameTimeMs * 1000:F3} µs over {_gpuFrameCount} frames");
             _gpuFrameTimeAccum = 0.0;
             _gpuFrameCount = 0;
             _gpuReportTimer = 0.0;

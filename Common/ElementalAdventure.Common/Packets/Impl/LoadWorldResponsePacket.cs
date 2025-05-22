@@ -4,6 +4,7 @@ public class LoadWorldResponsePacket : IPacket {
     public PacketType Type => PacketType.LoadWorldResponse;
 
     public int[,,] Tilemap { get; set; } = new int[0, 0, 0];
+    public (float, float, float, float)[] Walls { get; set; } = [];
     public int Midground { get; set; } = 0;
 
     public void Serialize(BinaryWriter writer) {
@@ -14,6 +15,13 @@ public class LoadWorldResponsePacket : IPacket {
             for (int y = 0; y < Tilemap.GetLength(1); y++)
                 for (int x = 0; x < Tilemap.GetLength(2); x++)
                     writer.Write(Tilemap[z, y, x]);
+        writer.Write((ushort)Walls.Length);
+        for (int i = 0; i < Walls.Length; i++) {
+            writer.Write(Walls[i].Item1);
+            writer.Write(Walls[i].Item2);
+            writer.Write(Walls[i].Item3);
+            writer.Write(Walls[i].Item4);
+        }
         writer.Write((ushort)Midground);
     }
 
@@ -27,6 +35,15 @@ public class LoadWorldResponsePacket : IPacket {
             for (int y = 0; y < yLength; y++)
                 for (int x = 0; x < xLength; x++)
                     packet.Tilemap[z, y, x] = reader.ReadInt32();
+        int wallsLength = reader.ReadUInt16();
+        packet.Walls = new (float, float, float, float)[wallsLength];
+        for (int i = 0; i < wallsLength; i++) {
+            float item1 = reader.ReadSingle();
+            float item2 = reader.ReadSingle();
+            float item3 = reader.ReadSingle();
+            float item4 = reader.ReadSingle();
+            packet.Walls[i] = (item1, item2, item3, item4);
+        }
         packet.Midground = reader.ReadUInt16();
         return packet;
     }

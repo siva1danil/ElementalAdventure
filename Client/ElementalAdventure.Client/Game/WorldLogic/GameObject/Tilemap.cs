@@ -12,6 +12,7 @@ namespace ElementalAdventure.Client.Game.WorldLogic.GameObject;
 // TODO: refactor internal format
 public class Tilemap {
     private List<Tile> _map;
+    private List<Box2> _walls;
     private Vector3i _dimensions;
     private Vector2[] _depth;
 
@@ -21,10 +22,12 @@ public class Tilemap {
     private TilemapShaderLayout.InstanceData[] _instanceData;
 
     public int Count => _map.Count;
+    public List<Box2> Walls => _walls;
     public int Midground => _midground;
 
     public Tilemap() {
         _map = [];
+        _walls = [];
         _depth = [new(0.0f, 0.0f)];
         _midground = 0;
         _dimensions = new(0, 0, 0);
@@ -61,6 +64,14 @@ public class Tilemap {
         for (int i = 0; i < _map.Count; i++) {
             Tile tile = _map[i];
             _instanceData[i] = new(tile.Position, tile.Position, tile.Index, tile.FrameSize, tile.FrameCount, tile.FrameTime);
+        }
+    }
+
+    public void SetWalls(Box2[] walls) {
+        _walls = [];
+        for (int i = 0; i < walls.Length; i++) {
+            float wy1 = _dimensions.Y - walls[i].Min.Y - 1, wy2 = _dimensions.Y - walls[i].Max.Y - 1;
+            _walls.Add(new Box2(new Vector2(walls[i].Min.X, wy2), new Vector2(walls[i].Max.X, wy1)));
         }
     }
 
