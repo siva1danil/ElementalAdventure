@@ -17,6 +17,8 @@ public class TextView : ViewBase {
     private string _text;
     private float _height;
 
+    private string _cachedText = string.Empty;
+
     public AssetID Font { get => _font; set { _font = value; InvalidateLayout(); } }
     public string Text { get => _text; set { _text = value; InvalidateLayout(); } }
     public float Height { get => _height; set { _height = value; InvalidateLayout(); } }
@@ -38,7 +40,10 @@ public class TextView : ViewBase {
         if (_font == AssetID.None || string.IsNullOrEmpty(_text))
             return;
         Span<byte> slot = renderer.AllocateInstance(this, 0, new AssetID("shader.msdf"), _font, MemoryMarshal.Cast<MsdfShaderLayout.GlobalData, byte>(_globalData.AsSpan()), Marshal.SizeOf<MsdfShaderLayout.InstanceData>() * _text.Length);
-        BuildGeometry(_text, slot);
+        if (_text != _cachedText) {
+            BuildGeometry(_text, slot);
+            _cachedText = _text;
+        }
     }
 
     private float Measure(string text) {

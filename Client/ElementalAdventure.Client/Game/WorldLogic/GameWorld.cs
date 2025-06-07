@@ -8,6 +8,7 @@ namespace ElementalAdventure.Client.Game.WorldLogic;
 public class GameWorld {
     private readonly double _tickInterval;
 
+    private int _floor = 0;
     private readonly Tilemap _tilemap;
     private readonly List<Entity> _entities;
     private readonly Queue<ICommand> _commands;
@@ -18,6 +19,7 @@ public class GameWorld {
 
     public double TickInterval => _tickInterval;
 
+    public int Floor { get => _floor; set => _floor = value; }
     public Tilemap Tilemap => _tilemap;
     public List<Entity> Entities => _entities;
 

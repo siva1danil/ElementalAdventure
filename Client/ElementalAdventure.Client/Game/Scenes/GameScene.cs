@@ -29,6 +29,8 @@ public class GameScene : IScene, IUniformProvider {
     private readonly Camera _worldCamera, _uiCamera;
     private readonly GameWorld _world;
 
+    private readonly TextView _healthText, _depthText;
+
     private double _tickAccumulator;
 
     public GameScene(ClientContext context) {
@@ -72,6 +74,9 @@ public class GameScene : IScene, IUniformProvider {
         _world.Entities.Add(new Entity(_context.AssetManager, new LivingDataComponent(true, false, _context.AssetManager.Get<PlayerType>(new AssetID("mage")).MaxHealth, _context.AssetManager.Get<PlayerType>(new AssetID("mage")).MaxHealth, _context.AssetManager.Get<PlayerType>(new AssetID("mage")).Speed), null, new HitboxDataComponent(new Box2(-0.1f, -0.5f + 2.0f / 32.0f - 0.01f, 0.1f, -0.5f + 2.0f / 32.0f + 0.01f)), [new PlayerBehaviourComponent(_context.AssetManager, _context.AssetManager.Get<PlayerType>(new AssetID("mage")))]));
         _world.Entities[0].PositionDataComponent.Position = new Vector2(0.0f, 0.0f);
 
+        _healthText = healthText;
+        _depthText = depthText;
+
         _tickAccumulator = 0.0;
     }
 
@@ -80,6 +85,11 @@ public class GameScene : IScene, IUniformProvider {
         while (_tickAccumulator >= _world.TickInterval) {
             _tickAccumulator -= _world.TickInterval;
             _world.Tick();
+
+            Entity? player = _world.Entities.FirstOrDefault(e => e.Has<PlayerBehaviourComponent>());
+            if (player != null)
+                _healthText.Text = player.LivingDataComponent!.Health.ToString() + " / " + player.LivingDataComponent.MaxHealth.ToString();
+            _depthText.Text = $"Floor {_world.Floor + 1}";
         }
     }
 
