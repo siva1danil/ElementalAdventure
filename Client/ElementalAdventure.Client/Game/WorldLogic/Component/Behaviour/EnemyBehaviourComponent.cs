@@ -6,7 +6,7 @@ using OpenTK.Mathematics;
 
 namespace ElementalAdventure.Client.Game.WorldLogic.Component.Behaviour;
 
-public class EnemyBehaviourComponent : IBehavourComponent {
+public class EnemyBehaviourComponent : IBehaviourComponent {
     private readonly EnemyType _enemyType;
 
     private readonly WeakReference<Entity?> _target = new(null);

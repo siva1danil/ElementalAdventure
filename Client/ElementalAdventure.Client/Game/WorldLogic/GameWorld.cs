@@ -45,4 +45,8 @@ public class GameWorld {
     public void AddCommand(ICommand command) {
         _commands.Enqueue(command);
     }
+
+    public void RemoveEntity(Entity entity) {
+        _entities.Remove(entity);
+    }
 }

@@ -5,7 +5,7 @@ using OpenTK.Mathematics;
 
 namespace ElementalAdventure.Client.Game.WorldLogic.Component.Behaviour;
 
-public class PlayerBehaviourComponent : IBehavourComponent {
+public class PlayerBehaviourComponent : IBehaviourComponent {
     private readonly PlayerType _playerType;
     private bool _facingRight = true;
 

@@ -17,21 +17,24 @@ public class Entity {
     private readonly PositionDataComponent _positionDataComponent;
     private readonly TextureDataComponent _textureDataComponent;
     private readonly LivingDataComponent? _livingDataComponent;
+    private readonly ProjectileDataComponent? _projectileDataComponent;
     private readonly HitboxDataComponent? _hitboxDataComponent;
-    private readonly IBehavourComponent[] _behaviourComponents;
+    private readonly IBehaviourComponent[] _behaviourComponents;
 
     private readonly TilemapShaderLayout.GlobalData[] _globalData;
 
     public PositionDataComponent PositionDataComponent => _positionDataComponent;
     public TextureDataComponent TextureDataComponent => _textureDataComponent;
     public LivingDataComponent? LivingDataComponent => _livingDataComponent;
+    public ProjectileDataComponent? ProjectileDataComponent => _projectileDataComponent;
     public HitboxDataComponent? HitboxDataComponent => _hitboxDataComponent;
 
-    public Entity(AssetManager assetManager, LivingDataComponent? livingDataComponent, HitboxDataComponent? hitboxDataComponent, IBehavourComponent[] behaviourComponents) {
+    public Entity(AssetManager assetManager, LivingDataComponent? livingDataComponent, ProjectileDataComponent? projectileDataComponent, HitboxDataComponent? hitboxDataComponent, IBehaviourComponent[] behaviourComponents) {
         _assetManager = assetManager;
         _positionDataComponent = new PositionDataComponent(new Vector2(0.0f, 0.0f));
         _textureDataComponent = new TextureDataComponent(false, AssetID.None, AssetID.None);
         _livingDataComponent = livingDataComponent;
+        _projectileDataComponent = projectileDataComponent;
         _hitboxDataComponent = hitboxDataComponent;
         _behaviourComponents = behaviourComponents;
 
@@ -46,7 +49,7 @@ public class Entity {
     }
 
     public void Update(GameWorld world) {
-        foreach (IBehavourComponent behaviourComponent in _behaviourComponents)
+        foreach (IBehaviourComponent behaviourComponent in _behaviourComponents)
             behaviourComponent?.Update(world, this);
     }
 
