@@ -68,6 +68,18 @@ public class Generator {
             }
         }
 
+        // Fill stairs
+        for (int y = 0; y < layout.GetLength(0); y++) {
+            for (int x = 0; x < layout.GetLength(1); x++) {
+                if (layout[y, x] == LayoutRoom.Empty) continue;
+                int originX = x * (type.RoomWidth + 1) + 1 + 1, originY = y * (type.RoomHeight + 1) + 1 + 1;
+                if (layout[y, x].Type == RoomType.Exit)
+                    tilemask[originY + type.RoomHeight / 2, originX + type.RoomWidth / 2] = TileMask.Exit;
+                else if (layout[y, x].Type == RoomType.Entrance)
+                    tilemask[originY + type.RoomHeight / 2, originX + type.RoomWidth / 2] = TileMask.Entrance;
+            }
+        }
+
         // Fill walls
         for (int y = 0; y < layout.GetLength(0); y++) {
             for (int x = 0; x < layout.GetLength(1); x++) {
@@ -165,7 +177,7 @@ public class Generator {
         return [.. enemies];
     }
 
-    public enum TileMask : byte { None = 0, Floor = 1, Wall = 2, Door = 3 }
+    public enum TileMask : byte { None = 0, Floor = 1, Wall = 2, Door = 3, Entrance = 4, Exit = 5 }
     public readonly record struct LayoutRoom(RoomType Type, bool DoorUp, bool DoorRight, bool DoorDown, bool DoorLeft) {
         public static LayoutRoom Empty => new(RoomType.None, false, false, false, false);
     }

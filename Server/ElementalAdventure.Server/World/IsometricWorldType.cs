@@ -39,6 +39,8 @@ public class IsometricWorldType : IWorldType {
     public AssetID DoorHorizontalClosedBottom { get; private init; }
     public AssetID DoorVerticalClosedTop { get; private init; }
     public AssetID DoorVerticalClosedBottom { get; private init; }
+    public AssetID StairsDown { get; private init; }
+    public AssetID StairsUp { get; private init; }
     public AssetID EnemyNormal { get; private init; }
 
     public IsometricWorldType(
@@ -73,6 +75,8 @@ public class IsometricWorldType : IWorldType {
         AssetID doorHorizontalClosedBottom,
         AssetID doorVerticalClosedTop,
         AssetID doorVerticalClosedBottom,
+        AssetID stairsDown,
+        AssetID stairsUp,
         AssetID enemyNormal
     ) {
         RoomWidth = roomWidth;
@@ -108,6 +112,8 @@ public class IsometricWorldType : IWorldType {
         DoorHorizontalClosedBottom = doorHorizontalClosedBottom;
         DoorVerticalClosedTop = doorVerticalClosedTop;
         DoorVerticalClosedBottom = doorVerticalClosedBottom;
+        StairsDown = stairsDown;
+        StairsUp = stairsUp;
         EnemyNormal = enemyNormal;
     }
 
@@ -122,6 +128,14 @@ public class IsometricWorldType : IWorldType {
                 // TileMask.Floor => Floor
                 if (mask[y, x] == Generator.TileMask.Floor)
                     layer[LayerFloor, y, x] = Floor;
+
+                // TileMask.Entrance, TileMask.Exit => StairsDown, StairsUp
+                if (mask[y, x] == Generator.TileMask.Entrance) {
+                    layer[LayerFloor, y, x] = Floor;
+                    layer[LayerMidground, y, x] = StairsUp;
+                }
+                if (mask[y, x] == Generator.TileMask.Exit)
+                    layer[LayerFloor, y, x] = StairsDown;
 
                 // TileMask.Wall => WallBottom, WallTop
                 if (mask[y, x] == Generator.TileMask.Wall && mask[y - 1, x] == Generator.TileMask.Floor) {

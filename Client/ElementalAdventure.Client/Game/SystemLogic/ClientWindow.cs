@@ -163,7 +163,9 @@ public class ClientWindow : GameWindow {
                     _context.AssetLoader.LoadBinary("TextureAtlas/Dungeon/fountain_2_top.2.png"),
                     _context.AssetLoader.LoadBinary("TextureAtlas/Dungeon/fountain_2_top.3.png"),
                     _context.AssetLoader.LoadBinary("TextureAtlas/Dungeon/fountain_2_top.4.png")
-                ], 100) }
+                ], 100) },
+                { new AssetID("stairs_down"), new([ _context.AssetLoader.LoadBinary("TextureAtlas/Dungeon/stairs_down.png") ], 100) },
+                { new AssetID("stairs_up"), new([ _context.AssetLoader.LoadBinary("TextureAtlas/Dungeon/stairs_up.png") ], 100) }
             }, 1));
             _context.AssetManager.Add(new AssetID("textureatlas.player"), new TextureAtlas(new Dictionary<AssetID, TextureAtlas.EntryDef> {
                 { new AssetID("mage_idle_left"), new ([
@@ -284,6 +286,8 @@ public class ClientWindow : GameWindow {
             _context.AssetManager.Add(new AssetID("fountain_1_top"), new TileType(new AssetID("textureatlas.dungeon"), new AssetID("fountain_1_top"), -1, -0.5f - 1.0f + 7.0f / 32.0f));
             _context.AssetManager.Add(new AssetID("fountain_2_bottom"), new TileType(new AssetID("textureatlas.dungeon"), new AssetID("fountain_2_bottom"), 0, -0.5f + 7.0f / 32.0f));
             _context.AssetManager.Add(new AssetID("fountain_2_top"), new TileType(new AssetID("textureatlas.dungeon"), new AssetID("fountain_2_top"), -1, -0.5f - 1.0f + 7.0f / 32.0f));
+            _context.AssetManager.Add(new AssetID("stairs_down"), new TileType(new AssetID("textureatlas.dungeon"), new AssetID("stairs_down"), 0, -0.5f));
+            _context.AssetManager.Add(new AssetID("stairs_up"), new TileType(new AssetID("textureatlas.dungeon"), new AssetID("stairs_up"), 0, -0.5f));
 
             _context.AssetManager.Add(new AssetID("mage"), new PlayerType(new AssetID("textureatlas.player"), new AssetID("mage_idle_left"), new AssetID("mage_idle_right"), new AssetID("mage_walk_left"), new AssetID("mage_walk_right"), 0, -0.5f + 2.0f / 32.0f, 5.0f, 0.25f));
             _context.AssetManager.Add(new AssetID("slime"), new EnemyType(new AssetID("textureatlas.enemy"), new AssetID("slime_walk_left"), new AssetID("slime_walk_right"), new AssetID("slime_walk_left"), new AssetID("slime_walk_right"), 0, -0.5f + 2.0f / 32.0f, 2.5f, 0.125f));
