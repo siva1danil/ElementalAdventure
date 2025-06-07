@@ -1,5 +1,6 @@
 using ElementalAdventure.Client.Game.Components.Data;
 using ElementalAdventure.Client.Game.Components.Utils;
+using ElementalAdventure.Client.Game.WorldLogic.Command;
 using ElementalAdventure.Client.Game.WorldLogic.GameObject;
 
 using OpenTK.Mathematics;
@@ -18,6 +19,12 @@ public class EnemyBehaviourComponent : IBehaviourComponent {
     }
 
     public void Update(GameWorld world, Entity entity) {
+        // Die
+        if (entity.LivingDataComponent!.Health <= 0) {
+            world.AddCommand(new RemoveEntityCommand(entity));
+            return;
+        }
+
         // Find target
         if (_searchCounter == 0 && !_target.TryGetTarget(out Entity? _)) FindTarget(world, entity);
         _searchCounter = (_searchCounter + 1) % 20;

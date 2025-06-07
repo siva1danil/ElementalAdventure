@@ -24,11 +24,11 @@ public class ProjectileBehaviourComponent : IBehaviourComponent {
 
         // Check for collisions with entities
         foreach (Entity target in world.Entities) {
-            if (target == entity || !target.Has<PlayerBehaviourComponent>() || !target.Has<EnemyBehaviourComponent>())
+            if (target == entity)
                 continue;
-            if (_type.TargetsEnemies && !entity.Has<EnemyBehaviourComponent>())
+            if (_type.TargetsEnemies && !target.Has<EnemyBehaviourComponent>())
                 continue;
-            if (_type.TargetsPlayers && !entity.Has<PlayerBehaviourComponent>())
+            if (_type.TargetsPlayers && !target.Has<PlayerBehaviourComponent>())
                 continue;
 
             Box2 hitbox = new(entity.HitboxDataComponent!.Box.Min + position, entity.HitboxDataComponent.Box.Max + position);
