@@ -90,6 +90,8 @@ public class GameScene : IScene, IUniformProvider {
             if (player != null)
                 _healthText.Text = player.LivingDataComponent!.Health.ToString() + " / " + player.LivingDataComponent.MaxHealth.ToString();
             _depthText.Text = $"Floor {_world.Floor + 1}";
+            if (player != null)
+                _worldCamera.Center = player.PositionDataComponent.Position;
         }
     }
 
@@ -128,8 +130,6 @@ public class GameScene : IScene, IUniformProvider {
     public void SetTilemap(AssetID[,,] tilemap, Box2[] walls, int midground) {
         _world.Tilemap.SetMap(new Vector2(-1.0f, 0.0f), _context.AssetManager, tilemap, midground);
         _world.Tilemap.SetWalls(walls);
-        _worldCamera.Center = new Vector2(tilemap.GetLength(2) * 0.5f - 0.5f, tilemap.GetLength(1) * 0.5f - 0.5f);
-        _worldCamera.TargetWorldSize = new Vector2(tilemap.GetLength(2), tilemap.GetLength(1));
     }
 
     public void SetPlayerPosition(Vector2 position) {
