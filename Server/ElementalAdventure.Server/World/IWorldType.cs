@@ -8,4 +8,5 @@ public interface IWorldType {
     public int LayerCount { get; }
     public int MidgroundLayer { get; }
     public void MapMaskToLayers(AssetID[,,] layer, Generator.TileMask[,] mask);
+    public AssetID GetEnemy();
 }

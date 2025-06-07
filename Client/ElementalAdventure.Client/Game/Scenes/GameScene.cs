@@ -53,10 +53,8 @@ public class GameScene : IScene, IUniformProvider {
         _ui.Push(layout);
 
         _world = new GameWorld(1.0f / 20.0f, new Tilemap(), []);
-        _world.Entities.Add(new Entity(_context.AssetManager, new LivingDataComponent(true, false, _context.AssetManager.Get<PlayerType>(new AssetID("mage")).Speed), new HitboxDataComponent(new Box2(-0.01f, -0.5f + 2.0f / 32.0f - 0.01f, 0.01f, -0.5f + 2.0f / 32.0f + 0.01f)), [new PlayerBehaviourComponent(_context.AssetManager.Get<PlayerType>(new AssetID("mage")))]));
-        _world.Entities.Add(new Entity(_context.AssetManager, new LivingDataComponent(false, false, _context.AssetManager.Get<EnemyType>(new AssetID("slime")).Speed), new HitboxDataComponent(new Box2(-0.01f, -0.5f + 2.0f / 32.0f - 0.01f, 0.01f, -0.5f + 2.0f / 32.0f + 0.01f)), [new EnemyBehaviourComponent(_context.AssetManager.Get<EnemyType>(new AssetID("slime")))]));
+        _world.Entities.Add(new Entity(_context.AssetManager, new LivingDataComponent(true, false, _context.AssetManager.Get<PlayerType>(new AssetID("mage")).MaxHealth, _context.AssetManager.Get<PlayerType>(new AssetID("mage")).MaxHealth, _context.AssetManager.Get<PlayerType>(new AssetID("mage")).Speed), new HitboxDataComponent(new Box2(-0.01f, -0.5f + 2.0f / 32.0f - 0.01f, 0.01f, -0.5f + 2.0f / 32.0f + 0.01f)), [new PlayerBehaviourComponent(_context.AssetManager.Get<PlayerType>(new AssetID("mage")))]));
         _world.Entities[0].PositionDataComponent.Position = new Vector2(0.0f, 0.0f);
-        _world.Entities[1].PositionDataComponent.Position = new Vector2(5.0f, 0.0f);
 
         _tickAccumulator = 0.0;
     }
@@ -106,6 +104,12 @@ public class GameScene : IScene, IUniformProvider {
             if (entity.Has<PlayerBehaviourComponent>())
                 entity.PositionDataComponent.Position = position;
         }
+    }
+
+    public void SpawnEnemy(EnemyType enemyType, Vector2 position) {
+        Entity enemy = new Entity(_context.AssetManager, new LivingDataComponent(false, true, enemyType.MaxHealth, enemyType.MaxHealth, enemyType.Speed), new HitboxDataComponent(new Box2(-0.01f, -0.5f + 2.0f / 32.0f - 0.01f, 0.01f, -0.5f + 2.0f / 32.0f + 0.01f)), [new EnemyBehaviourComponent(enemyType)]);
+        enemy.PositionDataComponent.Position = position;
+        _world.Entities.Add(enemy);
     }
 
     public void GetUniformData(AssetID shaderProgram, AssetID textureAtlas, Span<byte> buffer) {

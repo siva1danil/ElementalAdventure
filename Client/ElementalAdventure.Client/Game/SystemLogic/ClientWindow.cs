@@ -59,6 +59,7 @@ public class ClientWindow : GameWindow {
         registry.RegisterPacket(PacketType.HandshakeResponse, HandshakeResponsePacket.Deserialize, new HandshakeResponsePacketHandler(_context, "guest", "00000000-0000-0000-0000-000000000000"));
         registry.RegisterPacket(PacketType.LoginResponse, LoginResponsePacket.Deserialize, new LoginResponsePacketHandler(_context));
         registry.RegisterPacket(PacketType.LoadWorldResponse, LoadWorldResponsePacket.Deserialize, new LoadWorldResponsePacketHandler(this, _context));
+        registry.RegisterPacket(PacketType.SpawnEntity, SpawnEntityPacket.Deserialize, new SpawnEntityPacketHandler(_context));
     }
 
     private void LoadHandler() {
@@ -266,8 +267,8 @@ public class ClientWindow : GameWindow {
             _context.AssetManager.Add(new AssetID("fountain_2_bottom"), new TileType(new AssetID("textureatlas.dungeon"), new AssetID("fountain_2_bottom"), 0, -0.5f + 7.0f / 32.0f));
             _context.AssetManager.Add(new AssetID("fountain_2_top"), new TileType(new AssetID("textureatlas.dungeon"), new AssetID("fountain_2_top"), -1, -0.5f - 1.0f + 7.0f / 32.0f));
 
-            _context.AssetManager.Add(new AssetID("mage"), new PlayerType(new AssetID("textureatlas.player"), new AssetID("mage_idle_left"), new AssetID("mage_idle_right"), new AssetID("mage_walk_left"), new AssetID("mage_walk_right"), 0, -0.5f + 2.0f / 32.0f, 0.25f));
-            _context.AssetManager.Add(new AssetID("slime"), new EnemyType(new AssetID("textureatlas.enemy"), new AssetID("slime_walk_left"), new AssetID("slime_walk_right"), new AssetID("slime_walk_left"), new AssetID("slime_walk_right"), 0, -0.5f + 2.0f / 32.0f, 0.125f));
+            _context.AssetManager.Add(new AssetID("mage"), new PlayerType(new AssetID("textureatlas.player"), new AssetID("mage_idle_left"), new AssetID("mage_idle_right"), new AssetID("mage_walk_left"), new AssetID("mage_walk_right"), 0, -0.5f + 2.0f / 32.0f, 5.0f, 0.25f));
+            _context.AssetManager.Add(new AssetID("slime"), new EnemyType(new AssetID("textureatlas.enemy"), new AssetID("slime_walk_left"), new AssetID("slime_walk_right"), new AssetID("slime_walk_left"), new AssetID("slime_walk_right"), 0, -0.5f + 2.0f / 32.0f, 2.5f, 0.125f));
         } catch (Exception e) {
             Logger.Error(e.Message);
             Close();
@@ -278,6 +279,7 @@ public class ClientWindow : GameWindow {
         GL.DepthFunc(DepthFunction.Lequal);
         GL.Enable(EnableCap.Blend);
         GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
+        GL.Enable(EnableCap.Multisample);
 
         _scene = new StartupScene(_context);
     }

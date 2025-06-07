@@ -152,6 +152,19 @@ public class Generator {
         return [.. walls];
     }
 
+    public static (float X, float Y, AssetID type)[] GetEnemies(LayoutRoom[,] layout, TileMask[,] tilemask, IWorldType type) {
+        List<(float X, float Y, AssetID type)> enemies = [];
+        for (int y = 0; y < layout.GetLength(0); y++) {
+            for (int x = 0; x < layout.GetLength(1); x++) {
+                if (layout[y, x].Type == RoomType.Normal) {
+                    int originX = x * (type.RoomWidth + 1) + 1 + 1, originY = y * (type.RoomHeight + 1) + 1 + 1;
+                    enemies.Add((originX + type.RoomWidth / 2, tilemask.GetLength(0) - (originY + type.RoomHeight / 2), type.GetEnemy()));
+                }
+            }
+        }
+        return [.. enemies];
+    }
+
     public enum TileMask : byte { None = 0, Floor = 1, Wall = 2, Door = 3 }
     public readonly record struct LayoutRoom(RoomType Type, bool DoorUp, bool DoorRight, bool DoorDown, bool DoorLeft) {
         public static LayoutRoom Empty => new(RoomType.None, false, false, false, false);

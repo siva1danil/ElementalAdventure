@@ -39,6 +39,7 @@ public class IsometricWorldType : IWorldType {
     public AssetID DoorHorizontalClosedBottom { get; private init; }
     public AssetID DoorVerticalClosedTop { get; private init; }
     public AssetID DoorVerticalClosedBottom { get; private init; }
+    public AssetID EnemyNormal { get; private init; }
 
     public IsometricWorldType(
         int roomWidth,
@@ -71,7 +72,8 @@ public class IsometricWorldType : IWorldType {
         AssetID doorHorizontalClosedTop,
         AssetID doorHorizontalClosedBottom,
         AssetID doorVerticalClosedTop,
-        AssetID doorVerticalClosedBottom
+        AssetID doorVerticalClosedBottom,
+        AssetID enemyNormal
     ) {
         RoomWidth = roomWidth;
         RoomHeight = roomHeight;
@@ -106,6 +108,7 @@ public class IsometricWorldType : IWorldType {
         DoorHorizontalClosedBottom = doorHorizontalClosedBottom;
         DoorVerticalClosedTop = doorVerticalClosedTop;
         DoorVerticalClosedBottom = doorVerticalClosedBottom;
+        EnemyNormal = enemyNormal;
     }
 
     public void MapMaskToLayers(AssetID[,,] layer, Generator.TileMask[,] mask) {
@@ -207,5 +210,9 @@ public class IsometricWorldType : IWorldType {
                 }
             }
         }
+    }
+
+    public AssetID GetEnemy() {
+        return EnemyNormal;
     }
 }

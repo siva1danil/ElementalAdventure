@@ -6,5 +6,6 @@ public enum PacketType : ushort {
     LoginRequest = 0x0003,
     LoginResponse = 0x0004,
     LoadWorldRequest = 0x0005,
-    LoadWorldResponse = 0x0006
+    LoadWorldResponse = 0x0006,
+    SpawnEntity = 0x0007
 }
