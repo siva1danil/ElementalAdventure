@@ -1,3 +1,5 @@
+using ElementalAdventure.Client.Game.Components.Data;
+using ElementalAdventure.Client.Game.WorldLogic.Command;
 using ElementalAdventure.Client.Game.WorldLogic.GameObject;
 
 using OpenTK.Mathematics;
@@ -5,14 +7,13 @@ using OpenTK.Mathematics;
 namespace ElementalAdventure.Client.Game.WorldLogic.Component.Behaviour;
 
 public class ProjectileBehaviourComponent : IBehaviourComponent {
-    public ProjectileBehaviourComponent() {
-        // No initialization needed for now
+    private readonly ProjectileType _type;
+
+    public ProjectileBehaviourComponent(ProjectileType type) {
+        _type = type;
     }
 
     public void Update(GameWorld world, Entity entity) {
-        // Update velocity
-        entity.PositionDataComponent.Velocity = entity.PositionDataComponent.Velocity.Normalized() * entity.ProjectileDataComponent!.Speed;
-
         // Tick movement
         Vector2 position = entity.PositionDataComponent.Position;
         position += entity.PositionDataComponent.Velocity;
@@ -23,12 +24,18 @@ public class ProjectileBehaviourComponent : IBehaviourComponent {
 
         // Check for collisions with entities
         foreach (Entity target in world.Entities) {
-            if (target == entity || target.LivingDataComponent == null || (!entity.ProjectileDataComponent!.TargetsEnemies && target.LivingDataComponent.TargetableByPlayers) || (!entity.ProjectileDataComponent.TargetsPlayers && target.LivingDataComponent.TargetableByEnemies))
+            if (target == entity || !target.Has<PlayerBehaviourComponent>() || !target.Has<EnemyBehaviourComponent>())
+                continue;
+            if (_type.TargetsEnemies && !entity.Has<EnemyBehaviourComponent>())
+                continue;
+            if (_type.TargetsPlayers && !entity.Has<PlayerBehaviourComponent>())
                 continue;
 
-            if ((entity.ProjectileDataComponent.TargetsEnemies && target.LivingDataComponent.TargetableByPlayers) || (entity.ProjectileDataComponent.TargetsPlayers && target.LivingDataComponent.TargetableByEnemies)) {
-                target.LivingDataComponent.Health -= entity.ProjectileDataComponent.Damage;
-                world.RemoveEntity(entity);
+            Box2 hitbox = new(entity.HitboxDataComponent!.Box.Min + position, entity.HitboxDataComponent.Box.Max + position);
+            Box2 other = new(target.HitboxDataComponent!.Box.Min + target.PositionDataComponent.Position, target.HitboxDataComponent.Box.Max + target.PositionDataComponent.Position);
+            if (hitbox.Intersects(other)) {
+                target.LivingDataComponent!.Health -= _type.Damage;
+                world.AddCommand(new RemoveEntityCommand(entity));
                 break;
             }
         }
@@ -37,9 +44,14 @@ public class ProjectileBehaviourComponent : IBehaviourComponent {
         foreach (Box2 wall in world.Tilemap.Walls) {
             Box2 hitbox = new(entity.HitboxDataComponent!.Box.Min + position, entity.HitboxDataComponent.Box.Max + position);
             if (wall.Intersects(hitbox)) {
-                world.RemoveEntity(entity);
+                world.AddCommand(new RemoveEntityCommand(entity));
                 break;
             }
         }
+
+        // Update texture
+        entity.TextureDataComponent.Texture = _type.Texture;
+        entity.TextureDataComponent.TextureAtlas = _type.TextureAtlas;
+        entity.TextureDataComponent.Visible = true;
     }
 }

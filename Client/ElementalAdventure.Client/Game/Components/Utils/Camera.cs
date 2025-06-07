@@ -26,4 +26,18 @@ public class Camera {
         float scale = scaleX > scaleY ? scaleX : scaleY;
         return Matrix4.CreateOrthographicOffCenter(_center.X - _screenSize.X * scale / 2.0f, _center.X + _screenSize.X * scale / 2.0f, _flipY ? _center.Y + _screenSize.Y * scale / 2.0f : _center.Y - _screenSize.Y * scale / 2.0f, _flipY ? _center.Y - _screenSize.Y * scale / 2.0f : _center.Y + _screenSize.Y * scale / 2.0f, -1.0f, 1.0f);
     }
+
+    public Vector2 ScreenToWorld(Vector2 screenPos) {
+        float scaleX = _targetWorldSize.X / _screenSize.X;
+        float scaleY = _targetWorldSize.Y / _screenSize.Y;
+        float scale = Math.Max(scaleX, scaleY);
+
+        Vector2 halfScreen = _screenSize * 0.5f;
+        Vector2 offset = screenPos - halfScreen;
+
+        float worldOffsetX = offset.X * scale;
+        float worldOffsetY = (!_flipY ? -offset.Y : offset.Y) * scale;
+
+        return new Vector2(_center.X + worldOffsetX, _center.Y + worldOffsetY);
+    }
 }

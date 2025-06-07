@@ -41,6 +41,8 @@ public class ClientWindow : GameWindow {
         Resize += ResizeHandler;
         KeyDown += KeyDownHandler;
         KeyUp += KeyUpHandler;
+        MouseDown += MouseDownHandler;
+        MouseUp += MouseUpHandler;
 
         PacketRegistry registry = new();
 
@@ -219,6 +221,20 @@ public class ClientWindow : GameWindow {
                     _context.AssetLoader.LoadBinary("TextureAtlas/Enemy/slime_walk_right.3.png")
                 ], 100) }
             }, 1));
+            _context.AssetManager.Add(new AssetID("textureatlas.projectile"), new TextureAtlas(new Dictionary<AssetID, TextureAtlas.EntryDef> {
+                { new AssetID("fireball"), new ([
+                    _context.AssetLoader.LoadBinary("TextureAtlas/Projectile/fireball.0.png"),
+                    _context.AssetLoader.LoadBinary("TextureAtlas/Projectile/fireball.1.png"),
+                    _context.AssetLoader.LoadBinary("TextureAtlas/Projectile/fireball.2.png"),
+                    _context.AssetLoader.LoadBinary("TextureAtlas/Projectile/fireball.3.png"),
+                    _context.AssetLoader.LoadBinary("TextureAtlas/Projectile/fireball.4.png"),
+                    _context.AssetLoader.LoadBinary("TextureAtlas/Projectile/fireball.5.png"),
+                    _context.AssetLoader.LoadBinary("TextureAtlas/Projectile/fireball.6.png"),
+                    _context.AssetLoader.LoadBinary("TextureAtlas/Projectile/fireball.7.png"),
+                    _context.AssetLoader.LoadBinary("TextureAtlas/Projectile/fireball.8.png"),
+                    _context.AssetLoader.LoadBinary("TextureAtlas/Projectile/fireball.9.png")
+                ], 100) }
+            }, 1));
 
             _context.AssetManager.Add(new AssetID("font.arial"), new MsdfFont(_context.AssetLoader.LoadBinary("Font/Arial/Arial.png"), _context.AssetLoader.LoadBinary("Font/Arial/Arial.json")));
             _context.AssetManager.Add(new AssetID("font.pixeloidsans"), new MsdfFont(_context.AssetLoader.LoadBinary("Font/PixeloidSans/PixeloidSans.png"), _context.AssetLoader.LoadBinary("Font/PixeloidSans/PixeloidSans.json")));
@@ -350,5 +366,13 @@ public class ClientWindow : GameWindow {
             _context.PressedKeys.Remove(e.Key);
             _scene?.KeyUp(e);
         }
+    }
+
+    public void MouseDownHandler(MouseButtonEventArgs e) {
+        _scene?.MouseDown(e, MousePosition);
+    }
+
+    public void MouseUpHandler(MouseButtonEventArgs e) {
+        _scene?.MouseUp(e, MousePosition);
     }
 }

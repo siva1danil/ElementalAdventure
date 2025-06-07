@@ -69,7 +69,7 @@ public class GameScene : IScene, IUniformProvider {
         _ui.Push(layout);
 
         _world = new GameWorld(1.0f / 20.0f, new Tilemap(), []);
-        _world.Entities.Add(new Entity(_context.AssetManager, new LivingDataComponent(true, false, _context.AssetManager.Get<PlayerType>(new AssetID("mage")).MaxHealth, _context.AssetManager.Get<PlayerType>(new AssetID("mage")).MaxHealth, _context.AssetManager.Get<PlayerType>(new AssetID("mage")).Speed), null, new HitboxDataComponent(new Box2(-0.01f, -0.5f + 2.0f / 32.0f - 0.01f, 0.01f, -0.5f + 2.0f / 32.0f + 0.01f)), [new PlayerBehaviourComponent(_context.AssetManager.Get<PlayerType>(new AssetID("mage")))]));
+        _world.Entities.Add(new Entity(_context.AssetManager, new LivingDataComponent(true, false, _context.AssetManager.Get<PlayerType>(new AssetID("mage")).MaxHealth, _context.AssetManager.Get<PlayerType>(new AssetID("mage")).MaxHealth, _context.AssetManager.Get<PlayerType>(new AssetID("mage")).Speed), null, new HitboxDataComponent(new Box2(-0.01f, -0.5f + 2.0f / 32.0f - 0.01f, 0.01f, -0.5f + 2.0f / 32.0f + 0.01f)), [new PlayerBehaviourComponent(_context.AssetManager, _context.AssetManager.Get<PlayerType>(new AssetID("mage")))]));
         _world.Entities[0].PositionDataComponent.Position = new Vector2(0.0f, 0.0f);
 
         _tickAccumulator = 0.0;
@@ -106,6 +106,13 @@ public class GameScene : IScene, IUniformProvider {
 
     public void KeyUp(KeyboardKeyEventArgs args) {
         _world.AddCommand(new SetMovementCommand(_context.PressedKeys.Contains(Keys.W), _context.PressedKeys.Contains(Keys.A), _context.PressedKeys.Contains(Keys.S), _context.PressedKeys.Contains(Keys.D)));
+    }
+
+    public void MouseDown(MouseButtonEventArgs args, Vector2 position) { }
+
+    public void MouseUp(MouseButtonEventArgs args, Vector2 position) {
+        Vector2 world = _worldCamera.ScreenToWorld(position);
+        _world.AddCommand(new AttackCommand(world));
     }
 
     public void SetTilemap(AssetID[,,] tilemap, Box2[] walls, int midground) {

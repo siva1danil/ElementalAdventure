@@ -63,6 +63,10 @@ public class StartupScene : IScene, IUniformProvider {
 
     public void KeyUp(KeyboardKeyEventArgs args) { }
 
+    public void MouseDown(MouseButtonEventArgs args, Vector2 position) { }
+
+    public void MouseUp(MouseButtonEventArgs args, Vector2 position) { }
+
     public void GetUniformData(AssetID shaderProgram, AssetID textureAtlas, Span<byte> buffer) {
         Vector2i time = new((int)(uint)(DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() >> 32), (int)(uint)(DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() & 0xFFFFFFFF));
         if (shaderProgram == new AssetID("shader.userinterface")) {

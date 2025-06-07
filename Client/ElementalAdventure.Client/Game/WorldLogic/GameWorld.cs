@@ -13,6 +13,7 @@ public class GameWorld {
     private readonly Queue<ICommand> _commands;
 
     private Vector2 _input;
+    private Vector2 _attackInput;
     private long _tickTimestamp;
 
     public double TickInterval => _tickInterval;
@@ -21,6 +22,7 @@ public class GameWorld {
     public List<Entity> Entities => _entities;
 
     public Vector2 Input { get => _input; set => _input = value; }
+    public Vector2 AttackInput { get => _attackInput; set => _attackInput = value; }
     public long TickTimestamp => _tickTimestamp;
 
     public GameWorld(double tickInterval, Tilemap tilemap, List<Entity> entities) {

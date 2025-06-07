@@ -61,25 +61,25 @@ public class BatchedRenderer : IRenderer {
     public void Commit() {
         foreach (KeyValuePair<BatchKey, BatchData> batch in _batches) {
             // Invalidate inactive
-            if (batch.Value.PreviousSlots.Count != batch.Value.CurrentSlots.Count) {
-                int size = batch.Value.InstanceData.Length;
-                foreach (long owner in batch.Value.PreviousSlots) {
-                    if (!batch.Value.CurrentSlots.Contains(owner)) {
-                        // Deallocate old slot
-                        int oldOffset = batch.Value.Slots[owner].Offset, oldSize = batch.Value.Slots[owner].Size;
-                        Array.Copy(batch.Value.InstanceData, oldOffset + oldSize, batch.Value.InstanceData, oldOffset, batch.Value.InstanceData.Length - (oldOffset + oldSize));
-                        size -= oldSize;
+            // if (batch.Value.PreviousSlots.Count != batch.Value.CurrentSlots.Count) {
+            int size = batch.Value.InstanceData.Length;
+            foreach (long owner in batch.Value.PreviousSlots) {
+                if (!batch.Value.CurrentSlots.Contains(owner)) {
+                    // Deallocate old slot
+                    int oldOffset = batch.Value.Slots[owner].Offset, oldSize = batch.Value.Slots[owner].Size;
+                    Array.Copy(batch.Value.InstanceData, oldOffset + oldSize, batch.Value.InstanceData, oldOffset, batch.Value.InstanceData.Length - (oldOffset + oldSize));
+                    size -= oldSize;
 
-                        // Reorder offsets
-                        foreach (KeyValuePair<long, BatchSlot> slot in batch.Value.Slots)
-                            if (slot.Value.Offset >= oldOffset)
-                                batch.Value.Slots[slot.Key] = slot.Value with { Offset = slot.Value.Offset - oldSize };
-                        batch.Value.Slots.Remove(owner);
-                    }
+                    // Reorder offsets
+                    foreach (KeyValuePair<long, BatchSlot> slot in batch.Value.Slots)
+                        if (slot.Value.Offset >= oldOffset)
+                            batch.Value.Slots[slot.Key] = slot.Value with { Offset = slot.Value.Offset - oldSize };
+                    batch.Value.Slots.Remove(owner);
                 }
-                if (size != batch.Value.InstanceData.Length)
-                    Array.Resize(ref batch.Value.InstanceData, size);
             }
+            if (size != batch.Value.InstanceData.Length)
+                Array.Resize(ref batch.Value.InstanceData, size);
+            // }
 
             // Swap maps
             (batch.Value.PreviousSlots, batch.Value.CurrentSlots) = (batch.Value.CurrentSlots, batch.Value.PreviousSlots);
