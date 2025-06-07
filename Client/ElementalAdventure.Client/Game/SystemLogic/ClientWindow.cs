@@ -89,7 +89,9 @@ public class ClientWindow : GameWindow {
                 { new AssetID("button_e_normal"), new([_context.AssetLoader.LoadBinary("TextureAtlas/UI/button_e_normal.png")], 100) },
                 { new AssetID("button_e_press"), new([_context.AssetLoader.LoadBinary("TextureAtlas/UI/button_e_press.png")], 100) },
                 { new AssetID("button_tab_normal"), new([_context.AssetLoader.LoadBinary("TextureAtlas/UI/button_tab_normal.png")], 100) },
-                { new AssetID("button_tab_press"), new([_context.AssetLoader.LoadBinary("TextureAtlas/UI/button_tab_press.png")], 100) }
+                { new AssetID("button_tab_press"), new([_context.AssetLoader.LoadBinary("TextureAtlas/UI/button_tab_press.png")], 100) },
+                { new AssetID("icon_health"), new([_context.AssetLoader.LoadBinary("TextureAtlas/UI/icon_health.png")], 100) },
+                { new AssetID("icon_depth"), new([_context.AssetLoader.LoadBinary("TextureAtlas/UI/icon_depth.png")], 100) }
             }, 1));
             _context.AssetManager.Add(new AssetID("textureatlas.dungeon"), new TextureAtlas(new Dictionary<AssetID, TextureAtlas.EntryDef> {
                 { new AssetID("floor_1_full"), new([_context.AssetLoader.LoadBinary("TextureAtlas/Dungeon/floor_1_full.png")], 100) },

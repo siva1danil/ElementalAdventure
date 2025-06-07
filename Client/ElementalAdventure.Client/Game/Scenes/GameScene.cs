@@ -40,13 +40,29 @@ public class GameScene : IScene, IUniformProvider {
         _worldCamera = new Camera(new Vector2(5.0f, 5.0f), new Vector2(8.0f, 8.0f), context.WindowSize);
 
         AbsoluteLayout layout = new();
+        LinearLayout topLeft = new();
         LinearLayout bottomLeft = new();
         LinearLayout bottomRight = new();
-        ImageView wasd = new ImageView(_context.AssetManager) { Size = new Vector2(0f, 64f), AspectRatio = ImageView.AspectRatioType.AdjustWidth, ImageTextureAtlas = new AssetID("textureatlas.ui"), ImageTextureEntry = new AssetID("button_wasd_normal") };
-        ImageView e = new ImageView(_context.AssetManager) { Size = new Vector2(0f, 32f), AspectRatio = ImageView.AspectRatioType.AdjustWidth, ImageTextureAtlas = new AssetID("textureatlas.ui"), ImageTextureEntry = new AssetID("button_e_normal") };
-        ImageView q = new ImageView(_context.AssetManager) { Size = new Vector2(0f, 32f), AspectRatio = ImageView.AspectRatioType.AdjustWidth, ImageTextureAtlas = new AssetID("textureatlas.ui"), ImageTextureEntry = new AssetID("button_q_normal") };
+        LinearLayout hud = new() { Orientation = LinearLayout.OrientationType.Vertical, Gravity = LinearLayout.GravityType.Start };
+        LinearLayout hudLine1 = new() { Gravity = LinearLayout.GravityType.Center };
+        LinearLayout hudLine2 = new() { Gravity = LinearLayout.GravityType.Center };
+        ImageView health = new(_context.AssetManager) { Size = new Vector2(32f, 32f), AspectRatio = ImageView.AspectRatioType.None, ImageTextureAtlas = new AssetID("textureatlas.ui"), ImageTextureEntry = new AssetID("icon_health") };
+        ImageView depth = new(_context.AssetManager) { Size = new Vector2(32f, 32f), AspectRatio = ImageView.AspectRatioType.None, ImageTextureAtlas = new AssetID("textureatlas.ui"), ImageTextureEntry = new AssetID("icon_depth") };
+        TextView healthText = new(_context.AssetManager) { Text = "100", Font = new AssetID("font.pixeloidsans"), Height = 20f };
+        TextView depthText = new(_context.AssetManager) { Text = "Depth: 1", Font = new AssetID("font.pixeloidsans"), Height = 20f };
+        ImageView wasd = new(_context.AssetManager) { Size = new Vector2(0f, 64f), AspectRatio = ImageView.AspectRatioType.AdjustWidth, ImageTextureAtlas = new AssetID("textureatlas.ui"), ImageTextureEntry = new AssetID("button_wasd_normal") };
+        ImageView e = new(_context.AssetManager) { Size = new Vector2(0f, 32f), AspectRatio = ImageView.AspectRatioType.AdjustWidth, ImageTextureAtlas = new AssetID("textureatlas.ui"), ImageTextureEntry = new AssetID("button_e_normal") };
+        ImageView q = new(_context.AssetManager) { Size = new Vector2(0f, 32f), AspectRatio = ImageView.AspectRatioType.AdjustWidth, ImageTextureAtlas = new AssetID("textureatlas.ui"), ImageTextureEntry = new AssetID("button_q_normal") };
+        hudLine1.Add(health, new LinearLayout.LayoutParams { Margin = new Vector4(0.0f, 12.0f, 0.0f, 0.0f) });
+        hudLine1.Add(healthText, new LinearLayout.LayoutParams { Margin = new Vector4(0.0f, 0.0f, 0.0f, 0.0f) });
+        hudLine2.Add(depth, new LinearLayout.LayoutParams { Margin = new Vector4(0.0f, 12.0f, 0.0f, 0.0f) });
+        hudLine2.Add(depthText, new LinearLayout.LayoutParams { Margin = new Vector4(0.0f, 0.0f, 0.0f, 0.0f) });
+        hud.Add(hudLine1, new LinearLayout.LayoutParams { Margin = new Vector4(12.0f, 12.0f, 0.0f, 12.0f) });
+        hud.Add(hudLine2, new LinearLayout.LayoutParams { Margin = new Vector4(12.0f, 12.0f, 0.0f, 12.0f) });
+        layout.Add(topLeft, new AbsoluteLayout.LayoutParams { Position = new Vector2(0.0f, 0.0f), Anchor = new Vector2(0.0f, 0.0f) });
         layout.Add(bottomLeft, new AbsoluteLayout.LayoutParams { Position = new Vector2(0.0f, 1.0f), Anchor = new Vector2(0.0f, 1.0f) });
         layout.Add(bottomRight, new AbsoluteLayout.LayoutParams { Position = new Vector2(1.0f, 1.0f), Anchor = new Vector2(1.0f, 1.0f) });
+        topLeft.Add(hud, new LinearLayout.LayoutParams { Margin = new Vector4(0.0f, 0.0f, 0.0f, 0.0f) });
         bottomLeft.Add(wasd, new LinearLayout.LayoutParams { Margin = new Vector4(16.0f, 16.0f, 16.0f, 16.0f) });
         bottomRight.Add(e, new LinearLayout.LayoutParams { Margin = new Vector4(16.0f, 16.0f, 16.0f, 16.0f) });
         bottomRight.Add(q, new LinearLayout.LayoutParams { Margin = new Vector4(16.0f, 16.0f, 16.0f, 0.0f) });
@@ -123,6 +139,8 @@ public class GameScene : IScene, IUniformProvider {
                 UserInterfaceShaderLayout.UniformData data = new(_uiCamera.GetViewMatrix(), time, new(atlas.AtlasWidth, atlas.AtlasHeight), new(atlas.CellWidth, atlas.CellHeight), atlas.CellPadding);
                 MemoryMarshal.Write(buffer, data);
             }
+        } else if (shaderProgram == new AssetID("shader.msdf")) {
+            MemoryMarshal.Write(buffer, new MsdfShaderLayout.UniformData(_uiCamera.GetViewMatrix()));
         } else if (shaderProgram == new AssetID("shader.tilemap")) {
             float alpha = (DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() - _world.TickTimestamp) / (float)_world.TickInterval / 1000.0f;
             TextureAtlas atlas = _context.AssetManager.Get<TextureAtlas>(textureAtlas);
