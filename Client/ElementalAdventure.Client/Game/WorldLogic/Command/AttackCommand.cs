@@ -1,3 +1,4 @@
+using ElementalAdventure.Client.Game.SystemLogic;
 using ElementalAdventure.Client.Game.WorldLogic.GameObject;
 
 using OpenTK.Mathematics;
@@ -11,7 +12,7 @@ public class AttackCommand : ICommand {
         _target = target;
     }
 
-    public void Execute(GameWorld world) {
+    public void Execute(GameWorld world, ClientContext context) {
         world.AttackInput = _target;
     }
 }

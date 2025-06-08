@@ -33,6 +33,6 @@ public class LoadWorldResponsePacketHandler : PacketRegistry.IPacketHandler {
         Box2[] walls = new Box2[packet.Walls.Length];
         for (int i = 0; i < packet.Walls.Length; i++)
             walls[i] = new Box2(new Vector2(packet.Walls[i].Item1, packet.Walls[i].Item2), new Vector2(packet.Walls[i].Item1 + packet.Walls[i].Item3, packet.Walls[i].Item2 + packet.Walls[i].Item4));
-        _context.CommandQueue.Enqueue(new SetTilemapCommand(tilemap, walls, packet.Midground, new Vector2(packet.PlayerPosition.Item1, packet.PlayerPosition.Item2), new Vector2(packet.Exit.Item1, packet.Exit.Item2)));
+        _context.CommandQueue.Enqueue(new SetTilemapCommand(tilemap, walls, packet.Midground, new Vector2(packet.PlayerPosition.Item1, packet.PlayerPosition.Item2), new Vector2(packet.Exit.Item1, packet.Exit.Item2), packet.Floor));
     }
 }

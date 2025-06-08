@@ -31,6 +31,8 @@ public class GameServer {
         _registry.RegisterPacket(PacketType.HandshakeRequest, HandshakeRequestPacket.Deserialize, new HandshakeRequestPacketHandler());
         _registry.RegisterPacket(PacketType.LoginRequest, LoginRequestPacket.Deserialize, new LoginRequestPacketHandler(_database));
         _registry.RegisterPacket(PacketType.LoadWorldRequest, LoadWorldRequestPacket.Deserialize, new LoadWorldRequestPacketHandler(_database));
+        _registry.RegisterPacket(PacketType.NextLevelRequest, NextLevelPacket.Deserialize, new NextLevelPacketHandler(_database));
+        _registry.RegisterPacket(PacketType.Die, DiePacket.Deserialize, new DiePacketHandler(_database));
 
         _server.OnClientConnected += conn => Logger.Info($"Client connected");
         _server.OnClientDisconnected += (conn, ex) => Logger.Info($"Client disconnected");

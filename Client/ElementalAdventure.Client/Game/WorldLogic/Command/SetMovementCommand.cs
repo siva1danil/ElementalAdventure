@@ -1,3 +1,5 @@
+using ElementalAdventure.Client.Game.SystemLogic;
+
 using OpenTK.Mathematics;
 
 namespace ElementalAdventure.Client.Game.WorldLogic.Command;
@@ -10,7 +12,7 @@ public class SetMovementCommand : ICommand {
         if (_input.LengthSquared != 0) _input.Normalize();
     }
 
-    public void Execute(GameWorld world) {
+    public void Execute(GameWorld world, ClientContext context) {
         world.Input = _input;
     }
 }

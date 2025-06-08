@@ -8,6 +8,7 @@ public class LoadWorldResponsePacket : IPacket {
     public (float, float) PlayerPosition { get; set; } = (0.0f, 0.0f);
     public (float, float) Exit { get; set; } = (0.0f, 0.0f);
     public int Midground { get; set; } = 0;
+    public int Floor { get; set; } = 0;
 
     public void Serialize(BinaryWriter writer) {
         writer.Write((ushort)Tilemap.GetLength(0));
@@ -29,6 +30,7 @@ public class LoadWorldResponsePacket : IPacket {
         writer.Write(Exit.Item1);
         writer.Write(Exit.Item2);
         writer.Write((ushort)Midground);
+        writer.Write((ushort)Floor);
     }
 
     public static LoadWorldResponsePacket Deserialize(BinaryReader reader) {
@@ -53,6 +55,7 @@ public class LoadWorldResponsePacket : IPacket {
         packet.PlayerPosition = (reader.ReadSingle(), reader.ReadSingle());
         packet.Exit = (reader.ReadSingle(), reader.ReadSingle());
         packet.Midground = reader.ReadUInt16();
+        packet.Floor = reader.ReadUInt16();
         return packet;
     }
 }

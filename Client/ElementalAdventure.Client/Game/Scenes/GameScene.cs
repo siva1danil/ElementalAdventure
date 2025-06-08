@@ -14,6 +14,7 @@ using ElementalAdventure.Client.Game.WorldLogic.Component.Behaviour;
 using ElementalAdventure.Client.Game.WorldLogic.Component.Data;
 using ElementalAdventure.Client.Game.WorldLogic.GameObject;
 using ElementalAdventure.Common.Assets;
+using ElementalAdventure.Common.Packets.Impl;
 
 using OpenTK.Mathematics;
 using OpenTK.Windowing.Common;
@@ -84,15 +85,16 @@ public class GameScene : IScene, IUniformProvider {
         _tickAccumulator += args.Time;
         while (_tickAccumulator >= _world.TickInterval) {
             _tickAccumulator -= _world.TickInterval;
+            _world.Tick(_context);
 
             Entity? player = _world.Entities.FirstOrDefault(e => e.Has<PlayerBehaviourComponent>());
-            if (player != null && player.LivingDataComponent!.Health > 0)
-                _world.Tick();
             if (player != null)
                 _healthText.Text = player.LivingDataComponent!.Health.ToString() + " / " + player.LivingDataComponent.MaxHealth.ToString();
             _depthText.Text = $"Floor {_world.Floor + 1}";
-            if (player != null)
-                _worldCamera.Center = player.PositionDataComponent.Position;
+            if (player != null && player.LivingDataComponent!.Health <= 0 && !_world.IsPaused) {
+                _world.IsPaused = true;
+                _ = _context.PacketClient.Connection?.SendAsync(new DiePacket());
+            }
         }
     }
 
@@ -115,6 +117,9 @@ public class GameScene : IScene, IUniformProvider {
 
     public void KeyDown(KeyboardKeyEventArgs args) {
         _world.AddCommand(new SetMovementCommand(_context.PressedKeys.Contains(Keys.W), _context.PressedKeys.Contains(Keys.A), _context.PressedKeys.Contains(Keys.S), _context.PressedKeys.Contains(Keys.D)));
+        if (args.Key == Keys.E) {
+            _world.InteractInput = true;
+        }
     }
 
     public void KeyUp(KeyboardKeyEventArgs args) {
@@ -132,6 +137,9 @@ public class GameScene : IScene, IUniformProvider {
         _world.Tilemap.SetMap(new Vector2(-1.0f, 0.0f), _context.AssetManager, tilemap, midground);
         _world.Tilemap.SetWalls(walls);
         _world.Entities.RemoveAll(e => !e.Has<PlayerBehaviourComponent>());
+        if (_world.Entities[0].LivingDataComponent?.Health <= 0)
+            _world.Entities[0].LivingDataComponent!.Health = _world.Entities[0].LivingDataComponent!.MaxHealth;
+        _world.IsPaused = false;
     }
 
     public void SetPlayerPosition(Vector2 position) {
@@ -145,8 +153,12 @@ public class GameScene : IScene, IUniformProvider {
         _world.Exit = position;
     }
 
+    public void SetFloor(int floor) {
+        _world.Floor = floor;
+    }
+
     public void SpawnEnemy(EnemyType enemyType, Vector2 position) {
-        Entity enemy = new Entity(_context.AssetManager, new LivingDataComponent(false, true, enemyType.MaxHealth, enemyType.MaxHealth, enemyType.Speed), null, new HitboxDataComponent(new Box2(-0.1f, -0.5f + 2.0f / 32.0f, 0.1f, 0.1f)), [new EnemyBehaviourComponent(enemyType)]);
+        Entity enemy = new Entity(_context.AssetManager, new LivingDataComponent(false, true, enemyType.MaxHealth, enemyType.MaxHealth, enemyType.Speed * (new Random().NextSingle() * 0.4f + 0.8f)), null, new HitboxDataComponent(new Box2(-0.1f, -0.5f + 2.0f / 32.0f, 0.1f, 0.1f)), [new EnemyBehaviourComponent(enemyType)]);
         enemy.PositionDataComponent.Position = position;
         _world.Entities.Add(enemy);
     }
@@ -166,6 +178,11 @@ public class GameScene : IScene, IUniformProvider {
             MemoryMarshal.Write(buffer, new MsdfShaderLayout.UniformData(_uiCamera.GetViewMatrix()));
         } else if (shaderProgram == new AssetID("shader.tilemap")) {
             float alpha = (DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() - _world.TickTimestamp) / (float)_world.TickInterval / 1000.0f;
+
+            Entity? player = _world.Entities.FirstOrDefault(e => e.Has<PlayerBehaviourComponent>());
+            if (player != null)
+                _worldCamera.Center = Vector2.Lerp(player.PositionDataComponent!.LastPosition, player.PositionDataComponent!.Position, (DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() - _world.TickTimestamp) / (float)_world.TickInterval / 1000.0f);
+
             TextureAtlas atlas = _context.AssetManager.Get<TextureAtlas>(textureAtlas);
             TilemapShaderLayout.UniformData data = new TilemapShaderLayout.UniformData(_worldCamera.GetViewMatrix(), time, alpha, new(atlas.AtlasWidth, atlas.AtlasHeight), new(atlas.CellWidth, atlas.CellHeight), atlas.CellPadding);
             MemoryMarshal.Write(buffer, data);

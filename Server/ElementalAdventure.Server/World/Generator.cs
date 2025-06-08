@@ -176,13 +176,23 @@ public class Generator {
         return [.. walls];
     }
 
-    public static (float X, float Y, AssetID type)[] GetEnemies(LayoutRoom[,] layout, TileMask[,] tilemask, IWorldType type) {
+    public static (float X, float Y, AssetID type)[] GetEnemies(LayoutRoom[,] layout, TileMask[,] tilemask, IWorldType type, int count) {
         List<(float X, float Y, AssetID type)> enemies = [];
+        Random random = new Random();
+
         for (int y = 0; y < layout.GetLength(0); y++) {
             for (int x = 0; x < layout.GetLength(1); x++) {
                 if (layout[y, x].Type == RoomType.Normal) {
-                    int originX = x * (type.RoomWidth + 1) + 1 + 1, originY = y * (type.RoomHeight + 1) + 1 + 1;
-                    enemies.Add((originX + type.RoomWidth / 2, tilemask.GetLength(0) - (originY + type.RoomHeight / 2), type.GetEnemy()));
+                    int originX = x * (type.RoomWidth + 1) + 2;
+                    int originY = y * (type.RoomHeight + 1) + 2;
+
+                    for (int i = 0; i < count; i++) {
+                        float rx = (float)(random.NextDouble() * (type.RoomWidth - 1)) + 0.5f;
+                        float ry = (float)(random.NextDouble() * (type.RoomHeight - 1)) + 0.5f;
+                        float enemyX = originX + rx;
+                        float enemyY = tilemask.GetLength(0) - (originY + ry);
+                        enemies.Add((enemyX, enemyY, type.GetEnemy()));
+                    }
                 }
             }
         }

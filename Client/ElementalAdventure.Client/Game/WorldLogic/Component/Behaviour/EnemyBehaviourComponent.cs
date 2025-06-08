@@ -30,7 +30,12 @@ public class EnemyBehaviourComponent : IBehaviourComponent {
         _searchCounter = (_searchCounter + 1) % 20;
 
         // Follow target
-        Vector2 movement = (_target.TryGetTarget(out Entity? target) && target != null) ? (target.PositionDataComponent.Position - entity.PositionDataComponent.Position) : Vector2.Zero;
+        Vector2 movement = Vector2.Zero;
+        if (_target.TryGetTarget(out Entity? target) && target != null) {
+            Vector2 toTarget = target.PositionDataComponent.Position - entity.PositionDataComponent.Position;
+            if (toTarget.Length <= 6.0f)
+                movement = toTarget;
+        }
         entity.PositionDataComponent.Velocity = movement.LengthSquared > 1.0f ? movement.NormalizedOrZero() : movement;
 
         // Attack target

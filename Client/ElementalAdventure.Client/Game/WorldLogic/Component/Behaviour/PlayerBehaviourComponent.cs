@@ -13,6 +13,7 @@ public class PlayerBehaviourComponent : IBehaviourComponent {
     private readonly AssetManager _assetManager;
     private readonly PlayerType _playerType;
     private bool _facingRight = true;
+    private long _attackedAt = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
 
     public PlayerBehaviourComponent(AssetManager assetManager, PlayerType playerType) {
         _assetManager = assetManager;
@@ -27,6 +28,16 @@ public class PlayerBehaviourComponent : IBehaviourComponent {
 
         // Update velocity
         entity.PositionDataComponent.Velocity = world.Input;
+
+        // Interact
+        if (world.InteractInput) {
+            float distance = (world.Exit - entity.PositionDataComponent.Position).LengthSquared;
+            if (distance < 1.0f) {
+                world.IsPaused = true;
+                world.AddCommand(new NextLevelCommand());
+            }
+            world.InteractInput = false;
+        }
 
         // Tick movement
         Vector2 position = entity.PositionDataComponent.Position;
@@ -83,12 +94,13 @@ public class PlayerBehaviourComponent : IBehaviourComponent {
         // Attack
         if (world.AttackInput.LengthSquared > 0.0f) {
             Vector2 direction = (world.AttackInput - entity.PositionDataComponent.Position).NormalizedOrZero();
-            if (direction.LengthSquared > 0.0f) {
+            if (direction.LengthSquared > 0.0f && _attackedAt + 1000 < DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()) {
                 ProjectileType type = _assetManager.Get<ProjectileType>(new AssetID("fireball"));
                 Entity projectile = new Entity(_assetManager, null, new ProjectileDataComponent(type.TargetsEnemies, type.TargetsPlayers, type.Damage, type.Speed), new HitboxDataComponent(new Box2(-0.25f, -0.25f, 0.25f, 0.25f)), [new ProjectileBehaviourComponent(type)]);
                 projectile.PositionDataComponent.Position = entity.PositionDataComponent.Position;
                 projectile.PositionDataComponent.Velocity = direction * type.Speed;
                 world.AddCommand(new AddEntityCommand(projectile));
+                _attackedAt = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
             }
             world.AttackInput = Vector2.Zero;
         }
