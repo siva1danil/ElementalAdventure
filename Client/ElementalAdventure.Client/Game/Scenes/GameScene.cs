@@ -33,6 +33,7 @@ public class GameScene : IScene, IUniformProvider {
     private readonly TextView _healthText, _depthText;
 
     private double _tickAccumulator;
+    private bool _shownDeathScreen = false;
 
     public GameScene(ClientContext context) {
         _context = context;
@@ -55,7 +56,6 @@ public class GameScene : IScene, IUniformProvider {
         TextView depthText = new(_context.AssetManager) { Text = "Depth: 1", Font = new AssetID("font.pixeloidsans"), Height = 20f };
         ImageView wasd = new(_context.AssetManager) { Size = new Vector2(0f, 64f), AspectRatio = ImageView.AspectRatioType.AdjustWidth, ImageTextureAtlas = new AssetID("textureatlas.ui"), ImageTextureEntry = new AssetID("button_wasd_normal") };
         ImageView e = new(_context.AssetManager) { Size = new Vector2(0f, 32f), AspectRatio = ImageView.AspectRatioType.AdjustWidth, ImageTextureAtlas = new AssetID("textureatlas.ui"), ImageTextureEntry = new AssetID("button_e_normal") };
-        ImageView q = new(_context.AssetManager) { Size = new Vector2(0f, 32f), AspectRatio = ImageView.AspectRatioType.AdjustWidth, ImageTextureAtlas = new AssetID("textureatlas.ui"), ImageTextureEntry = new AssetID("button_q_normal") };
         hudLine1.Add(health, new LinearLayout.LayoutParams { Margin = new Vector4(0.0f, 12.0f, 0.0f, 0.0f) });
         hudLine1.Add(healthText, new LinearLayout.LayoutParams { Margin = new Vector4(0.0f, 0.0f, 0.0f, 0.0f) });
         hudLine2.Add(depth, new LinearLayout.LayoutParams { Margin = new Vector4(0.0f, 12.0f, 0.0f, 0.0f) });
@@ -68,7 +68,6 @@ public class GameScene : IScene, IUniformProvider {
         topLeft.Add(hud, new LinearLayout.LayoutParams { Margin = new Vector4(0.0f, 0.0f, 0.0f, 0.0f) });
         bottomLeft.Add(wasd, new LinearLayout.LayoutParams { Margin = new Vector4(16.0f, 16.0f, 16.0f, 16.0f) });
         bottomRight.Add(e, new LinearLayout.LayoutParams { Margin = new Vector4(16.0f, 16.0f, 16.0f, 16.0f) });
-        bottomRight.Add(q, new LinearLayout.LayoutParams { Margin = new Vector4(16.0f, 16.0f, 16.0f, 0.0f) });
         _ui.Push(layout);
 
         _world = new GameWorld(1.0f / 20.0f, new Tilemap(), []);
@@ -94,6 +93,7 @@ public class GameScene : IScene, IUniformProvider {
             if (player != null && player.LivingDataComponent!.Health <= 0 && !_world.IsPaused) {
                 _world.IsPaused = true;
                 _ = _context.PacketClient.Connection?.SendAsync(new DiePacket());
+                ShowDeathScreen();
             }
         }
     }
@@ -118,7 +118,10 @@ public class GameScene : IScene, IUniformProvider {
     public void KeyDown(KeyboardKeyEventArgs args) {
         _world.AddCommand(new SetMovementCommand(_context.PressedKeys.Contains(Keys.W), _context.PressedKeys.Contains(Keys.A), _context.PressedKeys.Contains(Keys.S), _context.PressedKeys.Contains(Keys.D)));
         if (args.Key == Keys.E) {
-            _world.InteractInput = true;
+            if (_world.Entities.FirstOrDefault(e => e.Has<PlayerBehaviourComponent>()) is Entity player && player.LivingDataComponent!.Health > 0)
+                _world.InteractInput = true;
+            else
+                _ = _context.PacketClient.Connection?.SendAsync(new LoadWorldRequestPacket());
         }
     }
 
@@ -140,6 +143,10 @@ public class GameScene : IScene, IUniformProvider {
         if (_world.Entities[0].LivingDataComponent?.Health <= 0)
             _world.Entities[0].LivingDataComponent!.Health = _world.Entities[0].LivingDataComponent!.MaxHealth;
         _world.IsPaused = false;
+        if (_shownDeathScreen) {
+            _ui.Pop();
+            _shownDeathScreen = false;
+        }
     }
 
     public void SetPlayerPosition(Vector2 position) {
@@ -189,6 +196,22 @@ public class GameScene : IScene, IUniformProvider {
         } else {
             throw new NotImplementedException($"Shader program {shaderProgram} not supported in {nameof(GameScene)}.");
         }
+    }
+
+    private void ShowDeathScreen() {
+        AbsoluteLayout layout = new();
+        LinearLayout center = new() { Orientation = LinearLayout.OrientationType.Vertical, Gravity = LinearLayout.GravityType.Center };
+        ImageView background = new(_context.AssetManager) { Size = new Vector2(0.0f, 360.0f), AspectRatio = ImageView.AspectRatioType.AdjustWidth, ImageTextureAtlas = new AssetID("textureatlas.ui"), ImageTextureEntry = new AssetID("background_dialog") };
+        TextView title = new(_context.AssetManager) { Text = "You died!", Font = new AssetID("font.pixeloidsans"), Height = 32f };
+        TextView message1 = new(_context.AssetManager) { Text = $"You reached: {_world.Floor} floor.", Font = new AssetID("font.pixeloidsans"), Height = 20f };
+        TextView message2 = new(_context.AssetManager) { Text = "Press E to respawn.", Font = new AssetID("font.pixeloidsans"), Height = 20f };
+        center.Add(title, new LinearLayout.LayoutParams { Margin = new Vector4(0.0f, 0.0f, 12.0f, 0.0f) });
+        center.Add(message1, new LinearLayout.LayoutParams { });
+        center.Add(message2, new LinearLayout.LayoutParams { });
+        layout.Add(background, new AbsoluteLayout.LayoutParams { Position = new Vector2(0.5f, 0.5f), Anchor = new Vector2(0.5f, 0.5f) });
+        layout.Add(center, new AbsoluteLayout.LayoutParams { Position = new Vector2(0.5f, 0.5f), Anchor = new Vector2(0.5f, 0.5f) });
+        _ui.Push(layout);
+        _shownDeathScreen = true;
     }
 
     public void Dispose() {
