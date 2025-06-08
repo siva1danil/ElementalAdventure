@@ -18,7 +18,9 @@ public class SQLiteDatabase : IDatabase {
         pragma.ExecuteNonQuery();
         using SQLiteCommand commandPlayerProfiles = new SQLiteCommand("""
             CREATE TABLE IF NOT EXISTS PlayerProfiles (
-                uid INTEGER PRIMARY KEY AUTOINCREMENT);
+                uid INTEGER PRIMARY KEY AUTOINCREMENT,
+                seed INTEGER DEFAULT 0,
+                floor INTEGER DEFAULT 0);
             """, _connection);
         commandPlayerProfiles.ExecuteNonQuery();
         using SQLiteCommand commandClientTokens = new SQLiteCommand("""
@@ -45,10 +47,18 @@ public class SQLiteDatabase : IDatabase {
     }
 
     public PlayerProfile? GetPlayerProfile(long uid) {
-        using SQLiteCommand command = new SQLiteCommand("SELECT uid FROM PlayerProfiles WHERE uid = @uid", _connection);
+        using SQLiteCommand command = new SQLiteCommand("SELECT uid, seed, floor FROM PlayerProfiles WHERE uid = @uid", _connection);
         command.Parameters.AddWithValue("@uid", uid);
         using SQLiteDataReader reader = command.ExecuteReader();
-        return reader.Read() ? new PlayerProfile(reader.GetInt64(0)) : null;
+        return reader.Read() ? new PlayerProfile(reader.GetInt64(0), reader.GetInt32(1), reader.GetInt32(2)) : null;
+    }
+
+    public void UpdatePlayerProfile(PlayerProfile profile) {
+        using SQLiteCommand command = new SQLiteCommand("UPDATE PlayerProfiles SET seed = @seed, floor = @floor WHERE uid = @uid", _connection);
+        command.Parameters.AddWithValue("@uid", profile.Uid);
+        command.Parameters.AddWithValue("@seed", profile.Seed);
+        command.Parameters.AddWithValue("@floor", profile.Floor);
+        command.ExecuteNonQuery();
     }
 
     public ClientToken CreateClientToken(string provider, string token, long uid) {

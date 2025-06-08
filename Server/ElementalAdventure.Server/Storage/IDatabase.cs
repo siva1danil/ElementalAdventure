@@ -8,6 +8,7 @@ public interface IDatabase {
 
     public PlayerProfile CreatePlayerProfile();
     public PlayerProfile? GetPlayerProfile(long uid);
+    public void UpdatePlayerProfile(PlayerProfile profile);
     public ClientToken CreateClientToken(string provider, string token, long uid);
     public ClientToken? GetClientToken(string provider, string token);
 }

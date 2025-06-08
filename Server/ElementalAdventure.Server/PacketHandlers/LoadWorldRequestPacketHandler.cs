@@ -3,6 +3,7 @@ using ElementalAdventure.Common.Assets;
 using ElementalAdventure.Common.Logging;
 using ElementalAdventure.Common.Packets;
 using ElementalAdventure.Common.Packets.Impl;
+using ElementalAdventure.Server.Models;
 using ElementalAdventure.Server.Storage;
 using ElementalAdventure.Server.World;
 
@@ -26,8 +27,20 @@ public class LoadWorldRequestPacketHandler : PacketRegistry.IPacketHandler {
             return;
         }
 
+        long uid = (long)connection.SessionStorage["uid"];
+
+        PlayerProfile? profile = _database.GetPlayerProfile(uid);
+        if (profile == null) {
+            Logger.Error($"Player profile not found for UID {uid}");
+            return;
+        }
+        if (profile.Value.Seed == 0) {
+            profile = new PlayerProfile(profile.Value.Uid, new Random().Next(), profile.Value.Floor);
+            _database.UpdatePlayerProfile(profile.Value);
+        }
+
         IsometricWorldType type = new(11, 7, new AssetID("floor_1_full"), new AssetID("wall_bottom"), new AssetID("wall_top"), new AssetID("wall_top_connected"), new AssetID("wall_bottom_connected"), new AssetID("wall_left"), new AssetID("wall_right"), new AssetID("wall_righttop"), new AssetID("wall_rightbottom"), new AssetID("wall_lefttop"), new AssetID("wall_leftbottom"), new AssetID("wall_side_connected"), new AssetID("wall_cross_lb_rb"), new AssetID("wall_cross_lt_lb"), new AssetID("wall_cross_lt_rt"), new AssetID("wall_cross_rt_rb"), new AssetID("wall_cross_lt_lb_rb"), new AssetID("wall_cross_lt_rt_rb"), new AssetID("wall_cross_lb_rt_rb"), new AssetID("wall_cross_lt_lb_rt"), new AssetID("wall_cross_lt_rt_lb_rb"), new AssetID("wall_doorway_horizontal_top"), new AssetID("wall_doorway_horizontal_bottom"), new AssetID("wall_doorway_vertical_top"), new AssetID("wall_doorway_vertical_bottom"), new AssetID("door_horizontal_closed_top"), new AssetID("door_horizontal_closed_bottom"), new AssetID("door_vertical_closed_top"), new AssetID("door_vertical_closed_bottom"), new AssetID("stairs_down"), new AssetID("stairs_up"), new AssetID("slime"));
-        Generator.LayoutRoom[,] layout = Generator.GenerateLayout(new Random().Next(), 0, new Dictionary<RoomType, int> { { RoomType.Entrance, 1 }, { RoomType.Exit, 1 }, { RoomType.Normal, 8 } });
+        Generator.LayoutRoom[,] layout = Generator.GenerateLayout(profile.Value.Seed, 0, new Dictionary<RoomType, int> { { RoomType.Entrance, 1 }, { RoomType.Exit, 1 }, { RoomType.Normal, 8 } });
         Generator.TileMask[,] tilemask = Generator.GenerateTilemask(layout, type);
         (int startX, int startY) = Generator.GetStartingPosition(layout, tilemask, type);
         (int exitX, int exitY) = Generator.GetExitPosition(layout, tilemask, type);
