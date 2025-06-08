@@ -20,6 +20,11 @@ public class PlayerBehaviourComponent : IBehaviourComponent {
     }
 
     public void Update(GameWorld world, Entity entity) {
+        // Update invincibility
+        if (entity.LivingDataComponent!.InvincibilityCounter > 0) {
+            entity.LivingDataComponent.InvincibilityCounter--;
+        }
+
         // Update velocity
         entity.PositionDataComponent.Velocity = world.Input;
 

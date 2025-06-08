@@ -33,6 +33,14 @@ public class EnemyBehaviourComponent : IBehaviourComponent {
         Vector2 movement = (_target.TryGetTarget(out Entity? target) && target != null) ? (target.PositionDataComponent.Position - entity.PositionDataComponent.Position) : Vector2.Zero;
         entity.PositionDataComponent.Velocity = movement.LengthSquared > 1.0f ? movement.NormalizedOrZero() : movement;
 
+        // Attack target
+        if (target != null) {
+            Box2 hitbox = new(entity.HitboxDataComponent!.Box.Min + entity.PositionDataComponent.Position, entity.HitboxDataComponent.Box.Max + entity.PositionDataComponent.Position);
+            Box2 targetHitbox = new(target.HitboxDataComponent!.Box.Min + target.PositionDataComponent.Position, target.HitboxDataComponent.Box.Max + target.PositionDataComponent.Position);
+            if (hitbox.Intersects(targetHitbox))
+                target.LivingDataComponent!.Health -= _enemyType.Damage;
+        }
+
         // Tick movement
         Vector2 position = entity.PositionDataComponent.Position;
         Vector2 velocity = entity.PositionDataComponent.Velocity * entity.LivingDataComponent!.MovementSpeed;

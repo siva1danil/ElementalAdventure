@@ -39,7 +39,7 @@ public class GameScene : IScene, IUniformProvider {
         _renderer = new(_context.AssetManager, this);
         _ui = new(new Vector2(0.0f, 1.0f), _context.WindowSize);
         _uiCamera = new Camera(context.WindowSize / 2.0f, context.WindowSize, context.WindowSize, true);
-        _worldCamera = new Camera(new Vector2(5.0f, 5.0f), new Vector2(8.0f, 8.0f), context.WindowSize);
+        _worldCamera = new Camera(new Vector2(5.0f, 5.0f), new Vector2(12.0f, 8.0f), context.WindowSize);
 
         AbsoluteLayout layout = new();
         LinearLayout topLeft = new();
@@ -71,7 +71,7 @@ public class GameScene : IScene, IUniformProvider {
         _ui.Push(layout);
 
         _world = new GameWorld(1.0f / 20.0f, new Tilemap(), []);
-        _world.Entities.Add(new Entity(_context.AssetManager, new LivingDataComponent(true, false, _context.AssetManager.Get<PlayerType>(new AssetID("mage")).MaxHealth, _context.AssetManager.Get<PlayerType>(new AssetID("mage")).MaxHealth, _context.AssetManager.Get<PlayerType>(new AssetID("mage")).Speed), null, new HitboxDataComponent(new Box2(-0.1f, -0.5f + 2.0f / 32.0f - 0.01f, 0.1f, -0.5f + 2.0f / 32.0f + 0.01f)), [new PlayerBehaviourComponent(_context.AssetManager, _context.AssetManager.Get<PlayerType>(new AssetID("mage")))]));
+        _world.Entities.Add(new Entity(_context.AssetManager, new LivingDataComponent(true, false, _context.AssetManager.Get<PlayerType>(new AssetID("mage")).MaxHealth, _context.AssetManager.Get<PlayerType>(new AssetID("mage")).MaxHealth, _context.AssetManager.Get<PlayerType>(new AssetID("mage")).Speed), null, new HitboxDataComponent(new Box2(-0.1f, -0.5f + 2.0f / 32.0f - 0.01f, 0.1f, 0.1f)), [new PlayerBehaviourComponent(_context.AssetManager, _context.AssetManager.Get<PlayerType>(new AssetID("mage")))]));
         _world.Entities[0].PositionDataComponent.Position = new Vector2(0.0f, 0.0f);
 
         _healthText = healthText;
@@ -140,7 +140,7 @@ public class GameScene : IScene, IUniformProvider {
     }
 
     public void SpawnEnemy(EnemyType enemyType, Vector2 position) {
-        Entity enemy = new Entity(_context.AssetManager, new LivingDataComponent(false, true, enemyType.MaxHealth, enemyType.MaxHealth, enemyType.Speed), null, new HitboxDataComponent(new Box2(-0.1f, -0.5f + 2.0f / 32.0f, 0.1f, 0.0f)), [new EnemyBehaviourComponent(enemyType)]);
+        Entity enemy = new Entity(_context.AssetManager, new LivingDataComponent(false, true, enemyType.MaxHealth, enemyType.MaxHealth, enemyType.Speed), null, new HitboxDataComponent(new Box2(-0.1f, -0.5f + 2.0f / 32.0f, 0.1f, 0.1f)), [new EnemyBehaviourComponent(enemyType)]);
         enemy.PositionDataComponent.Position = position;
         _world.Entities.Add(enemy);
     }
