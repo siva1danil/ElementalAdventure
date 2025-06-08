@@ -10,6 +10,7 @@ public class GameWorld {
 
     private int _floor = 0;
     private readonly Tilemap _tilemap;
+    private Vector2 _exit;
     private readonly List<Entity> _entities;
     private readonly Queue<ICommand> _commands;
 
@@ -21,6 +22,7 @@ public class GameWorld {
 
     public int Floor { get => _floor; set => _floor = value; }
     public Tilemap Tilemap => _tilemap;
+    public Vector2 Exit { get => _exit; set => _exit = value; }
     public List<Entity> Entities => _entities;
 
     public Vector2 Input { get => _input; set => _input = value; }

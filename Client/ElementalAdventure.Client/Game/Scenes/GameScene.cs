@@ -84,9 +84,10 @@ public class GameScene : IScene, IUniformProvider {
         _tickAccumulator += args.Time;
         while (_tickAccumulator >= _world.TickInterval) {
             _tickAccumulator -= _world.TickInterval;
-            _world.Tick();
 
             Entity? player = _world.Entities.FirstOrDefault(e => e.Has<PlayerBehaviourComponent>());
+            if (player != null && player.LivingDataComponent!.Health > 0)
+                _world.Tick();
             if (player != null)
                 _healthText.Text = player.LivingDataComponent!.Health.ToString() + " / " + player.LivingDataComponent.MaxHealth.ToString();
             _depthText.Text = $"Floor {_world.Floor + 1}";
@@ -130,6 +131,7 @@ public class GameScene : IScene, IUniformProvider {
     public void SetTilemap(AssetID[,,] tilemap, Box2[] walls, int midground) {
         _world.Tilemap.SetMap(new Vector2(-1.0f, 0.0f), _context.AssetManager, tilemap, midground);
         _world.Tilemap.SetWalls(walls);
+        _world.Entities.RemoveAll(e => !e.Has<PlayerBehaviourComponent>());
     }
 
     public void SetPlayerPosition(Vector2 position) {
@@ -137,6 +139,10 @@ public class GameScene : IScene, IUniformProvider {
             if (entity.Has<PlayerBehaviourComponent>())
                 entity.PositionDataComponent.Position = position;
         }
+    }
+
+    public void SetExitPosition(Vector2 position) {
+        _world.Exit = position;
     }
 
     public void SpawnEnemy(EnemyType enemyType, Vector2 position) {

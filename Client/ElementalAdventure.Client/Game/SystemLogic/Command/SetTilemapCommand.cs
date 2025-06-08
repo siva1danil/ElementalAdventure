@@ -11,12 +11,14 @@ public class SetTilemapCommand : IClientCommand {
     private readonly Box2[] _walls;
     private readonly int _midground;
     private readonly Vector2 _entrance;
+    private readonly Vector2 _exit;
 
-    public SetTilemapCommand(AssetID[,,] tilemap, Box2[] walls, int midground, Vector2 entrance) {
+    public SetTilemapCommand(AssetID[,,] tilemap, Box2[] walls, int midground, Vector2 entrance, Vector2 exit) {
         _tilemap = tilemap;
         _walls = walls;
         _midground = midground;
         _entrance = entrance;
+        _exit = exit;
     }
 
     public void Execute(ClientWindow client, IScene? scene, ClientContext context) {
@@ -26,5 +28,6 @@ public class SetTilemapCommand : IClientCommand {
         }
         gameScene.SetTilemap(_tilemap, _walls, _midground);
         gameScene.SetPlayerPosition(_entrance);
+        gameScene.SetExitPosition(_exit);
     }
 }

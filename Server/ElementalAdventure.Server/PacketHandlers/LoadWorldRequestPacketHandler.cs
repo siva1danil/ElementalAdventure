@@ -30,6 +30,7 @@ public class LoadWorldRequestPacketHandler : PacketRegistry.IPacketHandler {
         Generator.LayoutRoom[,] layout = Generator.GenerateLayout(new Random().Next(), 0, new Dictionary<RoomType, int> { { RoomType.Entrance, 1 }, { RoomType.Exit, 1 }, { RoomType.Normal, 8 } });
         Generator.TileMask[,] tilemask = Generator.GenerateTilemask(layout, type);
         (int startX, int startY) = Generator.GetStartingPosition(layout, tilemask, type);
+        (int exitX, int exitY) = Generator.GetExitPosition(layout, tilemask, type);
         AssetID[,,] tilemap = Generator.GenerateTilemap(tilemask, type);
         Generator.WallBox[] walls = Generator.GenerateWalls(tilemask, type);
         int[,,] data = new int[tilemap.GetLength(0), tilemap.GetLength(1), tilemap.GetLength(2)];
@@ -40,7 +41,7 @@ public class LoadWorldRequestPacketHandler : PacketRegistry.IPacketHandler {
         (float, float, float, float)[] wallsData = new (float, float, float, float)[walls.Length];
         for (int i = 0; i < walls.Length; i++)
             wallsData[i] = (walls[i].X, walls[i].Y, walls[i].Width, walls[i].Height);
-        _ = connection.SendAsync(new LoadWorldResponsePacket() { Tilemap = data, Midground = type.MidgroundLayer, Walls = wallsData, PlayerPosition = (startX, startY) });
+        _ = connection.SendAsync(new LoadWorldResponsePacket() { Tilemap = data, Midground = type.MidgroundLayer, Walls = wallsData, PlayerPosition = (startX, startY), Exit = (exitX, exitY) });
 
         (float X, float Y, AssetID Type)[] enemies = Generator.GetEnemies(layout, tilemask, type);
         foreach (var (x, y, enemyType) in enemies)
